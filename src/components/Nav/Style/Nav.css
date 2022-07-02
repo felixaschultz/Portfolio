@@ -1,0 +1,11 @@
+.navigation{
+    padding: 15px;
+}
+
+.navigation__link{
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    padding: 15px;
+    font-size: 17px;
+    display: inline-block;
+}

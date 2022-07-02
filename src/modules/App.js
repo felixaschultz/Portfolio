@@ -10,28 +10,11 @@ import Home from "../Pages/Home/Home";
 import Web from "../Pages/Web/Web";
 import Photography from "../Pages/Photography/Photography";
 import Nav from "../components/Nav/Nav";
+import Projects from "../Pages/Projects/Projects";
 import { useTitle, TitleProvider } from "../TitleContext";
 
 export default function App() {
     const { title } = useTitle();
-    if (window?.INIT?.ga) {
-        const gaScriptSrc = `https://www.googletagmanager.com/gtag/js?id=${window.INIT.ga.id}`;
-        const gaScript = document.createElement("script");
-        gaScript.async = true;
-        gaScript.src = gaScriptSrc;
-
-        const gaScriptInline = document.createElement("script");
-        gaScriptInline.innerHTML = `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-        
-            gtag('config', '${window.INIT.ga.id}');
-        `;
-
-        document.head.appendChild(gaScript)
-        document.head.appendChild(gaScriptInline)
-    }
 
     return (
         <>
@@ -50,6 +33,9 @@ export default function App() {
                         </Route>
                         <Route path="/web">
                             <Web />
+                        </Route>
+                        <Route path="/projects">
+                            <Projects />
                         </Route>
                         <Redirect to="/" />
                     </Switch>

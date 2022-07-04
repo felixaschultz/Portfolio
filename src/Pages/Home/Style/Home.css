@@ -23,3 +23,9 @@
     width: 100%;
     margin: auto;
 }
+
+.companys__logo{
+    width: 25%;
+    margin: auto;
+    padding: 10px;
+}

@@ -1,5 +1,9 @@
 import { useTitle } from "../../TitleContext";
 import "./Style/Home.css";
+import DanfossLogo from "./Danfoss_logo.svg";
+
+console.log(DanfossLogo);
+
 export default function Home() {
     const { setTitle } = useTitle();
 
@@ -14,7 +18,6 @@ export default function Home() {
                         <h2 className="heading">Felix A. Schultz</h2>
                         <p>AP graduate Multimediadesigner / Front End developer</p>
                     </section>
-                    <img className="me__image" src="/* https://new.felix-schultz.net/assets/me.jpg */" />
                     <section className="coding intro__section">
                         <h2 className="heading">&#60;Coder /&#62;</h2>
                         <p>
@@ -24,7 +27,9 @@ export default function Home() {
                     </section>
                 </section>
                 <section className="content">
-                    <h2>Hej</h2>
+                    <article className="companys">
+                        <img className="companys__logo" src={DanfossLogo} />
+                    </article>
                 </section>
             </main>
         </>

@@ -3,11 +3,11 @@ export default function Projects() {
         <>
             <main className="grid">
                 <section className="intro__section">
-                    <h1 className="heading">Projects</h1>
+                    <h1 className="heading">Projektter</h1>
                     <p></p>
                 </section>
                 <section className="intro__section">
-                    
+
                 </section>
             </main>
         </>

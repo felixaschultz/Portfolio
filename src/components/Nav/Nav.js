@@ -6,7 +6,7 @@ export default function Nav() {
         <>
             <nav className="navigation">
                 <Link className="navigation__link" to="/web">Web</Link>
-                <Link className="navigation__link" to="/projects">Projects</Link>
+                <Link className="navigation__link" to="/projects">Projektter</Link>
                 <Link className="navigation__link" to="/fotografi">Fotografi</Link>
             </nav>
         </>

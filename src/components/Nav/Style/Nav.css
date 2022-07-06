@@ -1,11 +1,16 @@
 .navigation{
     padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .navigation__link{
     text-decoration: none;
-    color: rgb(255, 255, 255);
-    padding: 15px;
-    font-size: 17px;
-    display: inline-block;
+    color: #fff;
+    padding: 0px 30px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

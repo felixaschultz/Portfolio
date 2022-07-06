@@ -4,7 +4,7 @@ export default function Projects(props) {
         <>
             <main className="grid">
                 <section className="intro__section">
-                    <h1 className="heading">Projektter</h1>
+                    <h1 className="heading">Projekter</h1>
                     <p></p>
                 </section>
                 <section className="intro__section">

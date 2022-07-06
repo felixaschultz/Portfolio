@@ -14,7 +14,6 @@ import Projects from "../Pages/Projects/Projects";
 import { useTitle, TitleProvider } from "../TitleContext";
 
 export default function App() {
-    const { title } = useTitle();
 
     return (
         <>
@@ -25,17 +24,17 @@ export default function App() {
                         <Nav />
                     </header>
                     <Switch>
-                        <Route path="/" exact title="home">
-                            <Home />
+                        <Route path="/" exact>
+                            <Home title="Felix A. | Portfolio" />
                         </Route>
                         <Route path="/fotografi">
-                            <Photography />
+                            <Photography title="Fotografi | Portfolio" />
                         </Route>
                         <Route path="/web">
-                            <Web />
+                            <Web title="Web | Portfolio" />
                         </Route>
                         <Route path="/projects">
-                            <Projects />
+                            <Projects title="Projects | Portfolio" />
                         </Route>
                         <Redirect to="/" />
                     </Switch>

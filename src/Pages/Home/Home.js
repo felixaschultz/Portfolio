@@ -1,15 +1,9 @@
-import { useTitle } from "../../TitleContext";
 import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 
-console.log(DanfossLogo);
 
-export default function Home() {
-    const { setTitle } = useTitle();
-
-    React.useEffect(() => {
-        setTitle('This is human readable title for Home Component')
-    }, [])
+export default function Home(props) {
+    document.title = props.title;
     return (
         <>
             <main>

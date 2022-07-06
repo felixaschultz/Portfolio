@@ -1,4 +1,5 @@
-export default function Projects() {
+export default function Projects(props) {
+    document.title = props.title;
     return (
         <>
             <main className="grid">

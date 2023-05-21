@@ -15,7 +15,6 @@ export default function Home(props) {
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h2 className="landingPage__heading">Felix A. Schultz</h2>
                         <p>AP graduate Multimediadesigner / Front End developer</p>
-                        <p>This is a github page test</p>
                     </section>
                     <section className="landingPage__content landingPage__right landingPage--TopRight">
                         <div className="landingPage__style"></div>

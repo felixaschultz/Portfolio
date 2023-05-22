@@ -1,3 +1,4 @@
+import "./Style.css";
 export default function Projects(props) {
     document.title = props.title;
     return (
@@ -8,12 +9,13 @@ export default function Projects(props) {
                         <h1 className="landingPage__heading">Projekter</h1>
                         <p></p>
                     </section>
-                    <section className="landingPage__content">
-                        <h2>GDPR Cookie banner</h2>
-                    </section>
                 </section>
-                <section>
-                    
+                <section className="belowthfold">
+                    <section className="content">
+                        <a href="https://www.intastellarsolutions.com/gdpr-cookiebanner">
+                            <h2>Intastellar Cookie Banner</h2>
+                        </a>
+                    </section>
                 </section>
             </main>
         </>

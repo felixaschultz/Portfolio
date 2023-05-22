@@ -82,3 +82,19 @@
     font-weight: 100;
     text-transform: uppercase;
 }
+
+@media screen and (min-width: 320px) and (max-width: 900px) {
+    .landingPage{
+        grid-template-columns: 1fr;
+        overflow: auto;
+        scroll-behavior: smooth;
+    }
+
+    .main-header{
+        padding: 73px;
+    }
+
+    .landingPage__content{
+        padding: 15px;
+    }
+}

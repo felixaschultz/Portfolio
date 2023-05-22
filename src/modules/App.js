@@ -36,7 +36,6 @@ export default function App() {
                     <Route path="/projects">
                         <Projects title="Projects | Portfolio" />
                     </Route>
-                    <Redirect to="/" />
                 </Switch>
             </Router>
         </>

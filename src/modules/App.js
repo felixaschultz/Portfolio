@@ -1,5 +1,5 @@
 import "./App.css";
-const Router = window.ReactRouterDOM.BrowserRouter;
+const Router = window.ReactRouterDOM.HashRouter;
 const Route =  window.ReactRouterDOM.Route;
 const Link =  window.ReactRouterDOM.Link;
 const Prompt =  window.ReactRouterDOM.Prompt;
@@ -36,6 +36,7 @@ export default function App() {
                     <Route path="/projects">
                         <Projects title="Projects | Portfolio" />
                     </Route>
+                    <Redirect to="/" />
                 </Switch>
             </Router>
         </>

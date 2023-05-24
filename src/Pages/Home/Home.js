@@ -3,6 +3,7 @@ import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
+import contact from "../../function/Contact";
 
 export default function Home(props) {
     document.title = props.title;
@@ -27,7 +28,9 @@ export default function Home(props) {
                                 {local[location].pages.homepage.title}
                             </h2>
                             <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
-                            <a href="#about" class="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
+                            <a onClick={() => {
+                                contact()
+                            }} class="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
                 </section>

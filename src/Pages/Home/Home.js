@@ -6,7 +6,7 @@ import { LocationContext } from "../../modules/App";
 
 export default function Home(props) {
     document.title = props.title;
-    const [location, setLocation] = useContext(LocationContext);
+    const [location] = useContext(LocationContext);
 
     return (
         <>
@@ -24,10 +24,10 @@ export default function Home(props) {
                         <div className="landingPage__style"></div>
                         <section className="landingPage__rightContent">
                             <h2 className="landingPage__headinTwo">
-                                {local[location].homepage.title}
+                                {local[location].pages.homepage.title}
                             </h2>
-                            <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].homepage.introduction}</p>
-                            <a href="#about" class="cta jumpBtn">Kontakt mig</a>
+                            <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
+                            <a href="#about" class="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
                 </section>

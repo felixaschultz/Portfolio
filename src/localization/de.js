@@ -15,6 +15,8 @@ export default {
             name: "Name",
             email: "E-Mail",
             message: "Deine Nachricht",
+            success: "Deine Nachricht wurde erfolgreich versendet.",
+            error: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
         }
     },
     navigation: {

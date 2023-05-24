@@ -15,6 +15,8 @@ export default {
             name: "Navn",
             email: "E-mail",
             message: "Din Besked",
+            success: "Din besked er blevet afsendt",
+            error: "Din besked kunne ikke afsendes. Prøv igen senere."
         },
     },
     navigation: {

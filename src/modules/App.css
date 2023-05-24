@@ -24,7 +24,7 @@ body{
 }
 
 .main-header{
-    position: fixed;
+    position: absolute;
     width: 100%;
     color: #fff;
     align-items: center;
@@ -45,7 +45,7 @@ body{
 }
 
 .content{
-    width: 1200px;
+    width: 1400px;
     margin: auto;
 }
 

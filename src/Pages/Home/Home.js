@@ -14,7 +14,7 @@ export default function Home(props) {
             <main>
                 <section className="landingPage">
                     <section className="landingPage__ImageContainer">
-                        <img loading="lazy" src="https://new.felix-schultz.net/assets/landingPage/IMG_1608.jpg" alt="" className="landingPage__imageOne"/>
+                        <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="" className="landingPage__imageOne"/>
                         <img loading="lazy" src="https://new.felix-schultz.net/assets/IMG_1020.jpg" alt="" className="landingPage__imageTwo"/>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">

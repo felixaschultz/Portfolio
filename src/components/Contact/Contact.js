@@ -13,10 +13,11 @@ export default function Contact(props){
         const body = {
             name: form.name,
             email: form.email,
-            message: form.message
+            msg: form.message,
+            divison: form.divison,
         }
 
-        fetch(location.origin + "/api/contact", {
+        fetch("https://www.intastellarsolutions.com/contact/send.php", {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
@@ -24,10 +25,10 @@ export default function Contact(props){
                 }
             }).then((re) => re.json()).then((re) => {
                 if(re.success){
-                    alert(local[location].contact.success);
+                    alert(local[location].pages.contact.success);
                     e.target.reset();
                 }else{
-                    alert(local[location].contact.error, re.status)
+                    alert(local[location].pages.contact.error, re.status)
                 }
             })
     }
@@ -53,6 +54,7 @@ export default function Contact(props){
                         {local[location].pages.contact.message}
                         <textarea className="formItems-input no-resize text-input" id="message" name="message"></textarea>
                     </label>
+                    <input name="division" value="felixaschultz" type="hidden" />
                     <button className="cta contact-cta">{local[location].pages.contact.submitBtn}</button>
                 </form>
             </section>

@@ -16,8 +16,8 @@ export default function Projects(props) {
                     </section>
                 </section>
                 <section className="belowthfold">
-                    <section className="content">
-                        <a href="https://www.intastellarsolutions.com/gdpr-cookiebanner">
+                    <section className="content project-grid">
+                        <a className="project" href="https://www.intastellarsolutions.com/gdpr-cookiebanner">
                             <h2>Intastellar Cookie Banner</h2>
                         </a>
                     </section>

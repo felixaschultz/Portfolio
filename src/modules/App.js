@@ -9,6 +9,7 @@ const Redirect = window.ReactRouterDOM.Redirect;
 
 import Home from "../Pages/Home/Home";
 import Web from "../Pages/Web/Web";
+import Footer from "../components/Footer/Footer";
 import Photography from "../Pages/Photography/Photography";
 import Nav from "../components/Nav/Nav";
 import Projects from "../Pages/Projects/Projects";
@@ -46,6 +47,7 @@ export default function App() {
                         </Route>
                         <Redirect to="/" />
                     </Switch>
+                    <Footer />
                 </LocationContext.Provider>
             </Router>
         </>

@@ -34,6 +34,11 @@ export default function Home(props) {
                         </section>
                     </section>
                 </section>
+                <section className="hero-intro">
+                    <div className="hero-intro__content">
+                        <h2>{local[location].pages.homepage.heroIntro.title}</h2>
+                    </div>
+                </section>
             </main>
             {
                 (showPopup) ? <Contact setShowPopup={setShowPopup} showPopup={showPopup} /> : null

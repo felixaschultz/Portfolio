@@ -7,10 +7,8 @@ export default function Contact(props){
     
     function contactMe(e){
         e.preventDefault();
-        console.log(e)
         const formData = new FormData(e.target);
 
-        console.log(formData)
     }
 
     return (<>
@@ -22,7 +20,18 @@ export default function Contact(props){
                 <h2>{local[location].pages.contact.title}</h2>
                 <p>{local[location].pages.contact.description}</p>
                 <form onSubmit={(e) => contactMe(e)} method="post">
-                    <input name="name"/>
+                    <label htmlFor="name">
+                        {local[location].pages.contact.name}
+                        <input id="name" type="text" name="name"/>
+                    </label>
+                    <label htmlFor="email">
+                        {local[location].pages.contact.email}
+                        <input id="email" type="email" name="email"/>
+                    </label>
+                    <label htmlFor="message">
+                        {local[location].pages.contact.message}
+                        <textarea id="message" name="message"></textarea>
+                    </label>
                     <button>{local[location].pages.contact.submitBtn}</button>
                 </form>
             </section>

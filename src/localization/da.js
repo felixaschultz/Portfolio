@@ -11,7 +11,10 @@ export default {
         contact: {
             title: 'Kontakt',
             description: "Du har et spørgsmål eller syndes mit arbejde super så kontakt mig under:",
-            submitBtn: "Afsend besked"
+            submitBtn: "Afsend besked",
+            name: "Navn",
+            email: "E-mail",
+            message: "Din Besked",
         },
     },
     navigation: {

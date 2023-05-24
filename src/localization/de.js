@@ -11,7 +11,10 @@ export default {
         contact: {
             title: 'Kontakt',
             description: "Sie haben eine frage oder finden meine arbeit super? Dann kontaktieren Sie mich einfach hier unten:",
-            submitBtn: "Nachricht senden"
+            submitBtn: "Nachricht senden",
+            name: "Name",
+            email: "E-Mail",
+            message: "Deine Nachricht",
         }
     },
     navigation: {

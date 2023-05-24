@@ -8,6 +8,11 @@ export default {
         projects: {
             title: "Projects",
         },
+        contact: {
+            title: 'Contact',
+            description: "Do you have a question or do you think my work is great? Then just contact me below:",
+            submitBtn: "Send message"
+        },
     },
     navigation: {
         langSelector:[

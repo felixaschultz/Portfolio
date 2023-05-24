@@ -11,9 +11,9 @@ export default function Nav() {
             <nav className="navigation">
                 <Link className="navigation__link" to="/projects">Projekter</Link>
                 {
-                    local[location].navigation.langSelector.map((choosedLang) => {
+                    local[location].navigation.langSelector.map((choosedLang, key) => {
                         return <>
-                            <button className="locationPicker" onClick={(e) => {setLocation(choosedLang.short)}}>
+                            <button key={choosedLang} className="locationPicker" onClick={(e) => {setLocation(choosedLang.short)}}>
                                 {choosedLang.long}
                             </button>
                         </>

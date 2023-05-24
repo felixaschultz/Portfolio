@@ -8,6 +8,11 @@ export default {
         projects: {
            title: "Projekter" 
         },
+        contact: {
+            title: 'Kontakt',
+            description: "Du har et spørgsmål eller syndes mit arbejde super så kontakt mig under:",
+            submitBtn: "Afsend besked"
+        },
     },
     navigation: {
         langSelector:[

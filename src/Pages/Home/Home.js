@@ -3,12 +3,12 @@ import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
-import contact from "../../function/Contact";
+import Contact from "../../components/Contact/Contact";
 
 export default function Home(props) {
     document.title = props.title;
     const [location] = useContext(LocationContext);
-
+    const [showPopup, setShowPopup] = useState(false);
     return (
         <>
             <main>
@@ -29,12 +29,15 @@ export default function Home(props) {
                             </h2>
                             <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
                             <a onClick={() => {
-                                contact()
-                            }} class="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
+                                setShowPopup(!showPopup)
+                            }} className="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
                 </section>
             </main>
+            {
+                (showPopup) ? <Contact setShowPopup={setShowPopup} showPopup={showPopup} /> : null
+            }
         </>
     )
 }

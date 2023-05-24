@@ -1,9 +1,13 @@
+const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
-
+import { local } from "../../localization/local";
+import { LocationContext } from "../../modules/App";
 
 export default function Home(props) {
     document.title = props.title;
+    const [location, setLocation] = useContext(LocationContext);
+
     return (
         <>
             <main>
@@ -20,11 +24,10 @@ export default function Home(props) {
                         <div className="landingPage__style"></div>
                         <section className="landingPage__rightContent">
                             <h2 className="landingPage__headinTwo">
-                                Front-end developer with passion
+                                {local[location].homepage.title}
                             </h2>
-                            <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>Jeg har en passion for front end web development. Jeg har arbejde mere end 10 års med udvikling af hjemmesider, de første 5 år bare som hobby ved siden af skolen.
-                            De sidste 5 år har fokuserede mig at går fuld professionelt ind i webudvikling. Jeg er igang med at udbygge mine færdigheder i ReactJS.</p>
-                            {/* <a href="#about" class="cta jumpBtn">Læs om og kontakt mig</a> */}
+                            <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].homepage.introduction}</p>
+                            <a href="#about" class="cta jumpBtn">Kontakt mig</a>
                         </section>
                     </section>
                 </section>

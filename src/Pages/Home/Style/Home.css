@@ -83,6 +83,16 @@
     text-transform: uppercase;
 }
 
+.cta{
+    color: var(--overlay);
+    text-decoration: none;
+    padding: 20px 32px;
+    background-color: #fff;
+    margin-top: 20px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
 @media screen and (min-width: 320px) and (max-width: 900px) {
     .landingPage{
         grid-template-columns: 1fr;

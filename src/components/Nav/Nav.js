@@ -9,7 +9,13 @@ export default function Nav() {
     return (
         <>
             <nav className="navigation">
-                <Link className="navigation__link" to="/projects">Projekter</Link>
+                {
+                    local[location].navigation.links.map((link, key) => {
+                        return (
+                            <Link className="navigation__link" to={link.path}>{link.name}</Link>
+                        )
+                    })
+                }
                 {
                     local[location].navigation.langSelector.map((choosedLang, key) => {
                         return <>

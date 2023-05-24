@@ -29,6 +29,12 @@ export default {
                 short: "de",
                 long: "Deutsch"
             }
+        ],
+        links: [
+            {
+                name: "Projects",
+                path: "/projects"
+            }
         ]
     }
 }

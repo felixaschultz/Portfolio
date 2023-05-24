@@ -30,7 +30,7 @@ export default function Home(props) {
                             <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
                             <a onClick={() => {
                                 setShowPopup(!showPopup)
-                            }} className="cta jumpBtn">{local[location].pages.homepage.topCta}</a>
+                            }} className="cta">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
                 </section>

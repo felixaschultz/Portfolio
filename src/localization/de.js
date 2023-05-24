@@ -29,6 +29,12 @@ export default {
                 short: "da",
                 long: "Dansk"
             }
+        ],
+        links: [
+            {
+                name: "Projekte",
+                path: "/projects"
+            }
         ]
     }
 }

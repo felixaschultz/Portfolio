@@ -12,7 +12,7 @@ import Web from "../Pages/Web/Web";
 import Footer from "../components/Footer/Footer";
 import Photography from "../Pages/Photography/Photography";
 import Nav from "../components/Nav/Nav";
-import Projects from "../Pages/Projects/Projects";
+import ProjectsPage from "../Pages/Projects/Projects";
 export const LocationContext = createContext(null);
 
 export default function App() {
@@ -43,7 +43,7 @@ export default function App() {
                             <Web title="Web | Portfolio" />
                         </Route>
                         <Route path="/projects">
-                            <Projects title="Projects | Portfolio" />
+                            <ProjectsPage title="Projects | Portfolio" />
                         </Route>
                         <Redirect to="/" />
                     </Switch>

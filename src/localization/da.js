@@ -7,6 +7,14 @@ export default {
             heroIntro: {
                title: "",
             },
+            about: {
+                title: "Det er mig",
+                description: ""
+            },
+            photography: {
+                title: "Fotografering",
+
+            },
         },
         projects: {
            title: "Projekter",

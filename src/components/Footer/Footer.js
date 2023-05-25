@@ -12,7 +12,7 @@ export default function Footer(){
                     <section>
                         
                     </section>
-                    <p>&copy; {new Date().getFullYear()}</p>
+                    <p>&copy; {new Date().getFullYear()} Felix A. Schultz</p>
                 </div>
             </footer>
         </>

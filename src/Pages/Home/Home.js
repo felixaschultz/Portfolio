@@ -38,7 +38,7 @@ export default function Home(props) {
                         </section>
                     </section>
                 </section>
-                <section className="content">
+                <section className="ppad content">
                     <div className="hero-intro__content grid">
                         {
                             Projects.slice(0, 3).map((project, key) => {
@@ -50,7 +50,7 @@ export default function Home(props) {
                                                 setProject(project.name)
                                             }
                                         }>
-                                            <img />
+                                            <img src="https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
                                         </article>
@@ -61,8 +61,11 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
-                <section>
-
+                <section className="photography">
+                    <section className="content">
+                        <h2>{local[location].pages.homepage.about.title}</h2>
+                        <p>{local[location].pages.homepage.about.description}</p>
+                    </section>
                 </section>
             </main>
             {

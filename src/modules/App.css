@@ -62,3 +62,7 @@ body{
     display: inline-block;
     margin: auto;
 }
+
+.ppad{
+    padding: 150px 0;
+}

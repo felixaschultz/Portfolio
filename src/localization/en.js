@@ -8,7 +8,7 @@ export default {
                 title: "",
             },
             about: {
-                title: "That´s me",
+                title: "Hi! My name is Felix. I´m a Frontend Webdeveloper based in Sønderborg",
                 description: ""
             },
             photography: {

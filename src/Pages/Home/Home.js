@@ -63,9 +63,12 @@ export default function Home(props) {
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
                 <section className="photography">
-                    <section className="content">
-                        <h2>{local[location].pages.homepage.about.title}</h2>
-                        <p>{local[location].pages.homepage.about.description}</p>
+                    <section className="grid content">
+                        <section>
+                            <h2>{local[location].pages.homepage.about.title}</h2>
+                            <p>{local[location].pages.homepage.about.description}</p>
+                        </section>
+                        <img />
                     </section>
                 </section>
                 <section className="ppad">

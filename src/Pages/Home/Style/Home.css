@@ -68,9 +68,13 @@
     top: 0;
     width: 70%;
     height: 100vh;
-    background: var(--overlay);
+    background: /* url("https://cdn.shopify.com/s/files/1/0314/1143/7703/files/hp-hero-6-d-large-tinted-moisturizer-1210x1566_1210x.jpg") */ var(--overlay);
+    background-size: 86%;
+    background-position: 191px -415px;
+    background-blend-mode: multiply;
     opacity: .7;
     z-index: -1;
+    background-repeat: no-repeat;
     clip-path: polygon(48% 0, 100% 0, 100% 100%, 0% 100%);
 }
 

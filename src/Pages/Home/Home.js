@@ -4,18 +4,21 @@ import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
 import Contact from "../../components/Contact/Contact";
+import { Projects } from "../../Projects/Projects";
+import Project from "../../components/Project/Project";
 
 export default function Home(props) {
     document.title = props.title;
     const [location] = useContext(LocationContext);
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
+    const [project, setProject] = useState(null);
     return (
         <>
             <main>
                 <section className="landingPage">
                     <section className="landingPage__ImageContainer">
+                        <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0314/1143/7703/files/hp-hero-6-d-large-tinted-moisturizer-1210x1566_1210x.jpg" alt="" className="landingPage__imageTwo"/>
                         <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="" className="landingPage__imageOne"/>
-                        <img loading="lazy" src="https://new.felix-schultz.net/assets/IMG_1020.jpg" alt="" className="landingPage__imageTwo"/>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h2 className="landingPage__heading">Felix A. Schultz</h2>
@@ -29,19 +32,38 @@ export default function Home(props) {
                             </h2>
                             <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
                             <a onClick={() => {
-                                setShowPopup(!showPopup)
+                                setShowPopup({hideShow: !showPopup.hideShow, item: "Contact"})
                             }} className="cta">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
                 </section>
                 <section className="hero-intro">
-                    <div className="hero-intro__content">
-                        <h2>{local[location].pages.homepage.heroIntro.title}</h2>
+                    <div className="hero-intro__content grid">
+                        {
+                            Projects.map((project) => {
+                                return (
+                                    <>
+                                        <article onClick={
+                                            () => {
+                                                setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}),
+                                                setProject(project.name)
+                                            }
+                                        }>
+                                            <h2>{project.name}</h2>
+                                            <p>{project.type}</p>
+                                        </article>
+                                    </>
+                                )
+                            })
+                        }
                     </div>
                 </section>
             </main>
             {
-                (showPopup) ? <Contact setShowPopup={setShowPopup} showPopup={showPopup} /> : null
+                (showPopup.hideShow && showPopup.item == "Contact") ? <Contact setShowPopup={setShowPopup} showPopup={showPopup.hideShow} /> : null
+            }
+            {
+                (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
             }
         </>
     )

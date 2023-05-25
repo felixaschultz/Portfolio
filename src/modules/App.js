@@ -28,7 +28,7 @@ export default function App() {
                 <LocationContext.Provider value={ provided }>
                     <header className="main-header">
                         <section className="grid">
-                            <Link className="logo" to="/">FelixS.</Link>
+                            {/* <Link className="logo" to="/">FelixS.</Link> */}
                             <Nav />
                         </section>
                     </header>

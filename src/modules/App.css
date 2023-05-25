@@ -54,3 +54,11 @@ body{
     font-size: 2em;
     position: relative;
 }
+
+.showMore{
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    display: inline-block;
+    margin: auto;
+}

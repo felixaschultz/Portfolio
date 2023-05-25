@@ -1,4 +1,5 @@
 const { useState, useEffect, useRef, useContext } = React;
+const Link = window.ReactRouterDOM.Link;
 import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
@@ -37,13 +38,13 @@ export default function Home(props) {
                         </section>
                     </section>
                 </section>
-                <section className="hero-intro">
+                <section className="content">
                     <div className="hero-intro__content grid">
                         {
-                            Projects.map((project) => {
+                            Projects.slice(0, 3).map((project, key) => {
                                 return (
                                     <>
-                                        <article className="frontpage-projects" onClick={
+                                        <article key={key} className="frontpage-projects" onClick={
                                             () => {
                                                 setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}),
                                                 setProject(project.name)
@@ -58,6 +59,10 @@ export default function Home(props) {
                             })
                         }
                     </div>
+                    <Link to="/projects" className="showMore">Show more</Link>
+                </section>
+                <section>
+
                 </section>
             </main>
             {

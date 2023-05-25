@@ -1,3 +1,30 @@
 .project-description{
     padding: 0px 15px;
 }
+
+.project-infos{
+    max-width: 1344px;
+    height: 514px;
+    line-height: 1.4em;
+}
+
+.project-infos img{
+    width: 1000px;
+    border-radius: 10px;
+}
+
+.project-infos .grid{
+    grid-template-columns: 1fr .5fr;
+}
+
+.project-name{
+    font-size: 1.75em;
+    font-weight: bolder;
+    margin: 1.5em 0;
+}
+
+.project-type{
+    font-size: 1.25em;
+    font-weight: 300;
+    margin: 1.5em 0;
+}

@@ -2,5 +2,8 @@
     "homepage": "https://github.com/felixaschultz/Portfolio",
     "scripts": {
         "start": "webpack serve --open "
+    },
+    "devDependencies": {
+        "url-loader": "^4.1.1"
     }
 }

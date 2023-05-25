@@ -9,7 +9,8 @@ export default {
             },
         },
         projects: {
-           title: "Projekter" 
+           title: "Projekter",
+           visit_urls: "Besøg hjemmesiden" 
         },
         contact: {
             title: 'Kontakt',

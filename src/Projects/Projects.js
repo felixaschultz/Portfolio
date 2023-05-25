@@ -1,10 +1,12 @@
+import cykelfaegen from "../statics/projects/cykelfaergen/screenshot-of-website.png";
 export const Projects = [
     {
+        id: "cykelfaergen",
         name: "Cykelfærgen Flensborg Fjord",
-        screenshot: "/statics/projects/cykelfaergen/screenshot-of-website.png",
+        screenshot: cykelfaegen,
         description: {
-            de: "",
-            da: "Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret.",
+            de: "Die Fahrradfähre Flensburger Förde hat einen neuen Webmaster gesucht der ihre Webseite überarbeiten und regelmässig aufdem laufenden halten konnte.",
+            da: "Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret. Desuden søgte de en der kunne holde deres SoMe opdateret.",
             en: "",
         },
         url: "https://www.cykelfaergen.info",

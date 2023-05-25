@@ -10,6 +10,7 @@ export default {
         },
         projects: {
             title: "Projects",
+            visit_urls: "Visit Website"
         },
         contact: {
             title: 'Contact',

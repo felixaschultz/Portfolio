@@ -15,6 +15,9 @@ export default {
                 title: "Fotografieren",
 
             },
+            recommendations: {
+                title: "Empfehlungen"
+            }
         },
         projects: {
             title: 'Projekte',

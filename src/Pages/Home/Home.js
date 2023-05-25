@@ -7,6 +7,7 @@ import { LocationContext } from "../../modules/App";
 import Contact from "../../components/Contact/Contact";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
+import { Recommendations } from "../../recommendations/Recommendations";
 
 export default function Home(props) {
     document.title = props.title;
@@ -66,6 +67,24 @@ export default function Home(props) {
                         <h2>{local[location].pages.homepage.about.title}</h2>
                         <p>{local[location].pages.homepage.about.description}</p>
                     </section>
+                </section>
+                <section className="ppad">
+                    <div className="content">
+                        <h2>{local[location].pages.homepage.recommendations.title}</h2>
+                        <div className="grid">
+                        {
+                            Recommendations.slice(0, 3).map((item, key) => {
+                                return (
+                                    <div key={key} className="recommendations__item">
+                                        <p>"{item.recommend}"</p>
+                                        <p>-{item.author}</p>
+                                    </div>
+
+                                )
+                            })
+                        }
+                        </div>
+                    </div>
                 </section>
             </main>
             {

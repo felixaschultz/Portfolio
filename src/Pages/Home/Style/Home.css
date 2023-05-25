@@ -124,6 +124,10 @@
     padding: 100px 0;
 }
 
+.recommendations__item{
+    padding: 25px;
+}
+
 @media screen and (min-width: 320px) and (max-width: 900px) {
     .landingPage{
         grid-template-columns: 1fr;

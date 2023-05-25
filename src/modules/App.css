@@ -41,8 +41,8 @@ body{
 
 .grid{
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(max(100px, 33%), 1fr));
+    gap: 5px;
 }
 
 .content{

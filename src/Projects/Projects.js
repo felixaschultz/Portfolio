@@ -1,4 +1,7 @@
 import cykelfaegen from "../statics/projects/cykelfaergen/screenshot-of-website.png";
+/* import alsense from "../statics/projects/alsense/"; */
+import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of-website.png";
+import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
 export const Projects = [
     {
         id: "cykelfaergen",
@@ -13,14 +16,39 @@ export const Projects = [
         type: "Web design / development & SoMe marketing"
     },
     {
-        name: "Test project",
-        screenshot: "",
+        id: "gdpr-cookiebanner",
+        name: "GDPR Cookiebanner",
+        screenshot: gdprcookiebanner,
         description: {
             de: "",
             da: "",
-            en: "",
+            en: ""
         },
-        url: null,
-        type: "Web design / development & SoMe marketing"
+        url: "https://www.intastellarsolutions.com/gdpr-cookiebanner",
+        type: "Web design / development"
+    },
+    {
+        id: "intastellarsolutions",
+        name: "Intastellar Solutions, International",
+        screenshot: intastellarsolutions,
+        description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        url: "https://www.intastellarsolutions.com",
+        type: "Web design / development"
+    },
+    {
+        id: "danfoss-insite",
+        name: "Danfoss Alsense Insite",
+        screenshot: null,
+        description: {
+            de: "",
+            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
+            en: ""
+        },
+        url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
+        type: "Web design / development"
     }
 ]

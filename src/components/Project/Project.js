@@ -20,7 +20,7 @@ export default function Project(props){
                             if(project.name === props.project){
                                 return (
                                     <> 
-                                        <img key={key} src={project.screenshot} alt={(project.url != null ? "Screenshot of the Website for " + project.url : "Project " + project.name)} />
+                                       { (project.screenshot !== null) ? <img key={key} src={project.screenshot} alt={(project.url != null ? "Screenshot of the Website for " + project.url : "Project " + project.name)} /> : null }
                                         <section key={key} className="project-description">
                                             <h2 className="project-name">{project.name}</h2>
                                             <p className="project-type">{project.type}</p>

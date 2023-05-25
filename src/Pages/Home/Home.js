@@ -43,12 +43,13 @@ export default function Home(props) {
                             Projects.map((project) => {
                                 return (
                                     <>
-                                        <article onClick={
+                                        <article className="frontpage-projects" onClick={
                                             () => {
                                                 setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}),
                                                 setProject(project.name)
                                             }
                                         }>
+                                            <img />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
                                         </article>

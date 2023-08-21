@@ -14,6 +14,13 @@ export default function Home(props) {
     const [location] = useContext(LocationContext);
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
+
+    window.addEventListener("DOMContentLoaded", function (){
+        Intastellar.accounts.id.renderButton(
+            document.querySelector("#buttonDiv")
+        )
+    })
+
     return (
         <>
             <main>

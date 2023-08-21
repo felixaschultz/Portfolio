@@ -9,7 +9,9 @@ export default {
             },
             about: {
                 title: "Hi! My name is Felix. I´m a Frontend Webdeveloper based in Sønderborg",
-                description: ""
+                description: `In 2016, at the age of 18, I was diagnosed with kidney disease, I was told when I got to the hospital that I only had a kidney function of 3%. I had to fight for my life for 3.5 years with a botched operation, an illness like a virus. In July 2019, I was finally transplanted without complications. In 2020 I started my education as a multimedia designer and finished it in 2022 with a grade 12.
+                In my free time, I like to go out with my camera and drone and record some video clips and pictures around me and nature. I also like to watch series & movies in my spare time, at the same time I can find myself developing a bit too much fun on various hoppy projects or other small things.
+                In August 2023, I have started my Professional Bachelor in Web Development at Erhvervsakademiet Aarhus, after I completed my Multimedia Designer education in 2022.`
             },
             photography: {
                 title: "Photography",

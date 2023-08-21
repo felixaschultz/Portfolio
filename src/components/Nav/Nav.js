@@ -26,7 +26,7 @@ export default function Nav() {
                     })
                 }
                 <a className="navigation__link" href="https://github.com/felixaschultz" target="_blank"><img className="github--icon" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" /> Github</a>
-                <a className="navigation__link" href="https://www.linkedin.com/in/felixaschultz" target="_blank"><img className="github--icon" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" /> LinkedIn</a>
+                {/* <a className="navigation__link" href="https://www.linkedin.com/in/felixaschultz" target="_blank"><img className="github--icon" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" /> LinkedIn</a> */}
                 {/* <div id="buttonDiv" data-client_id="" data-app-name="Felix A. Schultz Portfolio" data-login_uri="127.0.0.1:5500/auth.html"></div> */}
             </nav>
         </>

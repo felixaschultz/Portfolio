@@ -1,3 +1,29 @@
 .belowthfold{
-    
+    color: #fff;
+    text-decoration: none;
+}
+
+.belowthfold a{
+    text-decoration: none;
+}
+
+.project-grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(min-content, 1fr));
+}
+
+.project{
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    display: block;
+    color: #000;
+    width: max-content;
+    margin: 15px 0px;
+}
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .content{
+        width: 100%;
+    }
 }

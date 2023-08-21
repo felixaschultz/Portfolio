@@ -1,23 +1,51 @@
+const { useState, useEffect, useRef, useContext } = React;
 import "./Style.css";
-export default function Projects(props) {
+import { LocationContext } from "../../modules/App";
+import { local } from "../../localization/local";
+import { Projects } from "../../Projects/Projects";
+import Project from "../../components/Project/Project";
+
+export default function ProjectsPage(props) {
     document.title = props.title;
+    const [location, setLocation] = useContext(LocationContext);
+    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
+    const [project, setProject] = useState(null);
+
     return (
         <>
             <main>
                 <section className="landingPage">
                     <section className="landingPage__content">
-                        <h1 className="landingPage__heading">Projekter</h1>
+                        <h1 className="landingPage__heading">{local[location].pages.projects.title}</h1>
                         <p></p>
                     </section>
                 </section>
                 <section className="belowthfold">
-                    <section className="content">
-                        <a href="https://www.intastellarsolutions.com/gdpr-cookiebanner">
-                            <h2>Intastellar Cookie Banner</h2>
-                        </a>
+                    <section className="content project-grid">
+                    {
+                            Projects.map((project, key) => {
+                                return (
+                                    <>
+                                        <article key={key} className="frontpage-projects" onClick={
+                                            () => {
+                                                setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}),
+                                                setProject(project.name)
+                                            }
+                                        }>
+                                            <img src="https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" />
+                                            <h2>{project.name}</h2>
+                                            <p>{project.type}</p>
+                                        </article>
+                                    </>
+                                )
+                            })
+                        }
                     </section>
                 </section>
             </main>
+            {
+                (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
+            }
         </>
     )
 }

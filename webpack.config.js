@@ -47,6 +47,15 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
+        test: /\.(png|jpe?g|gif)$/,
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: "url-loader",
+          }
+        ],
+      },
+      {
         test: /\.(svg)$/,
         include: path.resolve(__dirname, 'src'),
         use: ['svg-url-loader'],

@@ -24,7 +24,7 @@ body{
 }
 
 .main-header{
-    position: fixed;
+    position: absolute;
     width: 100%;
     color: #fff;
     align-items: center;
@@ -41,15 +41,28 @@ body{
 
 .grid{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(max(100px, 33%), 1fr));
+    gap: 5px;
 }
 
 .content{
-    width: 1200px;
+    width: 1400px;
     margin: auto;
 }
 
 .heading{
     font-size: 2em;
     position: relative;
+}
+
+.showMore{
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    display: inline-block;
+    margin: auto;
+}
+
+.ppad{
+    padding: 150px 0;
 }

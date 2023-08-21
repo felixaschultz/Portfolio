@@ -1,0 +1,10 @@
+.footer{
+    width: 100%;
+    border-top: 1px solid #5075b5;
+}
+
+.footer_content{
+    width: 1400px;
+    margin: auto;
+    padding: 25px 0px;
+}

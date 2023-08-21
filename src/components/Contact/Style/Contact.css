@@ -1,0 +1,69 @@
+.popup{
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0, 0.75);
+    z-index: 15000;
+    display: grid;
+    place-content: center;
+}
+
+.popup-content{
+    padding: 15px;
+    max-width: 900px;
+    width: 100%;
+    background-color: var(--overlay);
+    border-radius: 5px;
+}
+
+.close-popup{
+    float: right;
+    font-size: 15px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-indent: -243%;
+    width: 33px;
+    overflow: hidden;
+    color: #c4c4c4;
+}
+
+.close-popup::after{
+    content: "X";
+    display: inline-block;
+    margin-left: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.formItems{
+    width: 100%;
+    padding: 15px 0px;
+    display: block;
+}
+
+.formItems-input{
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #c4c4c4;
+    font-size: 15px;
+}
+
+.no-resize{
+    resize: none;
+}
+
+.text-input{
+    width: 100%;
+    height: 250px;
+}
+
+.contact-cta{
+    border: none;
+    font-size: 16px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    float: right;
+}

@@ -1,6 +1,6 @@
 const { useState, useEffect, useRef, createContext, useMemo } = React;
 import "./App.css";
-const Router = window.ReactRouterDOM.HashRouter;
+const Router = window.ReactRouterDOM.BrowserRouter;
 const Route =  window.ReactRouterDOM.Route;
 const Link =  window.ReactRouterDOM.Link;
 const Prompt =  window.ReactRouterDOM.Prompt;

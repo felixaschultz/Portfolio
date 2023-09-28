@@ -12,6 +12,7 @@ export const Projects = [
             da: "Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret. Desuden søgte de en der kunne holde deres SoMe opdateret.",
             en: "",
         },
+        github: null,
         url: "https://www.cykelfaergen.info",
         type: "Web design / development & SoMe marketing"
     },
@@ -24,6 +25,7 @@ export const Projects = [
             da: "",
             en: ""
         },
+        github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
         url: "https://www.intastellarsolutions.com/gdpr-cookiebanner",
         type: "Web design / development"
     },
@@ -36,6 +38,7 @@ export const Projects = [
             da: "",
             en: ""
         },
+        github: null,
         url: "https://www.intastellarsolutions.com",
         type: "Web design / development"
     },
@@ -48,6 +51,7 @@ export const Projects = [
             da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
             en: ""
         },
+        github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
         type: "Web design / development"
     }

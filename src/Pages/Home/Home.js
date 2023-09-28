@@ -26,8 +26,8 @@ export default function Home(props) {
             <main>
                 <section className="landingPage">
                     <section className="landingPage__ImageContainer">
-                        <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0314/1143/7703/files/hp-hero-6-d-large-tinted-moisturizer-1210x1566_1210x.jpg" alt="" className="landingPage__imageTwo"/>
-                        <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="" className="landingPage__imageOne"/>
+                        <img loading="lazy" src="" alt="" className="landingPage__imageTwo"/>
+                        <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="Felix A. Schultz" className="landingPage__imageOne"/>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h2 className="landingPage__heading">Felix A. Schultz</h2>

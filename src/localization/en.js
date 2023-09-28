@@ -23,7 +23,8 @@ export default {
         },
         projects: {
             title: "Projects",
-            visit_urls: "Visit Website"
+            visit_urls: "Visit Website",
+            visit_github: "Visit Github"
         },
         contact: {
             title: 'Contact',
@@ -48,6 +49,10 @@ export default {
             }
         ],
         links: [
+            {
+                name: "Home",
+                path: "/"
+            },
             {
                 name: "Projects",
                 path: "/projects"

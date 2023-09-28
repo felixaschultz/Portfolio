@@ -24,7 +24,8 @@ export default {
         },
         projects: {
            title: "Projekter",
-           visit_urls: "Besøg hjemmesiden" 
+           visit_urls: "Besøg hjemmesiden",
+           visit_github: "Besøg Github"
         },
         contact: {
             title: 'Kontakt',
@@ -49,6 +50,10 @@ export default {
             }
         ],
         links: [
+            {
+                name: "Home",
+                path: "/"
+            },
             {
                 name: "Projekter",
                 path: "/projects"

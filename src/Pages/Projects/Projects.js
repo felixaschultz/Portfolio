@@ -11,7 +11,9 @@ export default function ProjectsPage(props) {
     const [location, setLocation] = useContext(LocationContext);
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
-    const {handle} = useParams();
+    const { handle, id } = useParams();
+
+    console.log(handle);
 
     if(handle){
         return (

@@ -70,7 +70,7 @@ export const Projects = [
         },
         short_description: {
             de: "",
-            da: "",
+            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
             en: ""
         },
         github: null,

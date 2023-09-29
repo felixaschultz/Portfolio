@@ -22,6 +22,10 @@
     margin: 15px 0px;
 }
 
+.landingPage__content{
+    padding: 15px;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .content{
         width: 100%;

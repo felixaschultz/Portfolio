@@ -19,7 +19,7 @@ export default function ProjectsPage(props) {
                 return project
             }
         })
-        console.log(location, project);
+        
         return (
             <>
                 <main>
@@ -28,6 +28,7 @@ export default function ProjectsPage(props) {
                             <h1 className="landingPage__heading">{project[0].name}</h1>
                             <p>{project[0].description[location]}</p>
                         </section>
+                        <img src={project[0].screenshot} />
                     </section>
                 </main>
             </>

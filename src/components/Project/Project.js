@@ -26,7 +26,7 @@ export default function Project(props){
                                         <section key={key} className="project-description">
                                             <h2 className="project-name">{project.name}</h2>
                                             <p className="project-type">{project.type}</p>
-                                            <p>{project.description[location]}</p>
+                                            <p>{project.short_description[location]}</p>
                                             {
                                                 (project.url != null) ? <a className="cta" href={project.url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
                                                 (project.github != null) ? <a className="cta" href={project.github} target="_blank">{local[location].pages.projects.visit_github}</a> : null

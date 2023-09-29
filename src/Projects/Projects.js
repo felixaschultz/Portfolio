@@ -9,7 +9,8 @@ export const Projects = [
         screenshot: cykelfaegen,
         description: {
             de: "Die Fahrradfähre Flensburger Förde hat einen neuen Webmaster gesucht der ihre Webseite überarbeiten und regelmässig aufdem laufenden halten konnte.",
-            da: "Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret. Desuden søgte de en der kunne holde deres SoMe opdateret.",
+            da: `Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret. Desuden søgte de en der kunne holde deres SoMe opdateret.
+                Jeg fik muligheden at overtage deres hjemmeside og SoMe. Jeg har sidenhen udviklet deres hjemmeside i PHP og har sidenhen udviklet deres SoMe.`,
             en: "",
         },
         github: null,

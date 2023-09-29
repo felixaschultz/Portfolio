@@ -46,7 +46,7 @@ export default function Home(props) {
                         </section>
                     </section>
                 </section>
-                <section className="ppad content">
+                <section className="ppad content projects">
                     <div className="hero-intro__content grid">
                         {
                             Projects.slice(0, 3).map((project, key) => {

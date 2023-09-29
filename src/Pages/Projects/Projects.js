@@ -12,22 +12,27 @@ export default function ProjectsPage(props) {
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
     const { handle, id } = useParams();
-
-    console.log(handle);
-
     if(handle){
+
+        const project = Projects.filter((project, key) => {
+            if(project.id == handle){
+                return project
+            }
+        })
+        console.log(location, project);
         return (
             <>
                 <main>
                     <section className="landingPage">
                         <section className="landingPage__content">
-                            <h1 className="landingPage__heading">{handle}</h1>
-                            <p></p>
+                            <h1 className="landingPage__heading">{project[0].name}</h1>
+                            <p>{project[0].description[location]}</p>
                         </section>
                     </section>
                 </main>
             </>
         )
+
     }else{
         return (
             <>

@@ -135,8 +135,9 @@
 @media screen and (min-width: 320px) and (max-width: 900px) {
     .landingPage{
         grid-template-columns: 1fr;
-        overflow: auto;
+        overflow: hidden;
         scroll-behavior: smooth;
+        height: auto;
     }
 
     .main-header{
@@ -145,5 +146,9 @@
 
     .landingPage__content{
         padding: 15px;
+    }
+    .hero-intro__content{
+        width: 100%;
+        display: block;
     }
 }

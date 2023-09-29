@@ -36,13 +36,16 @@ export default function App() {
                         <Route path="/" exact>
                             <Home title="Felix A. | Portfolio" />
                         </Route>
-                        <Route path="/fotografi">
+                        <Route path="/fotografi" exact>
                             <Photography title="Fotografi | Portfolio" />
                         </Route>
-                        <Route path="/web">
+                        <Route path="/web" exact>
                             <Web title="Web | Portfolio" />
                         </Route>
-                        <Route path="/projects">
+                        <Route path="/projects" exact>
+                            <ProjectsPage title="Projects | Portfolio" />
+                        </Route>
+                        <Route path="/projects/:id" exact>
                             <ProjectsPage title="Projects | Portfolio" />
                         </Route>
                         <Redirect to="/" />

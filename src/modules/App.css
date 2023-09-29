@@ -70,3 +70,12 @@ body{
 .content{
     padding: 73px;
 }
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .main-header{
+        padding: 0;
+    }
+    .grid{
+        grid-template-columns: 1fr;
+    }
+}

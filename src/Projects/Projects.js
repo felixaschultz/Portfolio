@@ -76,5 +76,23 @@ export const Projects = [
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
         type: "Web design / development"
+    },
+    {
+        id: "chat-bot",
+        name: "Chat Bot",
+        screenshot: null,
+        description: {
+            de: "",
+            da: "Under mit studie på Erhvervsakademiet Aarhus, fik jeg muligheden at udvikle en Chat Bot som et lille projekt. Jeg udviklede den i HTML & CSS og vanilla JS.",
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "Under mit studie på Erhvervsakademiet Aarhus, fik jeg muligheden at udvikle en Chat Bot som et lille projekt. Jeg udviklede den i HTML & CSS og vanilla JS.",
+            en: ""
+        },
+        github: "https://github.com/felixaschultz/chatbot",
+        url: "https://github.com/felixaschultz/chatbot",
+        type: "Web design / development"
     }
 ]

@@ -20,7 +20,7 @@ export default function ProjectsPage(props) {
             }
         })
 
-        console.log(project[0]);
+        document.title = project[0].name + " | Felix A. Schultz - Portfolio";
         
         return (
             <>

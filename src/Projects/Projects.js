@@ -38,7 +38,7 @@ export const Projects = [
             en: ""
         },
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
-        url: "https://www.intastellarsolutions.com/gdpr-cookiebanner",
+        url: "https://www.intastellarsolutions.com/solutions/cookie-consents",
         type: "Web design / development"
     },
     {
@@ -47,7 +47,14 @@ export const Projects = [
         screenshot: null,
         description: {
             de: "",
-            da: "Under mit studie på Erhvervsakademiet Aarhus, fik jeg muligheden at udvikle en Chat Bot som et lille projekt. Jeg udviklede den i HTML & CSS og vanilla JS.",
+            da: `
+                Dette projekt handlede om at kombinere 3 forskellige chat projekter ind til et
+
+                Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.
+                Jeg stod for at skrive og kode API endpoints til chatten. Jeg har benyttet mig af PHP, til at skrive en REST API som skal sikre at skabe noget funktionalitet, i frontend delen ved hjælp af JS fetch funktionen.
+
+                
+            `,
             en: ""
         },
         short_description: {
@@ -57,6 +64,24 @@ export const Projects = [
         },
         github: "https://github.com/felixaschultz/chatbot",
         url: "https://github.com/felixaschultz/chatbot",
+        type: "Web design / development"
+    },
+    {
+        id: "intastellar-consents-platform",
+        name: "Intastellar Consents Platform",
+        screenshot: null,
+        description: {
+            de: "",
+            da: "Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.",
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "Med Intastellar Consents, kan du nemt og hurtigt oprette en Cookie Consent, GDPR Consent eller en Privacy Policy til din hjemmeside. Du kan nemt og hurtigt oprette en konto og komme igang med at oprette din første Consent.",
+            en: ""
+        },
+        github: null,
+        url: "https://www.intastellar-consents.com",
         type: "Web design / development"
     },
     {

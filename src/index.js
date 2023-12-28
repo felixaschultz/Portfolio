@@ -1,6 +1,6 @@
 import App from "./modules/App.js";
 import { TitleProvider } from "./TitleContext";
-ReactDOM.render(
+ReactDOM.hydrate(
     <TitleProvider>
         <App />
     </TitleProvider>,

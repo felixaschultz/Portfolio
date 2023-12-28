@@ -30,12 +30,12 @@ export const Projects = [
         screenshot: gdprcookiebanner,
         description: {
             de: "",
-            da: "",
+            da: "Med GDPR blev det et krav at alle hjemmesider skulle have en Cookie Consent. Jeg fik muligheden at udvikle en Cookie Consent til min egen hjemmeside, som jeg sidenhen har udviklet til en digital platform.",
             en: ""
         },
         short_description: {
             de: "",
-            da: "",
+            da: "I 2018 blev GDPR indført i EU, som en ny lov der skulle sikre at alle hjemmesider skulle have en Cookie Consent. Jeg fik muligheden at udvikle en Cookie Consent til min egen hjemmeside, som jeg sidenhen har udviklet til en digital platform.",
             en: ""
         },
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",

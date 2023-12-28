@@ -1,7 +1,7 @@
 {
     "homepage": "https://github.com/felixaschultz/Portfolio",
     "scripts": {
-        "startDev": "webpack serve --open ",
+        "start": "webpack serve --open ",
         "build": "webpack build --open "
     },
     "devDependencies": {

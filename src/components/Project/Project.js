@@ -19,7 +19,7 @@ export default function Project(props){
                     {
                         Projects.map((project, key) => {
                             if(project.name === props.project){
-                                console.log(project);
+                                console.log(project.github, local[location].pages.projects.visit_github);
                                 return (
                                     <> 
                                        { (project.screenshot !== null) ? <img key={key} src={project.screenshot} alt={(project.url != null ? "Screenshot of the Website for " + project.url : "Project " + project.name)} /> : null }
@@ -29,7 +29,10 @@ export default function Project(props){
                                             <p>{project.short_description[location]}</p>
                                             {
                                                 (project.url != null) ? <a className="cta" href={project.url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
-                                                (project.github != null) ? <a className="cta" href={project.github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
+                                                
+                                            }
+                                            {
+                                                (project.github != null) ? <a className="showMore" href={project.github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
                                             }
                                             <Link className="showMore" to={"/projects/" + project.id}>Læs mere</Link>
                                         </section>

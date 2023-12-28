@@ -1,4 +1,5 @@
 const Link = window.ReactRouterDOM.Link;
+const useLocation = window.ReactRouterDOM.useLocation;
 const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Nav.css";
 import { LocationContext } from "../../modules/App";
@@ -6,8 +7,12 @@ import { local } from "../../localization/local";
 
 export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);
+    const locationPath = useLocation()
     return (
         <>
+            {
+                (locationPath.pathname != "/") ? <Link className="logo" to="/">FelixS.</Link> : null
+            }
             <nav className="navigation">
                 {
                     local[location].navigation.links.map((link, key) => {
@@ -25,8 +30,8 @@ export default function Nav() {
                         </>
                     })
                 }
-                <a className="navigation__link" href="https://github.com/felixaschultz" target="_blank"><img className="github--icon" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" /> Github</a>
-                <a className="navigation__link" href="https://www.linkedin.com/in/felixaschultz" target="_blank"> LinkedIn</a>
+                <a className="navigation__link" href="https://github.com/felixaschultz" target="_blank" role="button"><img className="github--icon" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" alt="Github" /></a>
+                <a className="navigation__link" href="https://www.linkedin.com/in/felixaschultz" target="_blank" role="button"> LinkedIn</a>
                 <iframe src="https://github.com/sponsors/felixaschultz/button" title="Sponsor felixaschultz" height="32" width="114" style={{border: 0, borderRadius: "6px"}}></iframe>
             </nav>
         </>

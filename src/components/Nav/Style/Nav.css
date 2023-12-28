@@ -17,7 +17,6 @@
 
 .github--icon{
     filter: invert(1);
-    width: 25%;
     margin-right: -30px;
 }
 
@@ -28,4 +27,12 @@
     background-color: transparent;
     color: #fff;
     cursor: pointer;
+}
+
+.header-grid{
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 5px;
+    justify-content: space-between;
+    align-items: center;
 }

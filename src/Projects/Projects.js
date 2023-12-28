@@ -2,6 +2,7 @@ import cykelfaegen from "../statics/projects/cykelfaergen/screenshot-of-website.
 /* import alsense from "../statics/projects/alsense/"; */
 import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of-website.png";
 import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
+import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 export const Projects = [
     {
         id: "cykelfaergen",
@@ -69,7 +70,7 @@ export const Projects = [
     {
         id: "intastellar-consents-platform",
         name: "Intastellar Consents Platform",
-        screenshot: null,
+        screenshot: intastellarConsentsLogin,
         description: {
             de: "",
             da: "Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.",
@@ -80,8 +81,8 @@ export const Projects = [
             da: "Med Intastellar Consents, kan du nemt og hurtigt oprette en Cookie Consent, GDPR Consent eller en Privacy Policy til din hjemmeside. Du kan nemt og hurtigt oprette en konto og komme igang med at oprette din første Consent.",
             en: ""
         },
-        github: null,
-        url: "https://www.intastellar-consents.com",
+        github: "",
+        url: "https://www.intastellarconsents.com",
         type: "Web design / development"
     },
     {

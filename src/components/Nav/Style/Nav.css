@@ -3,6 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    grid-column: 2/3;
 }
 
 .navigation__link{

@@ -14,7 +14,7 @@ const app = express();
 
 app.get('/', (req, res) => {
     const app = ReactDOMServer.renderToString(<App />);
-    const indexFile = path.resolve('./build/index.html');
+    const indexFile = path.resolve('./dist/index.html');
   
     fs.readFile(indexFile, 'utf8', (err, data) => {
       if (err) {
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use(express.static('./build'));
+app.use(express.static('./dist'));
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
@@ -38,7 +38,7 @@ app.listen(PORT, () => {
 
 app.get('/', (req, res) => {
     const app = ReactDOMServer.renderToString(<App />);
-    const indexFile = path.resolve('./build/index.html');
+    const indexFile = path.resolve('./dist/index.html');
   
     fs.readFile(indexFile, 'utf8', (err, data) => {
       if (err) {
@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use(express.static('./build'));
+app.use(express.static('./dist'));
 
 app.listen(PORT, () => {
 console.log(`Server is listening on port ${PORT}`);

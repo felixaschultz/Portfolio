@@ -28,7 +28,7 @@ body{
     width: 100%;
     color: #fff;
     align-items: center;
-    padding: 73px 10px 73px 117px;
+    padding: 73px 0px 73px 117px;
     z-index: 10000;
     transition: all .2s ease-in-out;
 }

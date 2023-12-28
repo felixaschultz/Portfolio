@@ -30,8 +30,8 @@ export default function Home(props) {
                         <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="Felix A. Schultz" className="landingPage__imageOne"/>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
-                        <h2 className="landingPage__heading">Felix A. Schultz</h2>
-                        <p>Frontend developer</p>
+                        <h1 className="landingPage__heading">Felix A. Schultz</h1>
+                        <h2>Frontend developer</h2>
                     </section>
                     <section className="landingPage__content landingPage__right landingPage--TopRight">
                         <div className="landingPage__style"></div>

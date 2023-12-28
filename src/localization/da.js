@@ -51,10 +51,6 @@ export default {
         ],
         links: [
             {
-                name: "Home",
-                path: "/"
-            },
-            {
                 name: "Projekter",
                 path: "/projects"
             }

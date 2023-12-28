@@ -22,7 +22,8 @@ export const Projects = [
         },
         github: null,
         url: "https://www.cykelfaergen.info",
-        type: "Web design / development & SoMe marketing"
+        type: "Web design / development & SoMe marketing",
+        technology: "HTML, CSS, JS, PHP, MySQL"
     },
     {
         id: "gdpr-cookiebanner",
@@ -40,7 +41,8 @@ export const Projects = [
         },
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
         url: "https://www.intastellarsolutions.com/solutions/cookie-consents",
-        type: "Web design / development"
+        type: "Web design / development",
+        technology: "HTML, CSS, JS"
     },
     {
         id: "chat-bot",
@@ -65,7 +67,8 @@ export const Projects = [
         },
         github: "https://github.com/felixaschultz/chatbot",
         url: "https://github.com/felixaschultz/chatbot",
-        type: "Web design / development"
+        type: "Web design / development",
+        technology: "HTML, CSS, JS, PHP, MySQL"
     },
     {
         id: "intastellar-consents-platform",
@@ -83,7 +86,8 @@ export const Projects = [
         },
         github: "",
         url: "https://www.intastellarconsents.com",
-        type: "Web design / development"
+        type: "Web design / development",
+        technology: "HTML, CSS, JS, ReactJS"
     },
     {
         id: "intastellarsolutions",
@@ -101,7 +105,8 @@ export const Projects = [
         },
         github: null,
         url: "https://www.intastellarsolutions.com",
-        type: "Web design / development"
+        type: "Web design / development",
+        technology: "HTML, CSS, JS"
     },
     {
         id: "danfoss-insite",
@@ -119,6 +124,7 @@ export const Projects = [
         },
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
-        type: "Web design / development"
+        type: "Web design / development",
+        technology: "HTML, CSS, JS, ReactJS"
     }
 ]

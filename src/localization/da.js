@@ -24,6 +24,7 @@ export default {
         },
         projects: {
            title: "Projekter",
+           description: "Her kan du se nogle af de projekter jeg har arbejdet på. Du kan også se flere projekter på min Github. Projekterne har jeg arbejdet på i min fritid, eller som en del af min uddannelse.",
            visit_urls: "Besøg hjemmesiden",
            visit_github: "Besøg Github"
         },

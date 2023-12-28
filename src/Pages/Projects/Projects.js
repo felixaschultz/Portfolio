@@ -12,6 +12,7 @@ export default function ProjectsPage(props) {
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
     const { handle, id } = useParams();
+    console.log(local[location].pages)
     if(handle){
 
         const project = Projects.filter((project, key) => {
@@ -28,6 +29,7 @@ export default function ProjectsPage(props) {
                     <section className="landingPage">
                         <section className="landingPage__content">
                             <h1 className="landingPage__heading">{project[0].name}</h1>
+                            <h3>Tech: {project[0].technology}</h3>
                             <p>{project[0].short_description[location]}</p>
                             <div>
                             {
@@ -56,7 +58,7 @@ export default function ProjectsPage(props) {
                     <section className="landingPage">
                         <section className="landingPage__content">
                             <h1 className="landingPage__heading">{local[location].pages.projects.title}</h1>
-                            <p></p>
+                            <p>{local[location].pages.projects.description}</p>
                         </section>
                     </section>
                     <section className="belowthfold">
@@ -73,6 +75,7 @@ export default function ProjectsPage(props) {
                                                 <img src="https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" />
                                                 <h2>{project.name}</h2>
                                                 <p>{project.type}</p>
+                                                <p>Tech: {project.technology}</p>
                                             </article>
                                         </>
                                     )

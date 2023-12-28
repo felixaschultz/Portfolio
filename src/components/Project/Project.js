@@ -19,7 +19,6 @@ export default function Project(props){
                     {
                         Projects.map((project, key) => {
                             if(project.name === props.project){
-                                console.log(project.github, local[location].pages.projects.visit_github);
                                 return (
                                     <> 
                                        { (project.screenshot !== null) ? <img key={key} src={project.screenshot} alt={(project.url != null ? "Screenshot of the Website for " + project.url : "Project " + project.name)} /> : null }

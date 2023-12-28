@@ -19,6 +19,8 @@ export default function ProjectsPage(props) {
                 return project
             }
         })
+
+        console.log(project[0]);
         
         return (
             <>
@@ -26,9 +28,20 @@ export default function ProjectsPage(props) {
                     <section className="landingPage">
                         <section className="landingPage__content">
                             <h1 className="landingPage__heading">{project[0].name}</h1>
-                            <p>{project[0].description[location]}</p>
+                            <p>{project[0].short_description[location]}</p>
                         </section>
                         <img src={project[0].screenshot} />
+                    </section>
+                    <section className="belowthfold">
+                        <section className="content">
+                            <p>{project[0].description[location]}</p>
+                            {
+                                (project[0].url != null) ? <a className="cta" href={project[0].url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
+                            }
+                            {
+                                (project[0].github != null) ? <a className="showMore" href={project[0].github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
+                            }
+                        </section>
                     </section>
                 </main>
             </>

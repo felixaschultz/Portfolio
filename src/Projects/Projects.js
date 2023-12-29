@@ -80,7 +80,10 @@ export const Projects = [
         },
         description: {
             de: "",
-            da: "Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.",
+            da: `<p>Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.</p>
+            <h2>Dashboard</h2>
+            <p></p>
+            <img src=${instasstellarConsetnsDashboard} />`,
             en: ""
         },
         short_description: {

@@ -43,9 +43,7 @@ export default function ProjectsPage(props) {
                         <img src={project[0].screenshot} />
                     </section>
                     <section className="belowthfold">
-                        <section className="content">
-                            <p>{project[0].description[location]}</p>
-                            <img src={project[0]?.images["dashboard"]} />
+                        <section className="content" dangerouslySetInnerHTML={{__html:project[0].description[location]}}>
                         </section>
                     </section>
                 </main>

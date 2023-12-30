@@ -32,7 +32,9 @@ export const Projects = [
         screenshot: gdprcookiebanner,
         description: {
             de: "",
-            da: "Med GDPR blev det et krav at alle hjemmesider skulle have en Cookie Consent. Jeg fik muligheden at udvikle en Cookie Consent til min egen hjemmeside, som jeg sidenhen har udviklet til en digital platform.",
+            da: `<section class="content-ppad">
+                    <p>Med GDPR blev det et krav at alle hjemmesider skulle have en Cookie Consent. Jeg fik muligheden at udvikle en Cookie Consent til min egen hjemmeside, som jeg sidenhen har udviklet til en digital platform.</p>
+                </section>`,
             en: ""
         },
         short_description: {

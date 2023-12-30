@@ -55,9 +55,9 @@ export const Projects = [
             de: "",
             da: `
             <section class="content-ppad">
-                <p>Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.</p>
-                <p>Vi startede med at lave en plan for hvordan vi ville gribe det an, og hvordan vi ville fordele arbejdet.</p>
-                <p>Til vores projektstyring benyttede vi Git og Github Projects, for at kunne se hvilken opgaver der ligger i backloggen.</p>
+                <p>Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.
+                Vi startede med at lave en plan for hvordan vi ville gribe det an, og hvordan vi ville fordele arbejdet.
+                Til vores projektstyring benyttede vi Git og Github Projects, for at kunne se hvilken opgaver der ligger i backloggen.</p>
             </section>
             <section class="content-ppad scroll-snap">
                 <h2>Min rolle i projektet</h2>

@@ -32,6 +32,12 @@
     margin: auto;
 }
 
+.scroll-snap{
+    scroll-snap-points-y: repeat(100vh);
+    scroll-snap-type: y mandatory;
+
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .content{
         width: 100%;

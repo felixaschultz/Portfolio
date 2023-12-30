@@ -129,7 +129,16 @@ export const Projects = [
             <img src=${instasstellarConsetnsDashboard} />
             <section class="content-ppad">
                 <p>Dashboarded indeholder også en simple lille cookie bot som checker hjemmesiden for cookies som er sendt igennem HTTP Requesten.</p>
-                <h2></h2>
+            </section>
+            <section class="content-ppad">
+                <h2>Live data</h2>
+                <p>For at hente live data til at vise aktive bruger på ens hjemmeside, benytter jeg mig af pull methoden og fetcher hvert 250 millisekund nye data fra APIen som fortiden kun tæller, de seneste bruger i de sidste 30 min.</p>
+                <p>Med denne metode kan jeg så vise live data på dashboardet som er relativt nyt.</p>
+            </section>
+            <section class="content-ppad">
+                <h2>Custom Hooks</h2>
+                <p>Jeg har udviklet en custom hook, som benytter sig af konceptet SWR, som jeg benytter mig af til at hente data fra APIen.</p>
+                <p>SWR, stale-while-revalidate, er en HTTP strategi som viser først data som ligger i cachen (stale), hvorefter den laver et nyt fetch kald (revalidate), for at så opdater indholdet med den nye opdateret information.</p>
             </section>
             `,
             en: ""

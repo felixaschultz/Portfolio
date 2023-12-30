@@ -38,6 +38,11 @@ body{
     font-size: 30px;
     text-decoration: none;
     color: #fff;
+    filter: invert(1);
+}
+
+.logo img{
+    width: 50%;
 }
 
 .grid{

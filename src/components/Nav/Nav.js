@@ -4,6 +4,7 @@ const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Nav.css";
 import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
+import logo from "../../statics/assets/felix-schultz-logo.svg";
 
 export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);
@@ -11,7 +12,7 @@ export default function Nav() {
     return (
         <>
             {
-                (locationPath.pathname != "/") ? <Link className="logo" to="/">FelixS.</Link> : null
+                (locationPath.pathname != "/") ? <Link className="logo" to="/"><img src={logo} /></Link> : null
             }
             <nav className="navigation">
                 {

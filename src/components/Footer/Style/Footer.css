@@ -8,3 +8,10 @@
     margin: auto;
     padding: 25px 0px;
 }
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .footer_content{
+        width: 100%;
+    }
+    
+}

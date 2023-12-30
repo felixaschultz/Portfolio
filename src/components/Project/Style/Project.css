@@ -33,3 +33,22 @@
     padding: 10px;
     color: #fff;
 }
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .project-infos{
+        height: auto;
+    }
+    .project-infos img{
+        width: 100%;
+    }
+    .project-infos .grid{
+        grid-template-columns: 1fr;
+    }
+    .project-name{
+        font-size: 1.5em;
+    }
+    .project-type{
+        font-size: 1em;
+    }
+    
+}

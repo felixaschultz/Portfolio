@@ -26,6 +26,12 @@
     padding: 15px;
 }
 
+.content-ppad{
+    padding: 10px 50px;
+    width: 1050px;
+    margin: auto;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .content{
         width: 100%;

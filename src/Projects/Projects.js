@@ -52,11 +52,12 @@ export const Projects = [
         description: {
             de: "",
             da: `
-                Dette projekt handlede om at kombinere 3 forskellige chat projekter ind til et
+            <section class="content-ppad">
+                <p>Dette projekt handlede om at kombinere 3 forskellige chat projekter ind til et</p>
 
-                Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.
-                Jeg stod for at skrive og kode API endpoints til chatten. Jeg har benyttet mig af PHP, til at skrive en REST API som skal sikre at skabe noget funktionalitet, i frontend delen ved hjælp af JS fetch funktionen.
-
+                <p>Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.</p>
+                <p>Jeg stod for at skrive og kode API endpoints til chatten. Jeg har benyttet mig af PHP, til at skrive en REST API som skal sikre at skabe noget funktionalitet, i frontend delen ved hjælp af JS fetch funktionen.</p>
+            </section>
                 
             `,
             en: ""
@@ -80,10 +81,27 @@ export const Projects = [
         },
         description: {
             de: "",
-            da: `<p>Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.</p>
-            <h2>Dashboard</h2>
-            <p></p>
-            <img src=${instasstellarConsetnsDashboard} />`,
+            da: `
+            <section class="content-ppad">
+                <p>Jeg fik udviklet for min Cookie banner, en digitale platform for at holde styr på alle de forskellige Consents. Jeg udviklede den i ReactJS.</p>
+                <h2>Dashboard</h2>
+                <p>Med Dashboard for man et hurtigt overblik over hvordan consents er fordelt henover:</p>
+                <ul>
+                    <li>Nødvendige cookies</li>
+                    <li>Statistik cookies</li>
+                    <li>Funktionelle cookies</li>
+                    <li>Marketing cookies</li>
+                    <li>Accepteret alle</li>
+                    <li>Afvist alle</li>
+                </ul>
+                <p>samt hvordan fordeling er mellem lande.</p>
+            </section>
+            <img src=${instasstellarConsetnsDashboard} />
+            <section class="content-ppad">
+                <p>Dashboarded indeholder også en simple lille cookie bot som checker hjemmesiden for cookies som er sendt igennem HTTP Requesten.</p>
+                <h2></h2>
+            </section>
+            `,
             en: ""
         },
         short_description: {

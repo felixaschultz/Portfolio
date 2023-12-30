@@ -141,84 +141,82 @@ export const Projects = [
                 <p>SWR, stale-while-revalidate, er en HTTP strategi som viser først data som ligger i cachen (stale), hvorefter den laver et nyt fetch kald (revalidate), for at så opdater indholdet med den nye opdateret information.</p>
                 <code class="code-editor">
 <pre>
-{
-    const { useState, useEffect } = React;
-    export default function useFetch(updateInterval, url, method, headers, body, handle){
-        const [loading, setLoading] = useState(true);
-        const [data, setData] = useState();
-        const [error, setError] = useState();
-        const [lastUpdated, setLastUpdated] = useState(Math.floor(Date.now() / 100));
-        const [updated, setUpdated] = useState("");
-        let id = undefined;
+const { useState, useEffect } = React;
+export default function useFetch(updateInterval, url, method, headers, body, handle){
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState();
+    const [error, setError] = useState();
+    const [lastUpdated, setLastUpdated] = useState(Math.floor(Date.now() / 100));
+    const [updated, setUpdated] = useState("");
+    let id = undefined;
 
-        if(!url) return;
+    if(!url) return;
 
-        useEffect(() => {
-            const controller = new AbortController();
-            setLoading(true);
-            fetch(url, { method: method, headers, body, signal: controller.signal } )
-                .then((res) => {
-                    if(res.status === 401){
-                        return "Err_Login_Expired";
-                    }else if(res.status === 403){
-                        return "Err_No_Access";
-                    }else if(
-                        res.status === 404 ||
-                        res.status === 500 ||
-                        res.status === 502 ||
-                        res.status === 503 ||
-                        res.status === 504
-                    ){
-                        return "Err_Server_Error";
-                    }
+    useEffect(() => {
+        const controller = new AbortController();
+        setLoading(true);
+        fetch(url, { method: method, headers, body, signal: controller.signal } )
+            .then((res) => {
+                if(res.status === 401){
+                    return "Err_Login_Expired";
+                }else if(res.status === 403){
+                    return "Err_No_Access";
+                }else if(
+                    res.status === 404 ||
+                    res.status === 500 ||
+                    res.status === 502 ||
+                    res.status === 503 ||
+                    res.status === 504
+                ){
+                    return "Err_Server_Error";
+                }
 
-                    return res.json()
-                })
+                return res.json()
+            })
+            .then(setData)
+            .catch(setError)
+            .finally(() => {
+                setLoading(false);
+                setUpdated("Now");
+                setLastUpdated(Math.floor(Date.now() / 1000));
+            });
+
+        if(typeof(updateInterval) !=='undefined'){
+            const interval1 = setInterval(() => {
+                if ((Math.floor(Date.now() / 1000)) - lastUpdated >= 60) {
+                    setUpdated(Math.floor(((Math.floor(Date.now() / 1000)) - lastUpdated) / 60) + " minute ago");
+                }
+            }, 1000);
+
+            id = setInterval(() => {
+                fetch(url, { method: method, headers, body, signal: controller.signal } )
+                .then((res) => res.json())
                 .then(setData)
                 .catch(setError)
                 .finally(() => {
                     setLoading(false);
+                    clearInterval(interval1);
                     setUpdated("Now");
                     setLastUpdated(Math.floor(Date.now() / 1000));
                 });
-
-            if(typeof(updateInterval) !=='undefined'){
-                const interval1 = setInterval(() => {
-                    if ((Math.floor(Date.now() / 1000)) - lastUpdated >= 60) {
-                        setUpdated(Math.floor(((Math.floor(Date.now() / 1000)) - lastUpdated) / 60) + " minute ago");
-                    }
-                }, 1000);
-
-                id = setInterval(() => {
-                    fetch(url, { method: method, headers, body, signal: controller.signal } )
-                    .then((res) => res.json())
-                    .then(setData)
-                    .catch(setError)
-                    .finally(() => {
-                        setLoading(false);
-                        clearInterval(interval1);
-                        setUpdated("Now");
-                        setLastUpdated(Math.floor(Date.now() / 1000));
-                    });
-                }, updateInterval * 60 * 1000)
-            }
-
-            return () => {
-                controller.abort();
-                if(typeof(updateInterval) !=='undefined'){
-                    clearInterval(id);
-                }
-            }
-        }, [url, handle]);
-
-        if(data == "Err_Login_Expired"){
-            localStorage.removeItem("globals");
-            window.location.href = "/login";
-            return;
+            }, updateInterval * 60 * 1000)
         }
 
-        return [loading, data, error, updated, lastUpdated, setUpdated];
+        return () => {
+            controller.abort();
+            if(typeof(updateInterval) !=='undefined'){
+                clearInterval(id);
+            }
+        }
+    }, [url, handle]);
+
+    if(data == "Err_Login_Expired"){
+        localStorage.removeItem("globals");
+        window.location.href = "/login";
+        return;
     }
+
+    return [loading, data, error, updated, lastUpdated, setUpdated];
 }
 </pre>
                 </code>

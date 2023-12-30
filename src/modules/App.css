@@ -21,6 +21,7 @@ body{
     background-color: var(--mainColor);
     background-attachment: fixed;
     color: #fff;
+    scroll-behavior: smooth;
 }
 
 .main-header{

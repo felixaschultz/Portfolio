@@ -139,7 +139,8 @@ export const Projects = [
                 <h2>Custom Hooks</h2>
                 <p>Jeg har udviklet en custom hook, som benytter sig af konceptet SWR, som jeg benytter mig af til at hente data fra APIen.</p>
                 <p>SWR, stale-while-revalidate, er en HTTP strategi som viser først data som ligger i cachen (stale), hvorefter den laver et nyt fetch kald (revalidate), for at så opdater indholdet med den nye opdateret information.</p>
-                <code class="code-editor">
+            </section>
+            <code class="code-editor">
 <pre>
 const { useState, useEffect } = React;
 export default function useFetch(updateInterval, url, method, headers, body, handle){
@@ -220,7 +221,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
 }
 </pre>
                 </code>
-            </section>
             `,
             en: ""
         },

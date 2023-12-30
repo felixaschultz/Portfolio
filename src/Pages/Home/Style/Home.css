@@ -140,6 +140,15 @@
         height: auto;
     }
 
+    .landingPage__heading{
+        font-size: 50px;
+        max-width: 100%;
+        margin: 20px 0px;
+        position: relative;
+        font-weight: 100;
+        text-transform: uppercase;
+    }
+
     .main-header{
         padding: 73px;
     }

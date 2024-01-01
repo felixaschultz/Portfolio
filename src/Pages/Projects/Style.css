@@ -46,6 +46,7 @@
     display: block;
     color: #d0d0d0;
     margin: 30px 0px;
+    overflow-y: hidden;
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){

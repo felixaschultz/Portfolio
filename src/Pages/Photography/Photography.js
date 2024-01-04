@@ -11,7 +11,7 @@ export default function Photography(props) {
     const [location, setLocation] = useContext(LocationContext);
     
     const images = importAll(require.context("../../assets/resource", true, /\.jpg|png|jpeg$/));
-    console.log(images)
+
     return (
         <>
             <main>

@@ -1,9 +1,15 @@
-import cykelfaegen from "../statics/projects/cykelfaergen/screenshot-of-website.png";
-/* import alsense from "../statics/projects/alsense/"; */
-import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of-website.png";
-import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
-import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
-import instasstellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
+import cykelfaegen from "../assets/resource/projects/cykelfaergen/screenshot-of-website.png";
+/* import alsense from "../assets/resource/projects/alsense/"; */
+import gdprcookiebanner from "../assets/resource/projects/gdprcookiebanner/screenshot-of-website.png";
+import intastellarsolutions from "../assets/resource/projects/intastellarsolutions/screenshot-of-website.png";
+import intastellarConsentsLogin from "../assets/resource/projects/intastellarconsents/screenshot-login.png";
+import instasstellarConsetnsDashboard from "../assets/resource/projects/intastellarconsents/screenshot-dashboard.png";
+import importAll from "../utils/importAll";
+const images = importAll(require.context("../assets/resource/projects", true, /\.jpg|png|jpeg$/));
+console.log(images);
+console.log(images["cykelfaergen"]);
+
+
 export const Projects = [
     {
         id: "cykelfaergen",
@@ -271,5 +277,24 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
         type: "Web design / development",
         technology: "HTML, CSS, JS, ReactJS"
+    },
+    {
+        id: "sailmore",
+        name: "Sailmore Dashboard & Website",
+        screenshot: null,
+        description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        github: null,
+        url: "https://sailmore-dev.felix-schultz.dk",
+        type: "Web development",
+        technology: "ReactJS"
     }
 ]

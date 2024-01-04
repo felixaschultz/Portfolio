@@ -13,6 +13,7 @@ export default function Footer(){
                         
                     </section>
                     <p>&copy; {new Date().getFullYear()} Felix A. Schultz</p>
+                    <a href="https://www.intastellarsolutions.com/about/legal/privacy" target="_blank">Privacy Policy</a>
                 </div>
             </footer>
         </>

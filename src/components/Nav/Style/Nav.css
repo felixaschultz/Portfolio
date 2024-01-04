@@ -6,6 +6,7 @@
     grid-column: 2/3;
     background-color: var(--mainColor);
     border-radius: 15px 0px 0px 15px;
+    position: relative;
 }
 
 .navigation__link{
@@ -38,6 +39,15 @@
     gap: 5px;
     justify-content: space-between;
     align-items: center;
+}
+
+.language{
+    position: absolute;
+    top: 80px;
+    background-color: var(--mainColor);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){

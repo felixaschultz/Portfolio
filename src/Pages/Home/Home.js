@@ -26,12 +26,12 @@ export default function Home(props) {
             <main>
                 <section className="landingPage">
                     <section className="landingPage__ImageContainer">
-                        <img loading="lazy" src="" alt="" className="landingPage__imageTwo"/>
-                        <img loading="lazy" src="https://media.licdn.com/dms/image/C4D03AQFpj4JkJ2LuQQ/profile-displayphoto-shrink_800_800/0/1633340982579?e=1690416000&v=beta&t=mWnTamTE4r15tgIDsRyIsV3GofhP0Ob12bmE-uvzjPA" alt="Felix A. Schultz" className="landingPage__imageOne"/>
+                        <img loading="lazy" src="https://scontent-cph2-1.xx.fbcdn.net/v/t39.30808-6/416042091_3027759064023016_4605641581664528329_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a73e89&_nc_ohc=DI-2A8_yBq0AX_Gg2b1&_nc_ht=scontent-cph2-1.xx&oh=00_AfCZ2stzbO-cXoASil1oTfZ0_mcyauD3s37np4h1FhbltA&oe=659B7547" alt="" className="landingPage__imageTwo"/>
+                        <img loading="lazy" src="https://scontent-cph2-1.xx.fbcdn.net/v/t39.30808-6/414970463_3026667090798880_372601580469977406_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a73e89&_nc_ohc=r7ZbFNy0KWkAX81XfVh&_nc_ht=scontent-cph2-1.xx&oh=00_AfDea1ar5QUr7Y1uXucQJsUinA9mt4C0RGqCpfEcAOX9yQ&oe=659C8214" alt="Felix A. Schultz" className="landingPage__imageOne"/>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h1 className="landingPage__heading">Felix A. Schultz</h1>
-                        <h2>Frontend developer</h2>
+                        <h2>Frontend developer | Photographer</h2>
                     </section>
                     <section className="landingPage__content landingPage__right landingPage--TopRight">
                         <div className="landingPage__style"></div>

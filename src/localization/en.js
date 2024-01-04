@@ -13,10 +13,6 @@ export default {
                 In my free time, I like to go out with my camera and drone and record some video clips and pictures around me and nature. I also like to watch series & movies in my spare time, at the same time I can find myself developing a bit too much fun on various hoppy projects or other small things.
                 In August 2023, I have started my Professional Bachelor in Web Development at Erhvervsakademiet Aarhus, after I completed my Multimedia Designer education in 2022.`
             },
-            photography: {
-                title: "Photography",
-
-            },
             recommendations: {
                 title: "Recommendations"
             }
@@ -25,6 +21,10 @@ export default {
             title: "Projects",
             visit_urls: "Visit Website",
             visit_github: "Visit Github"
+        },
+        photography: {
+            title: "Photography",
+            description: "Here you can see some of the photos I have taken. You can also see more photos on my Instagram.",
         },
         contact: {
             title: 'Contact',
@@ -52,6 +52,10 @@ export default {
             {
                 name: "Projects",
                 path: "/projects"
+            },
+            {
+                name: "Photography",
+                path: "/photography"
             }
         ]
     }

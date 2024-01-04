@@ -26,6 +26,10 @@ export default {
             visit_urls: "Webseite beschen",
             visit_github: "Github Repo besuchen"
         },
+        photography: {
+            title: "Fotografie",
+            description: "Hier können Sie einige der Fotos sehen, die ich gemacht habe. Sie können auch mehr Fotos auf meinem Instagram sehen.",
+        },
         contact: {
             title: 'Kontakt',
             description: "Sie haben eine frage oder finden meine arbeit super? Dann kontaktieren Sie mich einfach hier unten:",
@@ -52,6 +56,10 @@ export default {
             {
                 name: "Projekte",
                 path: "/projects"
+            },
+            {
+                name: "Fotografie",
+                path: "/fotografi"
             }
         ]
     }

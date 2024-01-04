@@ -13,6 +13,7 @@ import Footer from "../components/Footer/Footer";
 import Photography from "../Pages/Photography/Photography";
 import Nav from "../components/Nav/Nav";
 import ProjectsPage from "../Pages/Projects/Projects";
+import Gallery from "../Pages/Gallery";
 export const LocationContext = createContext(null);
 
 export default function App() {
@@ -47,6 +48,9 @@ export default function App() {
                         </Route>
                         <Route path="/projects/:handle" exact>
                             <ProjectsPage title="Projects | Portfolio" />
+                        </Route>
+                        <Route path="/gallery/:handle" exact>
+                            <Gallery title="Gallery | Portfolio" />
                         </Route>
                         <Redirect to="/" />
                     </Switch>

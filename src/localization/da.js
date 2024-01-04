@@ -28,6 +28,10 @@ export default {
            visit_urls: "Besøg hjemmesiden",
            visit_github: "Besøg Github"
         },
+        photography: {
+            title: "Fotografier",
+            description: "Her kan du se nogle af de fotografier jeg har taget. Du kan også se flere fotografier på min Instagram.",
+        },
         contact: {
             title: 'Kontakt',
             description: "Du har et spørgsmål eller syndes mit arbejde super så kontakt mig under:",
@@ -54,6 +58,10 @@ export default {
             {
                 name: "Projekter",
                 path: "/projects"
+            },
+            {
+                name: "Fotografi",
+                path: "/fotografi"
             }
         ]
     }

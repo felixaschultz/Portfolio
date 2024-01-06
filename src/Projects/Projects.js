@@ -12,8 +12,9 @@ export const Projects = [
         screenshot: cykelfaegen,
         description: {
             de: "",
-            da: `Projektet Cykelfærgen henover Flensborg fjord, søgte en nye Webmaster der kunne overtage og holde deres hjemmeside opdateret.
-            Jeg fik muligheden at kaste mig hen over deres hjemmeside...`,
+            da: `<section class="content-ppad">
+            <p></p>
+            </section>`,
             en: ""
         },
         short_description: {
@@ -35,6 +36,28 @@ export const Projects = [
             de: "",
             da: `<section class="content-ppad">
                     <p>Med GDPR blev det et krav at alle hjemmesider skulle have en Cookie Consent. Jeg fik muligheden at udvikle en Cookie Consent til min egen hjemmeside, som jeg sidenhen har udviklet til en digital platform.</p>
+                    
+                </section>
+                <section class="content-ppad">
+                    <h2>Banner funktionalitet</h2>
+                    <p>Cookie banners funktionalitet bliv udviklet i plain JS, med Custom HTML tags. Kerne funktion er at banneret ud fra en lang liste blockere alle 3-parts scripts (cookies), såsom Google Analytics etc.</p>
+                    <p>Scriptet går hele DOM-Træet igennem og scanner for scripts som matcher listen af black listed scripts. Så snart den finder script tags som indeholder "injection" scripts som f.eks.</p>
+    <code class="code-editor">
+        <pre>
+            &lt;script&gt;
+                (function(){
+                    var s = document.createElement("script");
+                    s.type = "text/javascript";
+                    s.async = true;
+                    s.src = "https://connect.facebook.com/events.js";
+                    var x = document.getElementsByTagName("script")[0];
+                    x.parentNode.insertBefore(s, x);
+                })()
+            &lt;/script&gt;
+        </pre>
+    </code>
+                    <p>For at kunne scanne hjemmesiden for ændringer som der sker på siden under loading, benytter jeg mig af "MutationObserver". MutationObserver kigger på ændringer som sker i DOM-træet. Udfra denne information og de forgivet Regex og script blocker
+                    cookie banneren alle scripts med, type="text/plain" hvorefter de scripts bliver fjernet fra DOM-træet.</p>
                 </section>`,
             en: ""
         },
@@ -291,5 +314,24 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://sailmore-dev.felix-schultz.dk",
         type: "Web development",
         technology: "ReactJS"
+    },
+    {
+        id: "just-drink",
+        name: "Just Drink",
+        screenshot: null,
+        description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        github: "https://github.com/felixaschultz/Just-Drink",
+        url: null,
+        type: "Web Development",
+        technology: "HTML, CSS, JS"
     }
 ]

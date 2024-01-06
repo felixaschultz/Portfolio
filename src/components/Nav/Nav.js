@@ -24,7 +24,7 @@ export default function Nav() {
                 {
                     local[location].navigation.links.map((link, key) => {
                         return (
-                            <Link className="navigation__link" to={link.path}>{link.name}</Link>
+                            <Link key={key} className="navigation__link" to={link.path}>{link.name}</Link>
                         )
                     })
                 }

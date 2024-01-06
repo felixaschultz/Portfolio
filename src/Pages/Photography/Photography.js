@@ -23,7 +23,7 @@ export default function Photography(props) {
                 </section>
                 <section className="belowthfold">
                 {images.map((photo, i) => (
-                   <img src={photo} />
+                   <img key={i} src={photo.default} alt={`photo-${i}`} />
                 ))}
                 </section>
             </main>

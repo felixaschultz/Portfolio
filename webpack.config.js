@@ -52,12 +52,21 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif)$/,
-        include: path.resolve(__dirname, 'src'),
+        include: path.resolve(__dirname, 'src/assets/resource'),
         type: 'asset/resource',
         use: [
           {
             loader: "url-loader",
           }
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: 'url-loader',
+          },
         ],
       },
       {

@@ -1,14 +1,9 @@
-import cykelfaegen from "../assets/resource/projects/cykelfaergen/screenshot-of-website.png";
-/* import alsense from "../assets/resource/projects/alsense/"; */
-import gdprcookiebanner from "../assets/resource/projects/gdprcookiebanner/screenshot-of-website.png";
-import intastellarsolutions from "../assets/resource/projects/intastellarsolutions/screenshot-of-website.png";
-import intastellarConsentsLogin from "../assets/resource/projects/intastellarconsents/screenshot-login.png";
-import instasstellarConsetnsDashboard from "../assets/resource/projects/intastellarconsents/screenshot-dashboard.png";
-import importAll from "../utils/importAll";
-const images = importAll(require.context("../assets/resource/projects", true, /\.jpg|png|jpeg$/));
-console.log(images);
-console.log(images["cykelfaergen"]);
-
+import cykelfaegen from "../statics/projects/cykelfaergen/screenshot-of-website.png";
+/* import alsense from "../statics/projects/alsense/"; */
+import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of-website.png";
+import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
+import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
+import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
 
 export const Projects = [
     {
@@ -113,7 +108,7 @@ export const Projects = [
         name: "Intastellar Consents Platform",
         screenshot: intastellarConsentsLogin,
         images: {
-            dashboard: instasstellarConsetnsDashboard
+            dashboard: instastellarConsetnsDashboard
         },
         description: {
             de: "",
@@ -132,7 +127,7 @@ export const Projects = [
                 </ul>
                 <p>samt hvordan fordeling er mellem lande.</p>
             </section>
-            <img src=${instasstellarConsetnsDashboard} />
+            <img src=${instastellarConsetnsDashboard} />
             <section class="content-ppad">
                 <p>Dashboarded indeholder også en simple lille cookie bot som checker hjemmesiden for cookies som er sendt igennem HTTP Requesten.</p>
             </section>

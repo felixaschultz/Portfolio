@@ -46,7 +46,7 @@ export default function App() {
                         <Route path="/projects" exact>
                             <ProjectsPage title="Projects | Portfolio" />
                         </Route>
-                        <Route path="/projects/:handle" exact>
+                        <Route path="/project/:handle" exact>
                             <ProjectsPage title="Projects | Portfolio" />
                         </Route>
                         <Route path="/gallery/:handle" exact>

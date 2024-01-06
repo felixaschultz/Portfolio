@@ -68,7 +68,7 @@ export default function ProjectsPage(props) {
                                         <>
                                             <article key={key} className="frontpage-projects" onClick={
                                                 () => {
-                                                    (window.location.pathname != "/projects") ? setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}) : window.location.href = "/projects/" + project.id
+                                                    (window.location.pathname != "/projects") ? setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}) : window.location.href = "/project/" + project.id
                                                 }
                                             }>
                                                 <img src="https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" />

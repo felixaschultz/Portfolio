@@ -23,6 +23,15 @@ export default function App() {
         value: location,
         setLocation: (location) => setLocation(location)
     }, [location, setLocation]));
+
+    let word = "";
+    window.addEventListener("keyup", (e) => {
+        word += e.key.toString();
+        if(word == "cool"){
+            alert("cool");
+        }
+    })
+
     return (
         <>
             <Router>

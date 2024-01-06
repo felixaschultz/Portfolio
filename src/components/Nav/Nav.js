@@ -18,7 +18,7 @@ export default function Nav() {
     return (
         <>
             {
-                (locationPath.pathname != "/") ? <Link className="logo" to="/"><img src={logo} /></Link> : null
+                (locationPath.pathname != "/") ? <a className="logo" href="/"><img src={logo} /></a> : null
             }
             <nav className="navigation">
                 {

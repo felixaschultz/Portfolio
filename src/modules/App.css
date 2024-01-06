@@ -77,6 +77,14 @@ body{
     padding: 73px;
 }
 
+.profilePicture{
+    object-fit: cover;
+    border-radius: 50%;
+    width: 500px;
+    height: 500px;
+    margin: auto;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .main-header{
         padding: 0;

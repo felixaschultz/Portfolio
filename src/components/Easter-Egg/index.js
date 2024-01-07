@@ -16,17 +16,12 @@ export default function EasterEgg(props) {
 
         if(word === "felix"){
             word = "";
+            const heading = document.querySelector(".landingPage__heading");
+
+            if(heading.innerText == "<FELIX A. SCHULTZ />"){
+                heading.innerText = "..- .-.. . -..-   .-   ... -.-. .... ..- .-.. - --..   -..-.->";
+            }
             setEasterEgg(true);
         }
     });
-
-    if(easterEgg){
-        return (
-            <>
-                <section className="easterEgg">
-                    <h1>🥚</h1>
-                </section>
-            </>
-        )
-    }
 }

@@ -1,7 +1,6 @@
 const { useState, useEffect, useRef, createContext, useMemo } = React;
 export default function EasterEgg(props) {
     let word = "";
-    const [easterEgg, setEasterEgg] = useState(false);
     window.addEventListener("keydown", (e) => {
         if (e.key === "Backspace") {
             // Handle backspace separately
@@ -14,6 +13,8 @@ export default function EasterEgg(props) {
             word += e.key;
         }
 
+        console.log(word);
+
         if(word === "felix"){
             word = "";
             const heading = document.querySelector(".landingPage__heading");
@@ -21,7 +22,23 @@ export default function EasterEgg(props) {
             if(heading.innerText == "<FELIX A. SCHULTZ />"){
                 heading.innerText = "..- .-.. . -..-   .-   ... -.-. .... ..- .-.. - --..   -..-.->";
             }
-            setEasterEgg(true);
+        }
+
+        if(word.toLowerCase() == "cykelfaergen" || word.toLowerCase() === "cykelfærgen"){
+            window.location.href = "/project/cykelfaergen";
+        }
+
+        if(word.toLowerCase() == "ross geller" || word.toLowerCase() == "ross"){
+            document.querySelector("body").style.transformOrigin = "960px 720px";
+            document.querySelector("body").style.transform = "rotate(9deg)";
+            setTimeout(() => {
+                document.querySelector("body").style.transform = "rotate(-9deg)";
+            }, 1000);
+
+            setTimeout(() => {
+                document.querySelector("body").style.transform = "rotate(0deg)";
+            }, 2000);
+            word = "";
         }
     });
 }

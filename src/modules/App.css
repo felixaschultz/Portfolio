@@ -22,6 +22,7 @@ body{
     background-attachment: fixed;
     color: #fff;
     scroll-behavior: smooth;
+    transition: all .2s ease-in-out;
 }
 
 .main-header{

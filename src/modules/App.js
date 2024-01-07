@@ -14,6 +14,7 @@ import Photography from "../Pages/Photography/Photography";
 import Nav from "../components/Nav/Nav";
 import ProjectsPage from "../Pages/Projects/Projects";
 import Gallery from "../Pages/Gallery";
+import EasterEgg from "../components/Easter-Egg";
 export const LocationContext = createContext(null);
 
 export default function App() {
@@ -23,33 +24,6 @@ export default function App() {
         value: location,
         setLocation: (location) => setLocation(location)
     }, [location, setLocation]));
-
-    let word = "";
-
-    window.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace") {
-            // Handle backspace separately
-            word = word.substring(0, word.length - 1);
-        } else if (e.key === "Shift") {
-            // Remove the entire "Shift" word and append uppercase letter
-            word += e.key.replace(/Shift/g, "").toUpperCase();
-        } else if (e.key.length === 1) {
-            // Handle regular alphanumeric keys
-            word += e.key;
-        }
-
-        if (word === "dark") {
-            document.body.style.backgroundColor = "black";
-            word = "";
-        }
-
-        if (word === "light") {
-            document.body.style.backgroundColor = "";
-            word = "";
-        }
-    });
-
-
 
     return (
         <>
@@ -82,6 +56,7 @@ export default function App() {
                         <Redirect to="/" />
                     </Switch>
                     <Footer />
+                    <EasterEgg />
                 </LocationContext.Provider>
             </Router>
         </>

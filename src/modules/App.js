@@ -39,12 +39,12 @@ export default function App() {
         }
 
         if (word === "dark") {
-            alert("Dark");
+            document.body.style.backgroundColor = "black";
             word = "";
         }
 
         if (word === "light") {
-            alert("Light");
+            document.body.style.backgroundColor = "";
             word = "";
         }
     });

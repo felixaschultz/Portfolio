@@ -25,12 +25,29 @@ export default function App() {
     }, [location, setLocation]));
 
     let word = "";
-    window.addEventListener("keyup", (e) => {
-        word += e.key.toString();
-        if(word == "cool"){
-            alert("cool");
-        }
-    })
+
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace") {
+        // Handle backspace separately
+        word = word.substring(0, word.length - 1);
+    } else if (e.key === "Shift") {
+        // Remove the entire "Shift" word and append uppercase letter
+        word += e.key.replace(/Shift/g, "").toUpperCase();
+    } else if (e.key.length === 1) {
+        // Handle regular alphanumeric keys
+        word += e.key;
+    }
+
+    if (word === "dark") {
+        alert("Dark");
+    }
+
+    if (word === "light") {
+        alert("Light");
+    }
+});
+
+
 
     return (
         <>

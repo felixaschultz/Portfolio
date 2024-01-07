@@ -56,6 +56,7 @@ export default function App() {
                         <Redirect to="/" />
                     </Switch>
                     <Footer />
+                    <canvas id="fireworksCanvas"></canvas>
                     <EasterEgg />
                 </LocationContext.Provider>
             </Router>

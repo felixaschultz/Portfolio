@@ -10,6 +10,7 @@
 .project-grid{
     display: grid;
     grid-template-columns: repeat(3, minmax(min-content, 1fr));
+    gap: 50px;
 }
 
 .project{

@@ -333,5 +333,29 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: null,
         type: "Web Development",
         technology: "HTML, CSS, JS"
+    },
+    {
+        id: "cykelfaergen-api",
+        name: "Cykelfærgen Sejlplan API",
+        screenshot: null,
+        description: {
+            de: "",
+            da: `
+                <section class="content-ppad">
+                    <p>Jeg har udviklet en API til Cykelfærgen Flensborg Fjord, som skal kunne bruges til at hente sejlplanen fra deres hjemmeside.
+                    APIen er udviklet i PHP og benytter sig af MySQL som database APIen er udviklet til at kunne hente sejlplanen for specifikke ruter.</p>
+                </section>
+            `,
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        github: null,
+        url: "https://developers.cykelfaergen.info/timetable/js",
+        type: "FE Development",
+        technology: "JS"
     }
 ]

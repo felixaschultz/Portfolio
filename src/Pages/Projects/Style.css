@@ -60,4 +60,8 @@
         width: 100%;
         padding: 10px 15px;
     }
+
+    .project-grid{
+        grid-template-columns: 1fr;
+    }
 }

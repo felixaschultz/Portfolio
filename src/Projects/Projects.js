@@ -357,5 +357,28 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://developers.cykelfaergen.info/timetable/js",
         type: "FE Development",
         technology: "JS"
+    },
+    {
+        id: "balticfinance-uploadformular",
+        name: "Baltic Finance Uploadformular",
+        screenshot: null,
+        description: {
+            de: "",
+            da: `
+                <section class="content-ppad">
+                    <p>Jeg havde muligheden at udvikle en uploadformular for Baltic Finance, som skulle kunne håndtere upload af filer og sende dem videre til Baltic Finance.</p>
+                </section>
+            `,
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        github: null,
+        url: null,
+        type: "Web Development",
+        technology: "HTML, CSS, JS, PHP"
     }
 ]

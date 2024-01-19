@@ -59,10 +59,10 @@ export default {
                 name: "Projekter",
                 path: "/projects"
             },
-            {
+            /* {
                 name: "Fotografi",
                 path: "/fotografi"
-            }
+            } */
         ]
     }
 }

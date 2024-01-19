@@ -53,10 +53,10 @@ export default {
                 name: "Projects",
                 path: "/projects"
             },
-            {
+            /* {
                 name: "Photography",
                 path: "/photography"
-            }
+            } */
         ]
     }
 }

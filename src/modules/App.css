@@ -23,7 +23,11 @@ body{
     color: #fff;
     scroll-behavior: smooth;
     transition: all .2s ease-in-out;
+}
+
+#app{
     transform: perspective(1000px);
+    transition: all .2s ease-in-out;
 }
 
 .main-header{

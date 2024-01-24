@@ -336,17 +336,129 @@ export default function useFetch(updateInterval, url, method, headers, body, han
     },
     {
         id: "cykelfaergen-api",
-        name: "Cykelfærgen Sejlplan API",
+        name: "Cykelfærgen Sejlplan API & Konfigurator",
         screenshot: null,
         description: {
-            de: "",
-            da: `
-                <section class="content-ppad">
-                    <p>Jeg har udviklet en API til Cykelfærgen Flensborg Fjord, som skal kunne bruges til at hente sejlplanen fra deres hjemmeside.
-                    APIen er udviklet i PHP og benytter sig af MySQL som database APIen er udviklet til at kunne hente sejlplanen for specifikke ruter.</p>
-                </section>
+            de: `
+            <section class="content-ppad">
+                <h2>Projektübersicht</h2>
+                <p>
+                    Ich habe eine API für die Cykelfærgen Flensborg Fjord entwickelt, die es ermöglicht, den Fahrplan von ihrer Website abzurufen.
+                    Die API ist in PHP geschrieben und verwendet MySQL als Datenbank. Sie ist darauf ausgelegt, die Fahrpläne für bestimmte Routen abzurufen.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Konfigurator für Fahrpläne</h2>
+                <p>
+                    Ein Konfigurator wurde entwickelt, um Partnern von Cykelfærgen und anderen Website-Besitzern zu helfen, ihren Fahrplan in ihre eigenen Websites zu integrieren.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Plattformfunktionen</h2>
+                <p>
+                    Die Plattform ist in PHP und MySQL entwickelt und bietet Benutzern die Möglichkeit, zwischen verschiedenen Fahrplänen zu wählen.
+                    Man kann wählen, alle Fahrpläne anzuzeigen oder nur einen einzelnen Fahrplan.
+                </p>
+                <p>
+                    Benutzer können die Fahrpläne anpassen, indem sie ihre Markenfarben auswählen, und sie können verschiedenen Domänennamen Fahrplänen zuordnen.
+                    Es gibt auch Unterstützung für drei Sprachen: Dänisch, Deutsch und Englisch.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Implementierung von Fahrplänen</h2>
+                <p>
+                    Um den Fahrplan auf der eigenen Website anzuzeigen, arbeite ich mit XMLHttpRequest() zum Abrufen von Daten.
+                    In diesem HTTP-Request sende ich einen API-Schlüssel, der die erforderlichen Informationen aus der Datenbank abruft.
+                    Gleichzeitig wird überprüft, ob die Domain der Website genehmigt ist, und wenn ja, wird auch überprüft, ob sie mit einer bestimmten Sprache verknüpft ist.
+                </p>
+                <p>
+                    Nachdem alle diese Überprüfungen durchgeführt wurden, wird der Fahrplan generiert und an den Clienten zurückgesendet, wo er dem HTML-Container hinzugefügt wird, wie zuvor angegeben.
+                </p>
+            </section>        
             `,
-            en: ""
+            da: `
+            <section class="content-ppad">
+                <h2>Project Overview</h2>
+                <p>
+                    Jeg har udviklet en API til Cykelfærgen Flensborg Fjord, som gør det muligt at hente sejlplanen fra deres hjemmeside.
+                    API'en er kodet i PHP og benytter MySQL som database. Den er designet til at hente sejlplanerne for specifikke ruter.
+                </p>
+            </section>
+        
+            <section class="content-ppad">
+                <h2>Konfigurator for Sejlplaner</h2>
+                <p>
+                    En konfigurator er udviklet for at hjælpe Cykelfærgens partnere og andre hjemmesideejere med at integrere deres sejlplan på deres egne hjemmesider.
+                </p>
+            </section>
+        
+            <section class="content-ppad">
+                <h2>Platformfunktionaliteter</h2>
+                <p>
+                    Platformen er udviklet i PHP og MySQL og giver brugerne mulighed for at vælge mellem forskellige sejlplaner.
+                    Man kan vælge at vise alle sejlplaner eller kun en enkelt sejlplan.
+                </p>
+                <p>
+                    Brugere kan tilpasse sejlplanerne ved at vælge deres brandfarver, og de kan tilknytte forskellige domænenavne til sejlplanerne.
+                    Der er også understøttelse af tre sprog: dansk, tysk og engelsk.
+                </p>
+            </section>
+        
+            <section class="content-ppad">
+                <h2>Implementering af Sejlplaner</h2>
+                <p>
+                    For at vise sejlplanen på ens hjemmeside arbejder jeg med XMLHttpRequest() til at hente data.
+                    I denne HTTP-anmodning sender jeg en API-nøgle, der henter de nødvendige oplysninger fra databasen.
+                    Samtidig kontrolleres det, om hjemmesidens domænenavn er godkendt, og hvis det er tilfældet, tjekkes det også, om det er knyttet til et bestemt sprog.
+                </p>
+                <p>
+                    Når alle disse kontroller er gennemført, genereres sejlplanen og sendes tilbage til klienten, hvor den tilføjes HTML-containeren, som blev angivet.
+                </p>
+            </section>
+            `,
+            en: `
+            <section class="content-ppad">
+                <h2>Project Overview</h2>
+                <p>
+                    I have developed an API for Cykelfærgen Flensborg Fjord that allows retrieving the schedule from their website.
+                    The API is coded in PHP and uses MySQL as a database. It is designed to fetch schedules for specific routes.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Schedule Configurator</h2>
+                <p>
+                    A configurator has been developed to assist Cykelfærgen's partners and other website owners in integrating their schedule into their own websites.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Platform Features</h2>
+                <p>
+                    The platform is developed in PHP and MySQL, providing users with the option to choose between different schedules.
+                    Users can choose to display all schedules or only a single schedule.
+                </p>
+                <p>
+                    Users have the option to customize schedules by selecting their brand colors, and they can associate different domain names with schedules.
+                    There is also support for three languages: Danish, German, and English.
+                </p>
+            </section>
+            
+            <section class="content-ppad">
+                <h2>Implementation of Schedules</h2>
+                <p>
+                    To display the schedule on a website, I use XMLHttpRequest() to fetch data.
+                    In this HTTP request, I send an API key that retrieves the necessary information from the database.
+                    Simultaneously, it checks if the website's domain name is approved, and if so, it also checks if it is associated with a specific language.
+                </p>
+                <p>
+                    After all these checks are completed, the schedule is generated and sent back to the client, where it is added to the HTML container as specified.
+                </p>
+            </section>        
+            `
         },
         short_description: {
             de: "",

@@ -13,7 +13,12 @@ export const Projects = [
         description: {
             de: "",
             da: `<section class="content-ppad">
-            <p></p>
+                <p></p>
+            </section>
+            <section class="content-ppad">
+                <h2>Reklame video</h2>
+                <p>Jeg fik produceret en lille reklamevideo for cykelfærgen. Med denne klip er intentionen at bygge og skabe mere opmærksomhed.</p>
+                <video src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4" controls></video>
             </section>`,
             en: ""
         },
@@ -259,25 +264,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         technology: "HTML, CSS, JS, ReactJS"
     },
     {
-        id: "intastellarsolutions",
-        name: "Intastellar Solutions, International",
-        screenshot: intastellarsolutions,
-        description: {
-            de: "",
-            da: "",
-            en: ""
-        },
-        short_description: {
-            de: "",
-            da: "",
-            en: ""
-        },
-        github: null,
-        url: "https://www.intastellarsolutions.com",
-        type: "Web design / development",
-        technology: "HTML, CSS, JS"
-    },
-    {
         id: "danfoss-insite",
         name: "Danfoss Alsense Insite",
         screenshot: null,
@@ -321,12 +307,12 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         screenshot: null,
         description: {
             de: "",
-            da: "",
+            da: "Under mit Studie som Mutlimediedesigner, fik jeg muligheden at udvikle en Webapp for en fiktiv kunde. Jeg valgte at udvikle en Webapp for en fiktiv kunde som sku.",
             en: ""
         },
         short_description: {
             de: "",
-            da: "",
+            da: "Under mit Studie som Mutlimediedesigner, fik jeg muligheden at udvikle en Webapp for en fiktiv kunde. Jeg valgte at udvikle en Webapp for en fiktiv kunde som skule have en App hvor med man kan bestille drikkevarer til ens fest. Ala Just Eat,",
             en: ""
         },
         github: "https://github.com/felixaschultz/Just-Drink",
@@ -478,7 +464,21 @@ export default function useFetch(updateInterval, url, method, headers, body, han
             de: "",
             da: `
                 <section class="content-ppad">
-                    <p>Jeg havde muligheden at udvikle en uploadformular for Baltic Finance, som skulle kunne håndtere upload af filer og sende dem videre til Baltic Finance.</p>
+                    <p>Jeg havde muligheden at udvikle en uploadformular for balticfinance, som skulle kunne håndtere upload af filer og sende dem videre til balticfinance.</p>
+                    <p>Jeg fik fra virksomheden opstillet nogle krav som formularet skulle kunne. Kravne var:</p>
+                    <ul>
+                        <li>Upload af filer</li>
+                        <li>Skulle kunne validere skadenummer i rigtige format</li>
+                        <li>Skulle kunne validere om filerne var i rigtige format (*.jpg, *.jpeg, *.png, *.pdf, *.gif, *.zip, *.webp)</li>
+                        <li>Uploaded skulle først ske når skadenummeret er i rigtig format</li>
+                        <li>Send filerne videre til balticfinance</li>
+                        <li>Send en bekræftelse til brugeren</li>
+                    </ul>
+                </section>
+                <section class="content-ppad">
+                    <h2>Formularen</h2>
+                    <p>Formularen blev udviklet i PHP og HTML, hvor jeg benyttede mig af PHP til at validere og håndtere upload af filer.</p>
+                    <p>Formularen blev udviklet med en simpel design, som skulle være nem at bruge for brugeren.</p>
                 </section>
             `,
             en: ""
@@ -489,7 +489,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
             en: ""
         },
         github: null,
-        url: null,
+        url: "https://customerupload.balticfinance.com",
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
     }

@@ -4,6 +4,7 @@ import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
+import responsive from "../../statics/assets/responsive.svg";
 const useParams = window.ReactRouterDOM.useParams;
 
 export default function ProjectsPage(props) {
@@ -71,7 +72,7 @@ export default function ProjectsPage(props) {
                                                     (window.location.pathname != "/projects") ? setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}) : window.location.href = "/project/" + project.id
                                                 }
                                             }>
-                                                <img src={(project.screenshot === null) ? "https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" : project.screenshot} />
+                                                <img src={(project.screenshot === null) ? responsive : project.screenshot} />
                                                 <h2>{project.name}</h2>
                                                 <p>{project.type}</p>
                                                 <p>Tech: {project.technology}</p>

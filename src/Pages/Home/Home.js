@@ -8,6 +8,7 @@ import Contact from "../../components/Contact/Contact";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import { Recommendations } from "../../recommendations/Recommendations";
+import responsive from "../../statics/assets/responsive.svg";
 
 export default function Home(props) {
     document.title = props.title;
@@ -58,7 +59,7 @@ export default function Home(props) {
                                                 setProject(project.name)
                                             }
                                         }>
-                                            <img src="https://denisechandler.com/wp-content/themes/portfolio_oct2021/images/adam_gidwitz.png" />
+                                            <img src={responsive} />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
                                         </article>

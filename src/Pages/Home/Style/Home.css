@@ -114,6 +114,7 @@
 .frontpage-projects img{
     transition: all .5s ease-out;
     perspective: 1000px;
+    max-width: 350px;
 }
 
 .frontpage-projects:hover img{

@@ -13,7 +13,6 @@ export default function ProjectsPage(props) {
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
     const { handle, id } = useParams();
-    console.log(local[location].pages)
     if(handle){
 
         const project = Projects.filter((project, key) => {
@@ -23,6 +22,30 @@ export default function ProjectsPage(props) {
         })
 
         document.title = project[0].name + " | Felix A. Schultz - Portfolio";
+
+        useEffect(() => {
+            const video = document.querySelector("video");
+            if(video){
+                video.addEventListener("click", function(){
+                    if(this.paused){
+                        this.play();
+                    } else {
+                        this.pause();
+                    }
+                })
+
+                window.addEventListener("keydown", function(e){
+                    e.preventDefault();
+                    if(e.keyCode == "32"){
+                        if(video.paused){
+                            video.play();
+                        } else {
+                            video.pause();
+                        }
+                    }
+                })
+            }
+        }, [project])
         
         return (
             <>
@@ -44,8 +67,7 @@ export default function ProjectsPage(props) {
                         <img src={project[0].screenshot} />
                     </section>
                     <section className="belowthfold">
-                        <section className="content" dangerouslySetInnerHTML={{__html:project[0].description[location]}}>
-                        </section>
+                        <section className="content" dangerouslySetInnerHTML={{__html: project[0].description[location]}}></section>
                     </section>
                 </main>
             </>

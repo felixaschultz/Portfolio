@@ -50,6 +50,12 @@
     overflow-y: hidden;
 }
 
+video{
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .content{
         width: 100%;

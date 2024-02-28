@@ -13,7 +13,7 @@ export const Projects = [
         description: {
             de: "",
             da: `<section class="content-ppad">
-                <p></p>
+                <p>I slutning af 2019 overtog jeg opgaven som webmaster hos cykelfærgen Flensborg fjord. Jeg besluttede mig at for udvikle den nye hjemmeside i PHP, det giver mig muligheden af at have filerne for de forskellige sprog dansk, tysk og engelsk.</p>
             </section>
             <section class="content-ppad">
                 <h2>Reklame video</h2>

@@ -201,4 +201,13 @@
         width: 100%;
         display: block;
     }
+
+    .landginPage-video{
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        aspect-ratio: 9/16;
+        opacity: .25;
+        object-fit: cover;
+    }
 }

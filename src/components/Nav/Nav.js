@@ -4,7 +4,7 @@ const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Nav.css";
 import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
-import logo from "../../statics/assets/felix-schultz-logo.svg";
+import logo from "../../statics/assets/felix-schultz-logo-icon.svg";
 
 export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);

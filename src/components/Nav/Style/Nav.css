@@ -44,6 +44,8 @@
     top: 80px;
     background-color: var(--headerColor);
     border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
     display: flex;
     flex-direction: column;
 }

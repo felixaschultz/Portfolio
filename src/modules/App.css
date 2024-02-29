@@ -6,7 +6,7 @@
     --mainColor: #002540;
     --secondaryColor: #8BCFFF;
     --light: #CCEAFF;
-    --headerColor: #0080dbc9;
+    --headerColor: #005da0c9;
     --overlay: #003962;
     --borderRadius: 10px;
 }
@@ -39,9 +39,11 @@ body{
     width: 100%;
     color: #fff;
     align-items: center;
-    padding: 15px;
+    padding: 10px 100px;
     z-index: 10000;
     background-color: var(--headerColor);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     transition: all .2s ease-in-out;
 }
 

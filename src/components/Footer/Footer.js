@@ -1,4 +1,5 @@
 const { useState, useEffect, useRef, useContext } = React;
+
 import "./Style/Footer.css";
 import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
@@ -9,9 +10,6 @@ export default function Footer(){
         <>
             <footer className="footer">
                 <div className="footer_content">
-                    <section>
-                        
-                    </section>
                     <p>&copy; {new Date().getFullYear()} Felix A. Schultz</p>
                     <a href="https://www.intastellarsolutions.com/about/legal/privacy" target="_blank">Privacy Policy</a>
                 </div>

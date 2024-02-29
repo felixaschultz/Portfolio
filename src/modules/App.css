@@ -11,6 +11,10 @@
     --borderRadius: 10px;
 }
 
+#fireworksCanvas{
+    position: fixed;
+}
+
 img, video{
     max-width: 100%;
 }
@@ -49,7 +53,7 @@ body{
 }
 
 .logo img{
-    width: 100%;
+    width: 90%;
 }
 
 .grid{

@@ -55,16 +55,11 @@ export default function Home(props) {
                             Projects.slice(0, 3).map((project, key) => {
                                 return (
                                     <>
-                                        <article key={key} className="frontpage-projects" onClick={
-                                            () => {
-                                                setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}),
-                                                setProject(project.name)
-                                            }
-                                        }>
-                                            <img src={responsive} />
+                                        <Link to={"/project/" + project.id} key={key} className="frontpage-projects">
+                                            <img src={project.screenshot ?? responsive} />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
-                                        </article>
+                                        </Link>
                                     </>
                                 )
                             })

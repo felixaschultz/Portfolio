@@ -109,6 +109,8 @@
     text-align: center;
     transition: all .5s ease-out;
     position: relative;
+    color: #fff;
+    text-decoration: none;
 }
 
 .frontpage-projects img{

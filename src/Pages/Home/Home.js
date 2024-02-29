@@ -4,7 +4,6 @@ import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
-import Contact from "../../components/Contact/Contact";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import { Recommendations } from "../../recommendations/Recommendations";
@@ -13,7 +12,10 @@ import responsive from "../../statics/assets/responsive.svg";
 export default function Home(props) {
     document.title = props.title;
     const [location] = useContext(LocationContext);
-    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
+    const showPopup = props.showPopup
+    const setShowPopup = props.setShowPopup
+    const item = props.item;
+
     const [project, setProject] = useState(null);
 
     window.addEventListener("DOMContentLoaded", function (){
@@ -98,9 +100,6 @@ export default function Home(props) {
                     </div>
                 </section>
             </main>
-            {
-                (showPopup.hideShow && showPopup.item == "Contact") ? <Contact setShowPopup={setShowPopup} showPopup={showPopup.hideShow} /> : null
-            }
             {
                 (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
             }

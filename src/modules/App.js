@@ -15,10 +15,12 @@ import Nav from "../components/Nav/Nav";
 import ProjectsPage from "../Pages/Projects/Projects";
 import Gallery from "../Pages/Gallery";
 import EasterEgg from "../components/Easter-Egg";
+import Contact from "../components/Contact/Contact";
 export const LocationContext = createContext(null);
 
 export default function App() {
     const [location, setLocation] = useState("da");
+    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
 
     const provided = useMemo(() => ({
         value: location,
@@ -37,7 +39,7 @@ export default function App() {
                     <div className="main-content">
                         <Switch>
                             <Route path="/" exact>
-                                <Home title="Felix A. | Portfolio" />
+                                <Home title="Felix A. | Portfolio" showPopup={showPopup} setShowPopup={setShowPopup} />
                             </Route>
                             <Route path="/fotografi" exact>
                                 <Photography title="Fotografi | Portfolio" />
@@ -60,6 +62,7 @@ export default function App() {
                     <Footer />
                     <canvas id="fireworksCanvas"></canvas>
                     <EasterEgg />
+                    {(showPopup.hideShow && showPopup.item == "Contact") ? <Contact setShowPopup={setShowPopup} showPopup={showPopup.hideShow} /> : null}
                 </LocationContext.Provider>
             </Router>
         </>

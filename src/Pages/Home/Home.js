@@ -27,7 +27,7 @@ export default function Home(props) {
     return (
         <>
             <main>
-                <section className="landingPage">
+                <section className="landingPage" style={{paddingBottom: "20px"}}>
                     <section className="landingPage__ImageContainer">
                         <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
                     </section>

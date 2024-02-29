@@ -33,8 +33,8 @@ export default {
             description: "Her kan du se nogle af de fotografier jeg har taget. Du kan også se flere fotografier på min Instagram.",
         },
         contact: {
-            title: 'Kontakt',
-            description: "Du har et spørgsmål eller syndes mit arbejde super så kontakt mig under:",
+            title: 'Lad os tage en snak!',
+            description: "Lad os tage en lille snak. Udfyld formularen og jeg vil kontakte dig hurtigst muligt.",
             submitBtn: "Afsend besked",
             name: "Navn",
             email: "E-mail",

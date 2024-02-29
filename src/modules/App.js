@@ -16,6 +16,7 @@ import ProjectsPage from "../Pages/Projects/Projects";
 import Gallery from "../Pages/Gallery";
 import EasterEgg from "../components/Easter-Egg";
 import Contact from "../components/Contact/Contact";
+import SingleProject from "../components/Project/SingleProject";
 export const LocationContext = createContext(null);
 
 export default function App() {
@@ -51,7 +52,7 @@ export default function App() {
                                 <ProjectsPage title="Projects | Portfolio" />
                             </Route>
                             <Route path="/project/:handle" exact>
-                                <ProjectsPage title="Projects | Portfolio" />
+                                <SingleProject title="Projects | Portfolio" />
                             </Route>
                             <Route path="/gallery/:handle" exact>
                                 <Gallery title="Gallery | Portfolio" />

@@ -6,110 +6,48 @@ import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import responsive from "../../statics/assets/responsive.svg";
 const useParams = window.ReactRouterDOM.useParams;
+const Link = window.ReactRouterDOM.Link;
 
 export default function ProjectsPage(props) {
     document.title = props.title;
     const [location, setLocation] = useContext(LocationContext);
     const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
     const [project, setProject] = useState(null);
-    const { handle, id } = useParams();
-    if(handle){
-
-        const project = Projects.filter((project, key) => {
-            if(project.id == handle){
-                return project
-            }
-        })
-
-        document.title = project[0].name + " | Felix A. Schultz - Portfolio";
-
-        useEffect(() => {
-            const video = document.querySelector("video");
-            if(video){
-                video.addEventListener("click", function(){
-                    if(this.paused){
-                        this.play();
-                    } else {
-                        this.pause();
-                    }
-                })
-
-                window.addEventListener("keydown", function(e){
-                    e.preventDefault();
-                    if(e.keyCode == "32"){
-                        if(video.paused){
-                            video.play();
-                        } else {
-                            video.pause();
+    return (
+        <>
+            <main>
+                <section className="landingPage">
+                    <section className="landingPage__content --span">
+                        <h1 className="landingPage__heading">{local[location].pages.projects.title}</h1>
+                        <p>{local[location].pages.projects.description}</p>
+                    </section>
+                </section>
+                <section className="belowthfold">
+                    <section className="content project-grid">
+                    {
+                            Projects.map((project, key) => {
+                                return (
+                                    <>
+                                        <Link to={"/project/" + project.id} key={key} className="frontpage-projects" onClick={
+                                            (e) => {
+                                                (window.location.pathname != "/projects") ?? e.preventDefault(), setShowPopup({hideShow: !showPopup.hideShow, item: "Project"})
+                                            }
+                                        }>
+                                            <img src={(project.screenshot === null) ? responsive : project.screenshot} />
+                                            <h2>{project.name}</h2>
+                                            <p>{project.type}</p>
+                                            <p>Tech: {project.technology}</p>
+                                        </Link>
+                                    </>
+                                )
+                            })
                         }
-                    }
-                })
+                    </section>
+                </section>
+            </main>
+            {
+                (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
             }
-        }, [project])
-        
-        return (
-            <>
-                <main>
-                    <section className="landingPage">
-                        <section className="landingPage__content">
-                            <h1 className="landingPage__heading">{project[0].name}</h1>
-                            <h3>Tech: {project[0].technology}</h3>
-                            <p>{project[0].short_description[location]}</p>
-                            <div>
-                            {
-                                (project[0].url != null) ? <a className="cta" href={project[0].url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
-                            }
-                            {
-                                (project[0].github != null) ? <a className="showMore" href={project[0].github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
-                            }
-                            </div>
-                        </section>
-                        <img src={project[0].screenshot} />
-                    </section>
-                    <section className="belowthfold">
-                        <section className="content" dangerouslySetInnerHTML={{__html: project[0].description[location]}}></section>
-                    </section>
-                </main>
-            </>
-        )
-
-    }else{
-        return (
-            <>
-                <main>
-                    <section className="landingPage">
-                        <section className="landingPage__content --span">
-                            <h1 className="landingPage__heading">{local[location].pages.projects.title}</h1>
-                            <p>{local[location].pages.projects.description}</p>
-                        </section>
-                    </section>
-                    <section className="belowthfold">
-                        <section className="content project-grid">
-                        {
-                                Projects.map((project, key) => {
-                                    return (
-                                        <>
-                                            <article key={key} className="frontpage-projects" onClick={
-                                                () => {
-                                                    (window.location.pathname != "/projects") ? setShowPopup({hideShow: !showPopup.hideShow, item: "Project"}) : window.location.href = "/project/" + project.id
-                                                }
-                                            }>
-                                                <img src={(project.screenshot === null) ? responsive : project.screenshot} />
-                                                <h2>{project.name}</h2>
-                                                <p>{project.type}</p>
-                                                <p>Tech: {project.technology}</p>
-                                            </article>
-                                        </>
-                                    )
-                                })
-                            }
-                        </section>
-                    </section>
-                </main>
-                {
-                    (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
-                }
-            </>
-        )
-    }
+        </>
+    )
 }

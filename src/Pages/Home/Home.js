@@ -29,7 +29,7 @@ export default function Home(props) {
             <main>
                 <section className="landingPage">
                     <section className="landingPage__ImageContainer">
-                        <video className="landginPage-video" muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
+                        <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h1 className="landingPage__heading">&lt;Felix A. Schultz /&gt;</h1>

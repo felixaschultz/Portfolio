@@ -111,6 +111,7 @@
     position: relative;
     color: #fff;
     text-decoration: none;
+    display: block;
 }
 
 .frontpage-projects img{

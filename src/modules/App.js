@@ -34,27 +34,29 @@ export default function App() {
                             <Nav />
                         </section>
                     </header>
-                    <Switch>
-                        <Route path="/" exact>
-                            <Home title="Felix A. | Portfolio" />
-                        </Route>
-                        <Route path="/fotografi" exact>
-                            <Photography title="Fotografi | Portfolio" />
-                        </Route>
-                        <Route path="/web" exact>
-                            <Web title="Web | Portfolio" />
-                        </Route>
-                        <Route path="/projects" exact>
-                            <ProjectsPage title="Projects | Portfolio" />
-                        </Route>
-                        <Route path="/project/:handle" exact>
-                            <ProjectsPage title="Projects | Portfolio" />
-                        </Route>
-                        <Route path="/gallery/:handle" exact>
-                            <Gallery title="Gallery | Portfolio" />
-                        </Route>
-                        <Redirect to="/" />
-                    </Switch>
+                    <div className="main-content">
+                        <Switch>
+                            <Route path="/" exact>
+                                <Home title="Felix A. | Portfolio" />
+                            </Route>
+                            <Route path="/fotografi" exact>
+                                <Photography title="Fotografi | Portfolio" />
+                            </Route>
+                            <Route path="/web" exact>
+                                <Web title="Web | Portfolio" />
+                            </Route>
+                            <Route path="/projects" exact>
+                                <ProjectsPage title="Projects | Portfolio" />
+                            </Route>
+                            <Route path="/project/:handle" exact>
+                                <ProjectsPage title="Projects | Portfolio" />
+                            </Route>
+                            <Route path="/gallery/:handle" exact>
+                                <Gallery title="Gallery | Portfolio" />
+                            </Route>
+                            <Redirect to="/" />
+                        </Switch>
+                    </div>
                     <Footer />
                     <canvas id="fireworksCanvas"></canvas>
                     <EasterEgg />

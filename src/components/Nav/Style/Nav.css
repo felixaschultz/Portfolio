@@ -4,7 +4,6 @@
     align-items: center;
     justify-content: flex-end;
     grid-column: 2/3;
-    background-color: var(--headerColor);
     border-radius: 15px 0px 0px 15px;
     position: relative;
 }

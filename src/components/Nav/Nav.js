@@ -17,9 +17,7 @@ export default function Nav() {
 
     return (
         <>
-            {
-                (locationPath.pathname != "/") ? <a className="logo" href="/"><img src={logo} /></a> : null
-            }
+            <a className="logo" href="/"><img src={logo} /></a>
             <nav className="navigation">
                 {
                     local[location].navigation.links.map((link, key) => {

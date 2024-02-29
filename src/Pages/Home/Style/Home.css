@@ -169,6 +169,14 @@
     padding: 0;
 }
 
+.landginPage-video{
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    aspect-ratio: 16/9;
+    opacity: .25;
+}
+
 @media screen and (min-width: 320px) and (max-width: 900px) {
     .landingPage{
         grid-template-columns: 1fr;

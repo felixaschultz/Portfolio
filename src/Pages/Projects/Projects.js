@@ -78,7 +78,7 @@ export default function ProjectsPage(props) {
             <>
                 <main>
                     <section className="landingPage">
-                        <section className="landingPage__content">
+                        <section className="landingPage__content --span">
                             <h1 className="landingPage__heading">{local[location].pages.projects.title}</h1>
                             <p>{local[location].pages.projects.description}</p>
                         </section>

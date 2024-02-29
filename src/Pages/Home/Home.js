@@ -8,6 +8,7 @@ import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import { Recommendations } from "../../recommendations/Recommendations";
 import responsive from "../../statics/assets/responsive.svg";
+import me from "../../statics/assets/me.jpg";
 
 export default function Home(props) {
     document.title = props.title;
@@ -71,7 +72,7 @@ export default function Home(props) {
                             <h2>{local[location].pages.homepage.about.title}</h2>
                             <p>{local[location].pages.homepage.about.description}</p>
                         </section>
-                        <img width="150px" height="150px" className="profilePicture" src="https://scontent-cph2-1.xx.fbcdn.net/v/t39.30808-6/347247051_2893026070829650_6388169301878078966_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=nnY8WKKrSjgAX8eVrds&_nc_ht=scontent-cph2-1.xx&oh=00_AfCHLpjNhaWcBN0z-sk5Z635W8RX4vO8NTpXWMCKFgV0qA&oe=659EBF75" />
+                        <img width="150px" height="150px" className="profilePicture" src={me} />
                     </section>
                 </section>
                 <section className="ppad">

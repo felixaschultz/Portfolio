@@ -41,13 +41,26 @@
 
 .language{
     position: absolute;
-    top: 80px;
+    top: 62px;
     background-color: var(--headerColor);
     border-radius: 10px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     display: flex;
     flex-direction: column;
+}
+
+.iconContainer .navigation__link{
+    padding: 0px 15px;
+}
+
+.--active::before{
+    content: "";
+    width: 100%;
+    position: absolute;
+    height: 1px;
+    inset: -50% 0%;
+    background-color: #fff;
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){
@@ -58,11 +71,11 @@
         padding: 0px 15px;
     }
     .header-grid{
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .logo img {
-        width: 20%;
+        width: 100%;
     }
 
     .main-header{

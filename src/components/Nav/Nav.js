@@ -11,6 +11,7 @@ export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);
     const locationPath = useLocation();
     const [showLanguage, setShowLanguage] = useState(false);
+    const currentLocation = "/" + locationPath.pathname.split("/")[1];
 
     const openLanguage = () => {
         setShowLanguage(!showLanguage);
@@ -22,11 +23,14 @@ export default function Nav() {
             <nav className="navigation">
                 {
                     local[location].navigation.links.map((link, key) => {
+                        console.log(link.path, currentLocation, currentLocation.indexOf(link.path));
                         return (
-                            <Link key={key} className="navigation__link" to={link.path}>{link.name}</Link>
+                            <Link key={key} className={`navigation__link ${(currentLocation == link.path || currentLocation.indexOf(link.path) > -1) ? "--active" : null} `} to={link.path}>{link.name}</Link>
                         )
                     })
                 }
+            </nav>
+            <section className="flex iconContainer">
                 <section>
                     <button onClick={openLanguage} className="locationPicker">{location}</button>
                     {
@@ -43,8 +47,6 @@ export default function Nav() {
                         </section> : null
                     }
                 </section>
-            </nav>
-            <section className="flex">
                 <GitHub url="https://github.com/felixaschultz" />
                 <LinkedIn url="https://www.linkedin.com/in/felixaschultz" />
                 <iframe src="https://github.com/sponsors/felixaschultz/button" title="Sponsor felixaschultz" height="32" width="114" style={{border: 0, borderRadius: "6px"}}></iframe>

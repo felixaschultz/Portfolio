@@ -24,10 +24,9 @@ export default function Nav() {
                 {
                     local[location].navigation.links.map((link, key) => {
                         return (
-                            <NavLink key={key} style={({ isActive }) => ({
-                                color: isActive
-                                    ? "greenyellow"
-                                    : "white",
+                            <NavLink key={key} style={({isActive})=>({
+                                borderBottom: isActive ? "#15b0ab solid 2px": '',
+                                opacity: isActive ? 1 : ""
                             })} className={`navigation__link`} to={link.path}>{link.name}</NavLink>
                         )
                     })

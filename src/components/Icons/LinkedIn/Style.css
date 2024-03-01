@@ -1,5 +1,3 @@
-.linkedIn::after{
-    background-image: url("https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png");
-    background-size: contain;
-    filter: invert(1);   
+.linkedIn{
+    background-size: contain; 
 }

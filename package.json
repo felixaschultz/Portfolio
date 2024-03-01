@@ -1,7 +1,7 @@
 {
     "homepage": "https://github.com/felixaschultz/Portfolio",
     "scripts": {
-        "start": "webpack serve --open ",
+        "start": "webpack serve --open",
         "build": "webpack build",
         "dev:build-server": "NODE_ENV=development webpack --config webpack.server.js --mode=development -w",
         "dev:start": "nodemon ./server-build/index.js",

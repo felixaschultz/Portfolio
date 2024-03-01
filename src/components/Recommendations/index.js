@@ -16,7 +16,7 @@ export default function Recommendations() {
                         return (
                             <div key={key} className="recommendations__item">
                                 <p className="recommendation">{item.recommend}</p>
-                                <p>-{item.author}</p>
+                                <p className="recommendation-user">{item.author}</p>
                             </div>
 
                         )

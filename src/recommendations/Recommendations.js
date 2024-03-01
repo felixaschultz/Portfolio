@@ -1,4 +1,4 @@
-export const Recommendations = [
+export const recom = [
     {
         recommend: `Felix is a skilled frontend developer who demonstrated capabilities and initiative during his internship in Danfoss where he worked on several projects related to building IoT services. 
         I can only recommend Felix as an engaged and self-driven colleague!`,

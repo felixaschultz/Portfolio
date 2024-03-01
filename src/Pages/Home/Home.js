@@ -6,7 +6,7 @@ import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
-import { Recommendations } from "../../recommendations/Recommendations";
+import Recommendations from "../../components/Recommendations";
 import responsive from "../../statics/assets/responsive.svg";
 import me from "../../statics/assets/me.jpg";
 
@@ -75,24 +75,7 @@ export default function Home(props) {
                         <img width="150px" height="150px" className="profilePicture" src={me} />
                     </section>
                 </section>
-                <section className="ppad">
-                    <div className="content">
-                        <h2>{local[location].pages.homepage.recommendations.title}</h2>
-                        <div className="grid">
-                        {
-                            Recommendations.slice(0, 3).map((item, key) => {
-                                return (
-                                    <div key={key} className="recommendations__item">
-                                        <p>"{item.recommend}"</p>
-                                        <p>-{item.author}</p>
-                                    </div>
-
-                                )
-                            })
-                        }
-                        </div>
-                    </div>
-                </section>
+                <Recommendations />
             </main>
             {
                 (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null

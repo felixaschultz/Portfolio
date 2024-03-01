@@ -1,0 +1,24 @@
+.recommendations__item{
+    padding: 25px;
+}
+
+.recommendation{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background-color: var(--headerColor);
+    border-radius: 15px;
+    position: relative;
+}
+
+.recommendation::before{
+    display: block;
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: -25px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 90px;
+}

@@ -2,7 +2,7 @@ const { useState, useEffect, useRef, useContext } = React;
 import { recom } from "../../recommendations/Recommendations";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
-
+import "./Style.css";
 
 export default function Recommendations() {
     const [location] = useContext(LocationContext);
@@ -15,7 +15,7 @@ export default function Recommendations() {
                     recom.slice(0, 3).map((item, key) => {
                         return (
                             <div key={key} className="recommendations__item">
-                                <p>"{item.recommend}"</p>
+                                <p className="recommendation">{item.recommend}</p>
                                 <p>-{item.author}</p>
                             </div>
 

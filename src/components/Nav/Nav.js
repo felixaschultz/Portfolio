@@ -1,4 +1,5 @@
 const Link = window.ReactRouterDOM.Link;
+const NavLink = window.ReactRouterDOM.NavLink;
 const useLocation = window.ReactRouterDOM.useLocation;
 const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Nav.css";
@@ -11,7 +12,6 @@ export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);
     const locationPath = useLocation();
     const [showLanguage, setShowLanguage] = useState(false);
-    const currentLocation = "/" + locationPath.pathname.split("/")[1];
 
     const openLanguage = () => {
         setShowLanguage(!showLanguage);
@@ -24,7 +24,11 @@ export default function Nav() {
                 {
                     local[location].navigation.links.map((link, key) => {
                         return (
-                            <Link key={key} className={`navigation__link ${(currentLocation == link.path || currentLocation.indexOf(link.path) > -1) ? "--active" : null} `} to={link.path}>{link.name}</Link>
+                            <NavLink key={key} style={({ isActive }) => ({
+                                color: isActive
+                                    ? "greenyellow"
+                                    : "white",
+                            })} className={`navigation__link`} to={link.path}>{link.name}</NavLink>
                         )
                     })
                 }

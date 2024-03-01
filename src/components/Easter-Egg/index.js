@@ -127,7 +127,7 @@ export default function EasterEgg(props) {
         document.querySelector("body").style.transform = "";
     })
 
-    window.addEventListener("load", () => {
+    /* window.addEventListener("load", () => {
       const pushDown = document.querySelector(".pushDown");
       const header = document.querySelector(".main-header");
       console.log(pushDown, header);
@@ -135,5 +135,5 @@ export default function EasterEgg(props) {
         console.log("clicked", pushDown);
         pushDown.style.transform = "translateY(100%)";
       });
-    });
+    }); */
 }

@@ -17,10 +17,30 @@ export const Projects = [
                 <p>I slutning af 2019 overtog jeg opgaven som webmaster hos cykelfærgen Flensborg fjord. Jeg besluttede mig at for udvikle den nye hjemmeside i PHP, det giver mig muligheden af at have filerne for de forskellige sprog dansk, tysk og engelsk.</p>
             </section>
             <section class="content-ppad">
+                <h2>Hvorfor valgte jeg PHP</h2>
+                <p>Det gjorte jeg på baggrund af at jeg gerne ville have en dynamisk hjemmeside. Som kunne render indhold baserende på sprog valg og hvor jeg kunne inkludere andre filer som der kan have specific indhold.
+                    Jeg ville også gerne have at hjemmesiden skulle kunne hente data fra en database, som jeg kunne opdatere og vedligeholde, sammentidligt skulle det indhold, som f.eks. deres sejlplan, Server-Side renderes for
+                    SEO optimereing.
+                </p>
+            </section>
+            <section class="content-ppad">
+                <h2>Sejlplan Funktion</h2>
+                <p>Det senest optimering som jeg fik udviklet på hjemmesiden, er et nyt design for sejlplanen. Jeg fik om struktueret databasen nyt for at kunne håndteren forskellige sejlplaner, både og havne.
+                    <br>
+                    Jeg fik også udviklet en ny funktion som gør det muligt at hente sejlplanen for en specifik rute, og vise den på hjemmesiden. Ved hentning af sejlplanen, laver jeg flere INNER JOINs på databasen, for at kunne hente alle de nødvendige informationer, så som færgen på ruten, ruten, gyldigheden af sejlplanen samt alle havne med ens tilsvarende afgang.   
+                </p>
+                <h2>Database Struktur</h2>
+                <p>
+                    Strukturen på databasen er sådan at jeg har en tabel for havne, en tabel for sejlplanen og en tabel for ruter. Med denne struktur kan jeg nemt og hurtigt tilføje nye sejlplaner og havne.
+                    Sejlplanen tabellen indeholder alle afgange og ankomster for alle ruter, ruten kollonden har en foreign key som peger på havne tabellen´s.
+                </p>
+            </section>
+            <section class="content-ppad">
                 <h2>Reklame video</h2>
                 <p>Jeg fik produceret en lille reklamevideo for cykelfærgen. Med denne klip er intentionen at bygge og skabe mere opmærksomhed.</p>
                 <video src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4" />
-            </section>`,
+            </section>
+            `,
             en: ""
         },
         short_description: {

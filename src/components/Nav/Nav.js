@@ -23,7 +23,6 @@ export default function Nav() {
             <nav className="navigation">
                 {
                     local[location].navigation.links.map((link, key) => {
-                        console.log(link.path, currentLocation, currentLocation.indexOf(link.path));
                         return (
                             <Link key={key} className={`navigation__link ${(currentLocation == link.path || currentLocation.indexOf(link.path) > -1) ? "--active" : null} `} to={link.path}>{link.name}</Link>
                         )

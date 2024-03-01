@@ -60,6 +60,7 @@
     position: absolute;
     height: 1px;
     inset: -50% 0%;
+    transform: scaleX(.7);
     background-color: #fff;
 }
 

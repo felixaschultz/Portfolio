@@ -58,6 +58,7 @@ export default function Home(props) {
                                             <img src={project.screenshot ?? responsive} />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
+                                            <p>Tech: {project.technology}</p>
                                         </Link>
                                     </>
                                 )

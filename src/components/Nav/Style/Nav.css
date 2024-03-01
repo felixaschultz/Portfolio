@@ -28,7 +28,14 @@
     border: none;
     background-color: transparent;
     color: #fff;
+    overflow: hidden;
     cursor: pointer;
+    position: relative;
+}
+
+.language .locationPicker:hover{
+    background-color: #fff;
+    color: var(--headerColor);
 }
 
 .header-grid{
@@ -41,8 +48,10 @@
 
 .language{
     position: absolute;
-    top: 62px;
+    top: 76px;
     background-color: var(--headerColor);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 10px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;

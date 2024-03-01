@@ -1,0 +1,12 @@
+.icon{
+    display: block;
+    width: 30px;
+    height: 30px; 
+}
+
+.icon::after{
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+}

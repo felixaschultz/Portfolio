@@ -102,6 +102,13 @@ body{
     transition: all .5s ease-out;
 }
 
+.flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .grid{
         grid-template-columns: 1fr;

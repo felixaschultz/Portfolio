@@ -162,6 +162,10 @@
     padding: 100px 0;
 }
 
+.photography .grid{
+    place-items: center;
+}
+
 .projects{
     padding: 0;
     margin-top: -70px;

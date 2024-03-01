@@ -4,6 +4,7 @@ import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of
 import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
 import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
+import dbStructrue from "./timetable/db-structure.png";
 
 export const Projects = [
     {
@@ -29,6 +30,82 @@ export const Projects = [
                     <br>
                     Jeg fik også udviklet en ny funktion som gør det muligt at hente sejlplanen for en specifik rute, og vise den på hjemmesiden. Ved hentning af sejlplanen, laver jeg flere INNER JOINs på databasen, for at kunne hente alle de nødvendige informationer, så som færgen på ruten, ruten, gyldigheden af sejlplanen samt alle havne med ens tilsvarende afgang.   
                 </p>
+    <code class="code-editor">
+    <pre>
+    &lt;?php
+        function Timetable($route){
+            $title = "Sejlplan";
+            $currentDate = date("Y-m-d");
+            /* Getting the route & the stops */
+            $sql = "SELECT 
+                fs.route_id,
+                fn.ferry_name,
+                ferry_route.days,
+                fs.departure_harbor, 
+                fs.arrival_harbor,
+                ferry_route.id AS ferryRouteId,
+                ferry_route.active_from AS active_from,
+                ferry_route.active_to AS active_to,
+                ferry_route.name AS routeName,
+                departure_harbor.name AS departure_harborName,
+                arrival_harbor.name AS arrival_harborName,
+                fs.id AS fs_id,
+                GROUP_CONCAT(fs.departure_time ORDER BY fs.departure_time SEPARATOR ', ') AS departure_times,
+                GROUP_CONCAT(fs.arrival_time ORDER BY fs.arrival_time SEPARATOR ', ') AS arrival_times,
+                GROUP_CONCAT(route_active_date.active_from ORDER BY route_active_date.active_from SEPARATOR ', ') AS active_date_from,
+                GROUP_CONCAT(route_active_date.active_to ORDER BY route_active_date.active_to SEPARATOR ', ') AS active_date_to,
+                price.price_dkk AS price_dkk,
+                price.price_euro AS price_euro
+            FROM 
+                timetable fs
+            INNER JOIN
+                routes ferry_route ON fs.route_id = ferry_route.id
+            INNER JOIN
+                ferries fn ON ferry_route.ferry = fn.id
+            INNER JOIN
+                harbor departure_harbor ON (fs.departure_harbor = departure_harbor.id)
+            INNER JOIN
+                harbor arrival_harbor ON (fs.arrival_harbor = arrival_harbor.id)
+            INNER JOIN 
+                route_active_date ON ferry_route.id = route_active_date.route_id
+            INNER JOIN
+                ticket_prices price ON ferry_route.id = price.route_id
+            WHERE
+                ferry_route.display_to >= '$currentDate'
+            AND
+                ferry_route.display_from <= '$currentDate'
+            AND
+                ferry_route.name = '$route'
+            OR
+                ferry_route.id = '$route'
+            AND
+                ferry_route.display_to >= '$currentDate'
+            AND
+                ferry_route.display_from <= '$currentDate'
+            GROUP BY
+                fs.departure_harbor, 
+                fs.arrival_harbor
+            ORDER BY
+                departure_times,
+                departure_harborName
+            DESC";
+            ...
+            echo '
+            &lt;section&gt;
+                &lt;h2 class="timetable-heading"&gt;'.$title.'&lt;/h2&gt;
+            &lt;/section&gt;
+            ';
+
+        }
+    ?&gt;
+    </pre>
+    </code>
+                <h3>ER-Diagram</h3>
+                <img src='${dbStructrue}' />
+                <h3>Forbedring til SQL selction</h3>
+                <p>For at forbedre koden og SQL selction af en rute kunne jeg lave et view i databasen og lave en SELECT på dette view.</p>
+            </section>
+            <section class="content-ppad">
                 <h2>Database Struktur</h2>
                 <p>
                     Strukturen på databasen er sådan at jeg har en tabel for havne, en tabel for sejlplanen og en tabel for ruter. Med denne struktur kan jeg nemt og hurtigt tilføje nye sejlplaner og havne.

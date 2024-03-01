@@ -28,7 +28,7 @@ export default function ProjectsPage(props) {
                             Projects.map((project, key) => {
                                 return (
                                     <>
-                                        <Link to={"/project/" + project.id} key={key} className="frontpage-projects" onClick={
+                                        <a href={"/project/" + project.id} key={key} className="frontpage-projects" onClick={
                                             (e) => {
                                                 (window.location.pathname != "/projects") ?? e.preventDefault(), setShowPopup({hideShow: !showPopup.hideShow, item: "Project"})
                                             }
@@ -37,7 +37,7 @@ export default function ProjectsPage(props) {
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
                                             <p>Tech: {project.technology}</p>
-                                        </Link>
+                                        </a>
                                     </>
                                 )
                             })

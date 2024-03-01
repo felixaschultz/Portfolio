@@ -33,7 +33,7 @@ export default function Project(props){
                                             {
                                                 (project.github != null) ? <a className="showMore" href={project.github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
                                             }
-                                            <Link className="showMore" to={"/project/" + project.id}>Læs mere</Link>
+                                            <a className="showMore" href={"/project/" + project.id}>Læs mere</a>
                                         </section>
                                     </>
                                 )

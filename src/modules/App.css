@@ -98,6 +98,10 @@ body{
     margin: auto;
 }
 
+.pushDown{
+    transition: all .5s ease-out;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .grid{
         grid-template-columns: 1fr;

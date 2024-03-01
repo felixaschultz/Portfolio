@@ -78,6 +78,7 @@ function fireWorks(){
 
 export default function EasterEgg(props) {
     let word = "";
+    const threeD = "";
 
     window.addEventListener("keydown", (e) => {
         if (e.key === "Backspace") {
@@ -125,4 +126,14 @@ export default function EasterEgg(props) {
         document.querySelector("body").style.transformOrigin = "";
         document.querySelector("body").style.transform = "";
     })
+
+    window.addEventListener("load", () => {
+      const pushDown = document.querySelector(".pushDown");
+      const header = document.querySelector(".main-header");
+      console.log(pushDown, header);
+      header.addEventListener("click", () => {
+        console.log("clicked", pushDown);
+        pushDown.style.transform = "translateY(100%)";
+      });
+    });
 }

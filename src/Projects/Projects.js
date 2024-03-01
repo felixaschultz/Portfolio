@@ -100,7 +100,7 @@ export const Projects = [
     ?&gt;
     </pre>
     </code>
-                <h3>ER-Diagram</h3>
+                <h3>ER-Diagram til Sejlplanen</h3>
                 <img src='${dbStructrue}' />
                 <h3>Forbedring til SQL selction</h3>
                 <p>For at forbedre koden og SQL selction af en rute kunne jeg lave et view i databasen og lave en SELECT på dette view.</p>

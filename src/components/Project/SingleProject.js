@@ -59,7 +59,7 @@ export default function SingleProject(props){
                     </section>
                     <img src={project[0].screenshot} />
                 </section>
-                <section className="belowthfold">
+                <section className="belowthfold project-page">
                     <section className="content" dangerouslySetInnerHTML={{__html: project[0].description[location]}}></section>
                 </section>
             </main>

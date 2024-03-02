@@ -34,6 +34,12 @@
     color: #fff;
 }
 
+.github-project-page{
+    width: 50px;
+    filter: invert(1);
+    margin: 0px 10px;
+}
+
 @media screen and (min-width: 340px) and (max-width: 900px){
     .project-infos{
         height: auto;

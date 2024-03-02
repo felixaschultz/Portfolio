@@ -66,6 +66,7 @@ video{
     font-size: 2em;
     font-weight: 300;
     margin: 20px 0px;
+    width: max-content;
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){

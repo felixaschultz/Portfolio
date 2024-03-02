@@ -48,19 +48,21 @@ export default function SingleProject(props){
                         <h1 className="landingPage__heading">{project[0].name}</h1>
                         <h3>Tech: {project[0].technology}</h3>
                         <p>{project[0].short_description[location]}</p>
-                        <div>
+                        <div className="flex">
                         {
                             (project[0].url != null) ? <a className="cta" href={project[0].url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
                         }
                         {
-                            (project[0].github != null) ? <a className="showMore" href={project[0].github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
+                            (project[0].github != null) ? <a className="showMore" href={project[0].github} target="_blank">
+                                <img className="github-project-page" src="https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png" />
+                            </a> : null
                         }
                         </div>
                     </section>
                     <img src={project[0].screenshot} />
                 </section>
                 <section className="belowthfold project-page">
-                    <section className="content" dangerouslySetInnerHTML={{__html: project[0].description[location]}}></section>
+                    <article className="content" dangerouslySetInnerHTML={{__html: project[0].description[location]}}></article>
                 </section>
             </main>
         </>

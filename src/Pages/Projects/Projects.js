@@ -23,7 +23,7 @@ export default function ProjectsPage(props) {
                     </section>
                 </section>
                 <section className="belowthfold">
-                    <section className="content project-grid">
+                    <article className="content project-grid">
                     {
                             Projects.map((project, key) => {
                                 return (
@@ -42,7 +42,7 @@ export default function ProjectsPage(props) {
                                 )
                             })
                         }
-                    </section>
+                    </article>
                 </section>
             </main>
             {

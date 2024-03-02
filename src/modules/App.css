@@ -106,7 +106,12 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
 
+.cta-container{
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){

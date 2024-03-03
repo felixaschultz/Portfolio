@@ -27,6 +27,11 @@ body{
     color: #fff;
     scroll-behavior: smooth;
     transition: all .2s ease-in-out;
+    
+}
+
+p{
+    line-height: 1.6em;
 }
 
 .main-content{

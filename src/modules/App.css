@@ -120,7 +120,7 @@ p{
 }
 
 @media screen and (min-width: 340px) and (max-width: 900px){
-    .grid{
+    .grid, .grid-4{
         grid-template-columns: 1fr;
     }
 }

@@ -12,7 +12,7 @@ export default function Recommendations() {
                 <h2>{local[location].pages.homepage.recommendations.title}</h2>
                 <div className="grid">
                 {
-                    recom.slice(0, 6).map((item, key) => {
+                    recom.slice(0, 9).map((item, key) => {
                         return (
                             <div key={key} className="recommendations__item">
                                 <p className="recommendation">{item.recommend}</p>

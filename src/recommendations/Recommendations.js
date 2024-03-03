@@ -25,5 +25,9 @@ export const recom = [
     {
         recommend: `Really professional and fast work. I hired Felix, to maintain and improve my website and I am very happy with my decision as I´m a small business owner and can now focus more on my daily business.`,
         author: "Marvin Fox"
+    },
+    {
+        recommend: `Felix har arbejdet med at designe fire roll up’s på 0,85x2 meter til at præsentere Farmer’s Window (Digi-Eye) på Årets Business Event 2019 i Sønderborg, samt business cards til mig som grundlægger ink. logoet som ikon. Han har vist en ualmindelig fild og dedikation, særligt da deadlines for trykt nærmede sig og påkrævede meget sent nattearbejde.`,
+        author: "Philip Staib, Adm. dir. Digi-Eye ApS"
     }
 ]

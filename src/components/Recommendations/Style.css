@@ -37,3 +37,7 @@
     font-size: 30px;
     font-family: 'Courier New', Courier, monospace;
 }
+
+.grid-4{
+    grid-template-columns: repeat(2, 1fr);
+}

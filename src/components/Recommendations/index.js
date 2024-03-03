@@ -10,7 +10,7 @@ export default function Recommendations() {
         <section className="ppad">
             <div className="content">
                 <h2>{local[location].pages.homepage.recommendations.title}</h2>
-                <div className="grid">
+                <div className="grid grid-4">
                 {
                     recom.slice(0, 9).map((item, key) => {
                         return (

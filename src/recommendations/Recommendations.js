@@ -29,5 +29,9 @@ export const recom = [
     {
         recommend: `Felix har arbejdet med at designe fire roll up’s på 0,85x2 meter til at præsentere Farmer’s Window (Digi-Eye) på Årets Business Event 2019 i Sønderborg, samt business cards til mig som grundlægger ink. logoet som ikon. Han har vist en ualmindelig fild og dedikation, særligt da deadlines for trykt nærmede sig og påkrævede meget sent nattearbejde.`,
         author: "Philip Staib, Adm. dir. - Digi-Eye ApS"
+    },
+    {
+        recommend: `I can recommend Felix for propper work, he is flexibel and trustful.`,
+        author: "Gerhard Jacobsen, Formand - Foreningnen Cykelfaergens Venner"
     }
 ]

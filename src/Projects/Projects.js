@@ -17,6 +17,10 @@ export const Projects = [
             <section class="content-ppad">
                 <h2>Beskrivelse</h2>
                 <p>I slutning af 2019 overtog jeg opgaven som webmaster hos cykelfærgen Flensborg fjord. Jeg besluttede mig at for udvikle den nye hjemmeside i PHP, det giver mig muligheden af at have filerne for de forskellige sprog dansk, tysk og engelsk.</p>
+                <p>Designet skulle være moderne, responsive samt skabe mere </p>
+            </section>
+            <section>
+                <p>Borgere på hhv Broagerland og på tysk side har de seneste 30 år skiftevis forsøgt at genoplive drømmen om færgesejlads på Flensborg Fjord, uden dog at kunne trænge helt igennem med deres projekt.</p>
             </section>
             <section class="content-ppad">
                 <h2>Hvorfor valgte jeg PHP</h2>
@@ -27,80 +31,82 @@ export const Projects = [
             </section>
             <section class="content-ppad">
                 <h2>Sejlplan Funktion</h2>
-                <p>Det senest optimering som jeg fik udviklet på hjemmesiden, er et nyt design for sejlplanen. Jeg fik om struktueret databasen nyt for at kunne håndteren forskellige sejlplaner, både og havne.
-                    <br>
-                    Jeg fik også udviklet en ny funktion som gør det muligt at hente sejlplanen for en specifik rute, og vise den på hjemmesiden. Ved hentning af sejlplanen, laver jeg flere INNER JOINs på databasen, for at kunne hente alle de nødvendige informationer, så som færgen på ruten, ruten, gyldigheden af sejlplanen samt alle havne med ens tilsvarende afgang.   
-                </p>
-    <code class="code-editor">
-    <pre>
-    &lt;?php
-        function Timetable($route){
-            $title = "Sejlplan";
-            $currentDate = date("Y-m-d");
-            /* Getting the route & the stops */
-            $sql = "SELECT 
-                fs.route_id,
-                fn.ferry_name,
-                ferry_route.days,
-                fs.departure_harbor, 
-                fs.arrival_harbor,
-                ferry_route.id AS ferryRouteId,
-                ferry_route.active_from AS active_from,
-                ferry_route.active_to AS active_to,
-                ferry_route.name AS routeName,
-                departure_harbor.name AS departure_harborName,
-                arrival_harbor.name AS arrival_harborName,
-                fs.id AS fs_id,
-                GROUP_CONCAT(fs.departure_time ORDER BY fs.departure_time SEPARATOR ', ') AS departure_times,
-                GROUP_CONCAT(fs.arrival_time ORDER BY fs.arrival_time SEPARATOR ', ') AS arrival_times,
-                GROUP_CONCAT(route_active_date.active_from ORDER BY route_active_date.active_from SEPARATOR ', ') AS active_date_from,
-                GROUP_CONCAT(route_active_date.active_to ORDER BY route_active_date.active_to SEPARATOR ', ') AS active_date_to,
-                price.price_dkk AS price_dkk,
-                price.price_euro AS price_euro
-            FROM 
-                timetable fs
-            INNER JOIN
-                routes ferry_route ON fs.route_id = ferry_route.id
-            INNER JOIN
-                ferries fn ON ferry_route.ferry = fn.id
-            INNER JOIN
-                harbor departure_harbor ON (fs.departure_harbor = departure_harbor.id)
-            INNER JOIN
-                harbor arrival_harbor ON (fs.arrival_harbor = arrival_harbor.id)
-            INNER JOIN 
-                route_active_date ON ferry_route.id = route_active_date.route_id
-            INNER JOIN
-                ticket_prices price ON ferry_route.id = price.route_id
-            WHERE
-                ferry_route.display_to >= '$currentDate'
-            AND
-                ferry_route.display_from <= '$currentDate'
-            AND
-                ferry_route.name = '$route'
-            OR
-                ferry_route.id = '$route'
-            AND
-                ferry_route.display_to >= '$currentDate'
-            AND
-                ferry_route.display_from <= '$currentDate'
-            GROUP BY
-                fs.departure_harbor, 
-                fs.arrival_harbor
-            ORDER BY
-                departure_times,
-                departure_harborName
-            DESC";
-            ...
-            echo '
-            &lt;section&gt;
-                &lt;h2 class="timetable-heading"&gt;'.$title.'&lt;/h2&gt;
-            &lt;/section&gt;
-            ';
+                <section>
+                    <p>Det senest optimering som jeg fik udviklet på hjemmesiden, er et nyt design for sejlplanen. Jeg fik om struktueret databasen nyt for at kunne håndteren forskellige sejlplaner, både og havne.
+                        <br>
+                        Jeg fik også udviklet en ny funktion som gør det muligt at hente sejlplanen for en specifik rute, og vise den på hjemmesiden. Ved hentning af sejlplanen, laver jeg flere INNER JOINs på databasen, for at kunne hente alle de nødvendige informationer, så som færgen på ruten, ruten, gyldigheden af sejlplanen samt alle havne med ens tilsvarende afgang.   
+                    </p>
+<code class="code-editor">
+<pre>
+&lt;?php
+    function Timetable($route){
+        $title = "Sejlplan";
+        $currentDate = date("Y-m-d");
+        /* Getting the route & the stops */
+        $sql = "SELECT 
+            fs.route_id,
+            fn.ferry_name,
+            ferry_route.days,
+            fs.departure_harbor, 
+            fs.arrival_harbor,
+            ferry_route.id AS ferryRouteId,
+            ferry_route.active_from AS active_from,
+            ferry_route.active_to AS active_to,
+            ferry_route.name AS routeName,
+            departure_harbor.name AS departure_harborName,
+            arrival_harbor.name AS arrival_harborName,
+            fs.id AS fs_id,
+            GROUP_CONCAT(fs.departure_time ORDER BY fs.departure_time SEPARATOR ', ') AS departure_times,
+            GROUP_CONCAT(fs.arrival_time ORDER BY fs.arrival_time SEPARATOR ', ') AS arrival_times,
+            GROUP_CONCAT(route_active_date.active_from ORDER BY route_active_date.active_from SEPARATOR ', ') AS active_date_from,
+            GROUP_CONCAT(route_active_date.active_to ORDER BY route_active_date.active_to SEPARATOR ', ') AS active_date_to,
+            price.price_dkk AS price_dkk,
+            price.price_euro AS price_euro
+        FROM 
+            timetable fs
+        INNER JOIN
+            routes ferry_route ON fs.route_id = ferry_route.id
+        INNER JOIN
+            ferries fn ON ferry_route.ferry = fn.id
+        INNER JOIN
+            harbor departure_harbor ON (fs.departure_harbor = departure_harbor.id)
+        INNER JOIN
+            harbor arrival_harbor ON (fs.arrival_harbor = arrival_harbor.id)
+        INNER JOIN 
+            route_active_date ON ferry_route.id = route_active_date.route_id
+        INNER JOIN
+            ticket_prices price ON ferry_route.id = price.route_id
+        WHERE
+            ferry_route.display_to >= '$currentDate'
+        AND
+            ferry_route.display_from <= '$currentDate'
+        AND
+            ferry_route.name = '$route'
+        OR
+            ferry_route.id = '$route'
+        AND
+            ferry_route.display_to >= '$currentDate'
+        AND
+            ferry_route.display_from <= '$currentDate'
+        GROUP BY
+            fs.departure_harbor, 
+            fs.arrival_harbor
+        ORDER BY
+            departure_times,
+            departure_harborName
+        DESC";
+        ...
+        echo '
+        &lt;section&gt;
+            &lt;h2 class="timetable-heading"&gt;'.$title.'&lt;/h2&gt;
+        &lt;/section&gt;
+        ';
 
-        }
-    ?&gt;
-    </pre>
-    </code>
+    }
+?&gt;
+</pre>
+</code>
+                </section>
                 <h3>ER-Diagram til Sejlplanen</h3>
                 <img src='${dbStructrue}' />
                 <h3>Forbedring til SQL selction</h3>
@@ -591,5 +597,22 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://customerupload.balticfinance.com",
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
+    },
+    {
+        id: "event-planer",
+        name: "Event Planer",
+        screenshot: null,
+        description: {
+            de: "",
+            da: `
+                <section class="content-ppad">
+                    <p>Under mit studie som Multimediedesigner, fik jeg muligheden at udvikle en Event Planer for en fiktiv kunde. Jeg valgte at udvikle en Event Planer for en fiktiv kunde som skulle have en App
+                </section>
+            `
+        },
+        github: "https://github.com/felixaschultz/eventplaner",
+        url: "https://event.inta.dev",
+        type: "Web Development",
+        technology: "Remix, ReactJS, MongoDB, Tailwind"
     }
 ]

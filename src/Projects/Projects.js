@@ -600,8 +600,13 @@ export default function useFetch(updateInterval, url, method, headers, body, han
     },
     {
         id: "event-planer",
-        name: "Event Planer",
+        name: "Event Planner",
         screenshot: null,
+        short_description: {
+            de: "",
+            da: "",
+            en: ""
+        },
         description: {
             de: "",
             da: `

@@ -32,7 +32,7 @@ export default function Nav() {
                                 {(showDropdown) ? <section className="dropdownContent">
                                     {
                                         link.items.map((item, key) => {
-                                            return <a key={key} href={item.path}>{item.name}</a>
+                                            return <a key={key} href={item.path} target="_blank">{item.name}</a>
                                         })
                                     }
                                 </section> : null}

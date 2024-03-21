@@ -12,6 +12,7 @@ export default function Nav() {
     const [location, setLocation] = useContext(LocationContext);
     const locationPath = useLocation();
     const [showLanguage, setShowLanguage] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const openLanguage = () => {
         setShowLanguage(!showLanguage);
@@ -25,14 +26,16 @@ export default function Nav() {
                     local[location].navigation.links.map((link, key) => {
                         return (
                             (link.type === "dropdown") ? <section key={key} className="dropdown">
-                                <button className="dropdownButton">{link.name}</button>
-                                <section className="dropdownContent">
+                                <button className="dropdownButton" onClick={() => {
+                                    setShowDropdown(!showDropdown)
+                                }}>{link.name}</button>
+                                {(showDropdown) ? <section className="dropdownContent">
                                     {
                                         link.items.map((item, key) => {
                                             return <a key={key} href={item.path}>{item.name}</a>
                                         })
                                     }
-                                </section>
+                                </section> : null}
                             </section> : <NavLink key={key} style={({isActive})=>({
                                 borderBottom: isActive ? "#15b0ab solid 2px": '',
                                 opacity: isActive ? 1 : ""

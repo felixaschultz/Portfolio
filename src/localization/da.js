@@ -63,12 +63,16 @@ export default {
                 name: "Websites",
                 items: [
                     {
-                        name: "Devhelp",
+                        name: "devhelp.dk",
                         path: "https://www.devhelp.dk"
                     },
                     {
                         name: "Intastellar Solutions, International",
                         path: "https://www.intastellarsolutions.com"
+                    },
+                    {
+                        name: "Intastellar Consents Solutions",
+                        path: "https://www.intastellarconsents.com"
                     }
                 ],
                 type: "dropdown"

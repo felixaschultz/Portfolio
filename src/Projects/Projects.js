@@ -611,7 +611,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
             de: "",
             da: `
                 <section class="content-ppad">
-                    <p>Under mit studie som Multimediedesigner, fik jeg muligheden at udvikle en Event Planer for en fiktiv kunde. Jeg valgte at udvikle en Event Planer for en fiktiv kunde som skulle have en App
+                    <h2>Beskrivelse</h2>
+                    <p>Som mit 2 Semester eksamensprojekt på Professionsbachelor i Webudvikling var opgaven at udvikle en Webapp hvor man kan planlægge et projekt.</p>
                 </section>
             `
         },

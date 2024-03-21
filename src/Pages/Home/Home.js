@@ -34,7 +34,7 @@ export default function Home(props) {
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h1 className="landingPage__heading">&lt;Felix A. Schultz /&gt;</h1>
-                        <h2>Frontend developer | Photographer</h2>
+                        <h2>Fullstack developer | Photographer</h2>
                     </section>
                     <section className="landingPage__content landingPage__right landingPage--TopRight">
                         <section className="landingPage__rightContent">

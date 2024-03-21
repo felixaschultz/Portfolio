@@ -59,10 +59,20 @@ export default {
                 name: "Projekter",
                 path: "/projects"
             },
-            /* {
-                name: "Fotografi",
-                path: "/fotografi"
-            } */
+            {
+                name: "Websites",
+                items: [
+                    {
+                        name: "Devhelp",
+                        path: "https://www.devhelp.dk"
+                    },
+                    {
+                        name: "Intastellar Solutions, International",
+                        path: "https://www.intastellarsolutions.com"
+                    }
+                ],
+                type: "dropdown"
+            }
         ]
     }
 }

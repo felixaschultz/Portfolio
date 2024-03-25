@@ -578,12 +578,168 @@ export default function useFetch(updateInterval, url, method, headers, body, han
                         <li>Uploaded skulle først ske når skadenummeret er i rigtig format</li>
                         <li>Send filerne videre til balticfinance</li>
                         <li>Send en bekræftelse til brugeren</li>
+                        <li>Upload en kopi til nextcloud</li>
                     </ul>
                 </section>
                 <section class="content-ppad">
                     <h2>Formularen</h2>
-                    <p>Formularen blev udviklet i PHP og HTML, hvor jeg benyttede mig af PHP til at validere og håndtere upload af filer.</p>
-                    <p>Formularen blev udviklet med en simpel design, som skulle være nem at bruge for brugeren.</p>
+                    <p>Formularen blev udviklet i PHP og HTML, hvor jeg benyttede mig af PHP til at validere og håndtere upload af filer. I projekt beskrivelsen fik jeg udover kravne også et design som jeg tog udgangspunktet i.</p>
+                    <p>Jeg fik started med at bygge selve formularet i HTML & CSS, da det var noget der tog kortest tid for mig at bygge. Derefter bygyndte jeg på selve upload funktionalitet.</p>
+                </section>
+                <section class="content-ppad">
+                    <h3>Upload funktion</h3>
+                    <p>Upload funktionen blev udviklet i PHP, hvor jeg benyttede mig af PHP´s indbygget funktioner til at håndtere upload af filer. PHP´s indbygget funktioner er:</p>
+                    <ul>
+                        <li>move_uploaded_file()</li>
+                        <li>$_FILES</li>
+                        <li>$_POST</li>
+                    </ul>
+                    <p>Der blev implementeret nogle checks for at være sikker på at være sikker på at filerne og brugeren som uploader dokumenterne, er en kunde af balticfinance.</p>
+                    <code class="code-editor">
+<pre>
+&lt;?php
+    // Check om requesten kom fra en POST request og formularet
+    if(!isset($_POST["verify_key"]) || !isset($_SESSION["verify_key"]) || $_SESSION["verify_key"] != $_POST["verify_key"]){
+        header("HTTP/1.1 401 Verificerings kode stemmer ikke overens!<br>Session: ".$_SESSION["verify_key"]."<br>Verify: ".$_POST["verify_key"]);
+        die();
+    }
+    // Check om Password matcher
+    if(!in_array($_POST["password"], $_ENV["PASSWORD"])){
+        header("HTTP/1.1 401 Forkert kodeord! ".$_POST["password"]);
+        die();
+    }
+
+    for($i=0;$i<count($_FILES['file']['name']);$i++) {
+        $file_name = $_FILES['file']['name'][$i];
+        $file_size =$_FILES['file']['size'][$i];
+        $file_tmp =$_FILES['file']['tmp_name'][$i];
+        $file_type=$_FILES['file']['type'][$i];   
+        $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+        array_push($data, $file_name);
+
+        if(in_array($file_ext,$allowed_types)=== false){
+            header("HTTP/1.1 415 Filtype er ikke tilladt. Vælg venligst mellem: JPEG, PNG, PDF, ZIP, GIF eller WEBP fil");
+        }
+
+        if($file_size > 15000000){
+            header("HTTP/1.1 403 En eller flere filer er for stort. Maks 15MB");
+        }
+
+        
+    }
+
+    if(empty($errors)){
+        $folder_name = date("dmY", time()) . "_" . date("H:i", time()) . "_" . $calim_no . "/";
+        if (!file_exists($folder_name) && $allowed) {
+            mkdir($folder_name, 0777, true);
+
+            $json_array = array (
+                "claim_no" => $calim_no,
+                "file" => $_FILES['file']['name'],
+                "name" => $_POST["name"],
+                "email" => $_POST["email"],
+                "phone" => $_POST["phone"],
+                "who_are_you" => $_POST["who_are_you"],
+                "message" => $_POST["message"]
+            );
+
+            $json = json_encode($json_array);
+            file_put_contents($folder_name . "/details.json", $json);
+</pre>
+
+                    </code>
+                    <p>Der laves en details.json fil i en mappe med et case nummer, dato, og tid som indholder</p>
+                    <ul>
+                        <li>Navn</li>
+                        <li>Email</li>
+                        <li>Case Nummer</li>
+                        <li>Telefon nummer</li>
+                        <li>Meddelse</li>
+                        <li>Indsender</li>
+                    </ul>
+                    <code class="code-editor">
+<pre>
+    if(empty($errors)){
+        $folder_name = date("dmY", time()) . "_" . date("H:i", time()) . "_" . $calim_no . "/";
+        if (!file_exists($folder_name) && $allowed) {
+            mkdir($folder_name, 0777, true);
+
+            $json_array = array (
+                "claim_no" => $calim_no,
+                "file" => $_FILES['file']['name'],
+                "name" => $_POST["name"],
+                "email" => $_POST["email"],
+                "phone" => $_POST["phone"],
+                "who_are_you" => $_POST["who_are_you"],
+                "message" => $_POST["message"]
+            );
+
+            $json = json_encode($json_array);
+            file_put_contents($folder_name . "/details.json", $json);
+
+            echo count($_FILES['file']['name']);
+            echo $_FILES['file']['name'];
+
+            for($i=0;$i$lt;count($_FILES['file']['name']);$i++) {
+                echo "hej";
+                $file_name = $_FILES['file']['name'][$i];
+                $file_size =$_FILES['file']['size'][$i];
+                $file_tmp =$_FILES['file']['tmp_name'][$i];
+                $file_type=$_FILES['file']['type'][$i];   
+                $movedFiles = move_uploaded_file($file_tmp,$folder_name.$file_name);
+            }
+        }else{
+            $errors[] = "Something went wrong with creating the folder: " . $folder_name;
+        }
+    }else{
+        echo "Hej";
+        print_r($errors);
+    }
+</pre>
+                    </code>
+                    <p>Disse informationer bliver sammentidligt også sendt til nextcloud som et backup. For at kunne sende og uploade alt til nextcloud benytter jeg mig af cURL.</p>
+                    <p></p>
+                    <code class="code-editor">
+<pre>
+if($movedFiles){
+    $ch = curl_init($webDAVurl . '/' . $folder_name);
+    curl_setopt($ch, CURLOPT_USERPWD, $webDAVuser . ':' . $webDAVpassword);
+    curl_setopt($ch,CURLOPT_HTTPHEADER, array('Authorization: Basic '. base64_encode($webDAVuser . ':' . $webDAVpassword)));
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'MKCOL');
+    curl_exec($ch);
+    
+    $dir = scandir($folder_name);
+    foreach($dir as $file){
+        if(is_file($folder_name.$file)){
+
+            $file_path = $folder_name . $file;
+            $url = $webDAVurl . $folder_name . str_replace(" ", "-", $file);
+            $username = $webDAVuser;
+            $password = $webDAVpassword;
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_USERPWD, $webDAVuser . ':' . $webDAVpassword);
+            curl_setopt($ch,CURLOPT_HTTPHEADER, array('Authorization: Basic '. base64_encode($webDAVuser . ':' . $webDAVpassword)));
+            curl_setopt($ch, CURLOPT_UPLOAD, true);
+            curl_setopt($ch, CURLOPT_PUT, true);
+            curl_setopt($ch, CURLOPT_INFILE, fopen($file_path, 'rb'));
+            curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file_path));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
+            $response = curl_exec($ch);
+            
+            if (curl_errno($ch)) {
+                curl_setopt($curl, CURLOPT_VERBOSE, true);
+                curl_setopt($curl, CURLOPT_STDERR, fopen('php://stderr', 'w'));
+                header("HTTP/1.1 401 Something went wrong with uploading your files.");
+            }
+
+            curl_close($ch);
+        }
+   
+</pre>
+                    </code>
                 </section>
             `,
             en: ""
@@ -598,7 +754,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
     },
-    {
+    /* {
         id: "event-planer",
         name: "Event Planner",
         screenshot: null,
@@ -612,7 +768,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
             da: `
                 <section class="content-ppad">
                     <h2>Beskrivelse</h2>
-                    <p>Som mit 2 Semester eksamensprojekt på Professionsbachelor i Webudvikling var opgaven at udvikle en Webapp hvor man kan planlægge et projekt.</p>
+                    <p>Som mit 2 Semester eksamensprojekt på Professionsbachelor i Webudvikling var opgaven at udvikle en Webapp hvor man kan planlægge et event.</p>
+                    <p></p>
                 </section>
             `
         },
@@ -620,5 +777,5 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://event.inta.dev",
         type: "Web Development",
         technology: "Remix, ReactJS, MongoDB, Tailwind"
-    }
+    } */
 ]

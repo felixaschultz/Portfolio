@@ -182,61 +182,6 @@ export const Projects = [
         technology: "HTML, CSS, JS"
     },
     {
-        id: "chat-bot",
-        name: "Chat Bot",
-        screenshot: null,
-        description: {
-            de: "",
-            da: `
-            <section class="content-ppad">
-                <p>Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.
-                Vi startede med at lave en plan for hvordan vi ville gribe det an, og hvordan vi ville fordele arbejdet.
-                Til vores projektstyring benyttede vi Git og Github Projects, for at kunne se hvilken opgaver der ligger i backloggen.</p>
-            </section>
-            <section class="content-ppad scroll-snap">
-                <h2>Min rolle i projektet</h2>
-                <p>Jeg stod for at skrive og kode API endpoints til chatten. Jeg har benyttet mig af PHP, til at skrive en REST API som skal sikre at skabe noget funktionalitet, i frontend delen ved hjælp af JS fetch funktionen.</p>
-                <h3>API endpoints</h3>
-                <p>Dissen endpoints til chat funktionalitet fik jeg implementeret:</p>
-                <ul>
-                    <li>getChat</li>
-                    <li>chat</li>
-                    <li>getChatHistory</li>
-                </ul>
-                <p>Med disse enpoints skaber jeg til frontend delen en adgang, for at kunne tilgår dataen i Databasen.</p>
-                <p>Alle endpoints i dette projekt har fået 4 headers som de skal sende med, til clientent.</p>
-                <ol>
-                    <li>Content-Type: application/json charset=UTF-8</li>
-                    <li>Access-Control-Allow-Credentials: true</li>
-                    <li>Access-Control-Allow-Methods: GET, POST</li>
-                    <li>Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, *</li>
-                </ol>
-                <p>Med den første fortæller vi clienten i hviket format den kan regne med. Nummer 2 fortæller at den gerne må med sende cookies og andre nødvendig credentials men primært cookies. Nummer 3 fortæller om hvilken request method API endpoints har adgang til. Den sidste fortæller lige det sammen, så den kan være lidt liggylidgt hvis den nu ikke også vil indeholde Access-Allow-Origin: * som her vigitg for sikkerheden.</p>
-                <p>Den fortæller nemlig om hvilken andre domains må for adgang til API endpoints. Hvis * er sat så betyder det at vi har sat en wild card som betyder at alle kan tilgår APIén. I en god API vil man sætte hvis muligt en domain som for adgang, eller men sætter en Authorize header med en JWT til verificering og tidsbegænsning.</p>
-            </section>
-            <section class="content-ppad scroll-snap">
-                <h3>getChat endpoint</h3>
-                <img src="/assets/projects/chatbot/getChat-endpoint.png" alt="" srcset="">
-                <p>Med denne endpoint kan frontend hente alle svar og spørgesmål fra en specific chat historik.</p>
-                <p>Frontend deler laver til denne endpoint en POST request som backend og APIen opfanger med hjælp af PHP indbygget funktion file_get_contents.</p>
-                <p>Den funktion modtager en argument som skal entent være et link eller destination til en fil, eller som i mit eksempel, modtager den som argument "php://input".</p>
-                <p>Med php://input for jeg direkte adgang til request body i et HTTP POST request, som backenden så kan håndter. I projektet er formatet som frontend sender med POST requesten et JSON objekt som er bestående ud af en chatId.</p>
-                <p>Med denne chatId kan backenden så finde frem til den rigtige chat historik i databasen, og returnere den som JSON til frontend.</p>
-            </section>
-            `,
-            en: ""
-        },
-        short_description: {
-            de: "",
-            da: "Under mit studie på Erhvervsakademiet Aarhus, fik jeg muligheden at udvikle en Chat Bot som et lille projekt. Jeg udviklede den i HTML & CSS og vanilla JS.",
-            en: ""
-        },
-        github: "https://github.com/felixaschultz/chatbot",
-        url: "https://github.com/felixaschultz/chatbot",
-        type: "Web design / development",
-        technology: "HTML, CSS, JS, PHP, MySQL"
-    },
-    {
         id: "intastellar-consents-platform",
         name: "Intastellar Consents Platform",
         screenshot: intastellarConsentsLogin,
@@ -367,6 +312,61 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://www.intastellarconsents.com",
         type: "Web design / development",
         technology: "HTML, CSS, JS, ReactJS"
+    },
+    {
+        id: "chat-bot",
+        name: "Chat Bot",
+        screenshot: null,
+        description: {
+            de: "",
+            da: `
+            <section class="content-ppad">
+                <p>Jeg stod i den situation at jeg som skole projekt skulle komibnere 3 forskellige chat design, sammen med 2 andre i gruppen.
+                Vi startede med at lave en plan for hvordan vi ville gribe det an, og hvordan vi ville fordele arbejdet.
+                Til vores projektstyring benyttede vi Git og Github Projects, for at kunne se hvilken opgaver der ligger i backloggen.</p>
+            </section>
+            <section class="content-ppad scroll-snap">
+                <h2>Min rolle i projektet</h2>
+                <p>Jeg stod for at skrive og kode API endpoints til chatten. Jeg har benyttet mig af PHP, til at skrive en REST API som skal sikre at skabe noget funktionalitet, i frontend delen ved hjælp af JS fetch funktionen.</p>
+                <h3>API endpoints</h3>
+                <p>Dissen endpoints til chat funktionalitet fik jeg implementeret:</p>
+                <ul>
+                    <li>getChat</li>
+                    <li>chat</li>
+                    <li>getChatHistory</li>
+                </ul>
+                <p>Med disse enpoints skaber jeg til frontend delen en adgang, for at kunne tilgår dataen i Databasen.</p>
+                <p>Alle endpoints i dette projekt har fået 4 headers som de skal sende med, til clientent.</p>
+                <ol>
+                    <li>Content-Type: application/json charset=UTF-8</li>
+                    <li>Access-Control-Allow-Credentials: true</li>
+                    <li>Access-Control-Allow-Methods: GET, POST</li>
+                    <li>Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, *</li>
+                </ol>
+                <p>Med den første fortæller vi clienten i hviket format den kan regne med. Nummer 2 fortæller at den gerne må med sende cookies og andre nødvendig credentials men primært cookies. Nummer 3 fortæller om hvilken request method API endpoints har adgang til. Den sidste fortæller lige det sammen, så den kan være lidt liggylidgt hvis den nu ikke også vil indeholde Access-Allow-Origin: * som her vigitg for sikkerheden.</p>
+                <p>Den fortæller nemlig om hvilken andre domains må for adgang til API endpoints. Hvis * er sat så betyder det at vi har sat en wild card som betyder at alle kan tilgår APIén. I en god API vil man sætte hvis muligt en domain som for adgang, eller men sætter en Authorize header med en JWT til verificering og tidsbegænsning.</p>
+            </section>
+            <section class="content-ppad scroll-snap">
+                <h3>getChat endpoint</h3>
+                <img src="/assets/projects/chatbot/getChat-endpoint.png" alt="" srcset="">
+                <p>Med denne endpoint kan frontend hente alle svar og spørgesmål fra en specific chat historik.</p>
+                <p>Frontend deler laver til denne endpoint en POST request som backend og APIen opfanger med hjælp af PHP indbygget funktion file_get_contents.</p>
+                <p>Den funktion modtager en argument som skal entent være et link eller destination til en fil, eller som i mit eksempel, modtager den som argument "php://input".</p>
+                <p>Med php://input for jeg direkte adgang til request body i et HTTP POST request, som backenden så kan håndter. I projektet er formatet som frontend sender med POST requesten et JSON objekt som er bestående ud af en chatId.</p>
+                <p>Med denne chatId kan backenden så finde frem til den rigtige chat historik i databasen, og returnere den som JSON til frontend.</p>
+            </section>
+            `,
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "Under mit studie på Erhvervsakademiet Aarhus, fik jeg muligheden at udvikle en Chat Bot som et lille projekt. Jeg udviklede den i HTML & CSS og vanilla JS.",
+            en: ""
+        },
+        github: "https://github.com/felixaschultz/chatbot",
+        url: "https://github.com/felixaschultz/chatbot",
+        type: "Web design / development",
+        technology: "HTML, CSS, JS, PHP, MySQL"
     },
     {
         id: "danfoss-insite",

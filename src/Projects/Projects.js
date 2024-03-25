@@ -179,7 +179,7 @@ export const Projects = [
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
         url: "https://www.intastellarsolutions.com/solutions/cookie-consents",
         type: "Web design / development",
-        technology: "HTML, CSS, JS"
+        technology: "JS"
     },
     {
         id: "intastellar-consents-platform",
@@ -311,7 +311,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: "",
         url: "https://www.intastellarconsents.com",
         type: "Web design / development",
-        technology: "HTML, CSS, JS, ReactJS"
+        technology: "ReactJS, MySQL"
     },
     {
         id: "chat-bot",

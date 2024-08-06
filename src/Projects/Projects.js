@@ -139,6 +139,42 @@ export const Projects = [
         technology: "HTML, CSS, JS, PHP, MySQL"
     },
     {
+        id: "instastellarsignin",
+        name: "Signin with Intastellar",
+        screenshot: intastellarsolutions,
+        description: {
+            de: "",
+            da: `
+            <section class="content-ppad">
+                <p>Så er der gang i udvikling af authentication provider.</p>
+                
+                <p>Hvorfor udvikle en egen authentcation løsning, og ikke benytte en af de eksisterende, f.eks. Google?</p>
+                
+                <p>Efter jeg fik udviklet for nogle år siden et authencation system, med ikke kun simple e-mail & password verificering.
+                Indtastning af e-mail og kodeord, så kigge i database efter et match, derefter blive logget ind på et domæne. Det bliv mig ret hurtig for kedeligt, tilbage i 2018.</p>
+                
+                <p>Derfor besluttede jeg at udvikle en løsning der kunne implementeres på forskellige domæner.</p>
+                
+                <p>I dag har jeg en løsning som jeg kan benyttes i forskellige projekter, hvor jeg vil benytte mig noget authentication.</p>
+                
+                <p>Efter at en bruger har verificeret sig med enten e-mail & password og 2-faktor verificering (anbefaler jeg at have aktiveret på ens konto) eller e-mail, password & Passkey eller kun e-mail og passkey.
+                Bliver brugeren verificeret og logget ind på intastellaraccounts.com, hvorefter en token bliver sendt via Window.postMessage fra popup vinduet ned til parent. Token bliver så benyttet at hente brugerens informationer og verificering. Min første version inden verificering med token bestod i, af at sende brugerens profil til host f.eks. example.com.</p>
+                
+                <p>Brugeren skal inden han kan logge ind på siden lige verificer at denne Website må benytte ens offentlige profil (profil billedet, navn og e-mail), efter han af sagt ja til deling af informationen bliver han sendt vider.
+                Website ejeren har muligheden at definere i scopen, andre informationer, så som mobil-/telefonnummer eller fødselsdato, som brugeren skal godkendes.</p>
+                
+                <p>Nu benyttes token, som indeholder issueren samt brugerens id og e-mail, til at hente hele profilen ved at fetch verificerings serveren med token, som tjekker om den er i orden. Derefter sendes brugerens profilen til example.com.
+                Der bliver der så kaldt enten en funktion som håndter dataen, eller brugeren bliver sendt til example.com’s authentication server. Det er noget som udvikleren har muligheden til at bestemme, ved at definere i data- attributten en funktion eller url.</p></p>
+            </section>
+                `,
+            en: ""
+        },
+        github: "https://github.com/Intastellar-Solutions-International/intastellar-signin",
+        url: "https://www.intastellarsolutions.com/solutions/signin",
+        type: "Web development",
+        technology: "JS, MySQL, PHP"
+    },
+    {
         id: "gdpr-cookiebanner",
         name: "GDPR Cookiebanner",
         screenshot: gdprcookiebanner,

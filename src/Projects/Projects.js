@@ -4,6 +4,7 @@ import gdprcookiebanner from "../statics/projects/gdprcookiebanner/screenshot-of
 import intastellarsolutions from "../statics/projects/intastellarsolutions/screenshot-of-website.png";
 import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
+import intastellarSignIn from "../statics/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png";
 import dbStructrue from "./timetable/db-structure.png";
 
 export const Projects = [
@@ -141,7 +142,7 @@ export const Projects = [
     {
         id: "instastellarsignin",
         name: "Signin with Intastellar",
-        screenshot: intastellarsolutions,
+        screenshot: intastellarSignIn,
         description: {
             de: "",
             da: `

@@ -640,12 +640,12 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         screenshot: null,
         description: {
             de: "",
-            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
+            da: "Denne side er ikke klar i nu!",
             en: ""
         },
         short_description: {
             de: "",
-            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
+            da: "Denne side er ikke klar i nu!",
             en: ""
         },
         github: null,

@@ -831,7 +831,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "balticfinance-uploadformular",
         name: "Baltic Finance Uploadformular",
         screenshot: null,
-        highlight: true,
         description: {
             de: "",
             da: `
@@ -1021,7 +1020,7 @@ if($movedFiles){
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
     },
-    /* {
+    {
         id: "analytics-candidatedk",
         name: "Analytics for Candidate.dk",
         screenshot: candidatedk,
@@ -1047,7 +1046,7 @@ if($movedFiles){
         url: "https://candidate.dk",
         type: "Web Development",
         technology: "MongoDB, RemixJS",
-    } */
+    }
     /* {
         id: "event-planer",
         name: "Event Planner",

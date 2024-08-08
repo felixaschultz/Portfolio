@@ -147,8 +147,6 @@ export const Projects = [
             de: "",
             da: `
             <section class="content-ppad">
-                <p>Så er der gang i udvikling af authentication provider.</p>
-                
                 <p>Hvorfor udvikle en egen authentcation løsning, og ikke benytte en af de eksisterende, f.eks. Google?</p>
                 
                 <p>Efter jeg fik udviklet for nogle år siden et authencation system, med ikke kun simple e-mail & password verificering.
@@ -168,6 +166,11 @@ export const Projects = [
                 Der bliver der så kaldt enten en funktion som håndter dataen, eller brugeren bliver sendt til example.com’s authentication server. Det er noget som udvikleren har muligheden til at bestemme, ved at definere i data- attributten en funktion eller url.</p></p>
             </section>
                 `,
+            en: ""
+        },
+        short_description: {
+            de: "",
+            da: "Jeg har udviklet en egen authentication løsning, som kan implementeres på forskellige domæner. Løsningen er udviklet i PHP og MySQL.",
             en: ""
         },
         github: "https://github.com/Intastellar-Solutions-International/intastellar-signin",

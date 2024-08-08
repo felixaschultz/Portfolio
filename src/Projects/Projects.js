@@ -171,6 +171,7 @@ export const Projects = [
                     <ol>
                         <li>Brugerens ID</li>
                         <li>Brugerens email</li>
+                        <li>Scope</li>
                     </ol>
                     Denne token bliver sendt ned til parent vinduet, hvor den bliver gemt og benyttet af scriptet for at sende den vider til verificering, inden hjemmesiden for adgang til brugerens data.
                 </p>

@@ -1019,6 +1019,26 @@ if($movedFiles){
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
     },
+    {
+        id: "analytics-candidatedk",
+        name: "Analytics for Candidate.dk",
+        screenshot: null,
+        highlight: true,
+        short_description: {
+            de: "",
+            da: "Jeg har udviklet en analytics løsning for Candidate.dk, som er en rekrutteringsplatform. Løsningen er udviklet i PHP og MySQL.",
+            en: ""
+        },
+        description: {
+            de: "",
+            da: "",
+            en: ""
+        },
+        github: null,
+        url: "https://candidate.dk",
+        type: "Web Development",
+        technology: "MongoDB, RemixJS",
+    }
     /* {
         id: "event-planer",
         name: "Event Planner",

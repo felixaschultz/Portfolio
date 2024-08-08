@@ -54,7 +54,6 @@ export default function Home(props) {
                             Projects.filter((project) => {
                                 return project.highlight
                             }).slice(0, 3).map((project, key) => {
-                                console.log(project)
                                 return (
                                     <>
                                         <Link to={"/project/" + project.id} key={key} className="frontpage-projects">

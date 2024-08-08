@@ -1,11 +1,11 @@
 export default {
-    pages:{
+    pages: {
         homepage: {
             title: 'Fullstack developer with passion',
-            introduction: 'Jeg har en passion for Fullstack web development. Jeg har arbejde mere end 10 års med udvikling af hjemmesider, de første 5 år bare som hobby ved siden af skolen. De sidste 5 år har fokuserede mig at går fuld professionelt ind i webudvikling. Jeg er igang med at udbygge mine færdigheder i ReactJS.',
+            introduction: 'Jeg har en passion for Fullstack web development. Jeg har arbejde mere end 10 års med udvikling af hjemmesider, de første 5 år bare som hobby ved siden af skolen. De seneste 5 år fik jeg fokuserede mig på at går professionelt ind i webudvikling. Jeg er igang med at udbygge mine færdigheder i ReactJS.',
             topCta: "Kontakt mig",
             heroIntro: {
-               title: "",
+                title: "",
             },
             about: {
                 title: "Moin! Mit navn er Felix. Jeg er en Fullstack Developer basseret i Aarhus og råder i Sønderjylland & Tyskland",
@@ -23,10 +23,10 @@ export default {
             }
         },
         projects: {
-           title: "Projekter",
-           description: "Her kan du se nogle af de projekter jeg har arbejdet på. Du kan også se flere projekter på min Github. Projekterne har jeg arbejdet på i min fritid, eller som en del af min uddannelse.",
-           visit_urls: "Besøg hjemmesiden",
-           visit_github: "Besøg Github"
+            title: "Projekter",
+            description: "Her kan du se nogle af de projekter jeg har arbejdet på. Du kan også se flere projekter på min Github. Projekterne har jeg arbejdet på i min fritid, eller som en del af min uddannelse.",
+            visit_urls: "Besøg hjemmesiden",
+            visit_github: "Besøg Github"
         },
         photography: {
             title: "Fotografier",
@@ -44,7 +44,7 @@ export default {
         },
     },
     navigation: {
-        langSelector:[
+        langSelector: [
             {
                 short: "en",
                 long: "English"

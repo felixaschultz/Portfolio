@@ -12,6 +12,7 @@ export const Projects = [
         id: "cykelfaergen",
         name: "Cykelfærgen Flensborg Fjord",
         screenshot: cykelfaegen,
+        highlight: true,
         description: {
             de: "",
             da: `
@@ -137,12 +138,13 @@ export const Projects = [
         github: null,
         url: "https://www.cykelfaergen.info",
         type: "Web design / development & SoMe marketing",
-        technology: "HTML, CSS, JS, PHP, MySQL"
+        technology: "HTML, CSS, JS, PHP, MySQL",
     },
     {
         id: "instastellarsignin",
         name: "'Sign in with Intastellar' - authenticator",
         screenshot: intastellarSignIn,
+        highlight: true,
         description: {
             de: "",
             da: `
@@ -578,6 +580,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "chat-bot",
         name: "Chat Bot",
         screenshot: null,
+        highlight: true,
         description: {
             de: "",
             da: `

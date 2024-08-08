@@ -19,7 +19,7 @@ export default function Home(props) {
 
     const [project, setProject] = useState(null);
 
-    window.addEventListener("DOMContentLoaded", function (){
+    window.addEventListener("DOMContentLoaded", function () {
         Intastellar.accounts.id.renderButton(
             document.querySelector("#buttonDiv")
         )
@@ -28,7 +28,7 @@ export default function Home(props) {
     return (
         <>
             <main>
-                <section className="landingPage" style={{paddingBottom: "20px"}}>
+                <section className="landingPage" style={{ paddingBottom: "20px" }}>
                     <section className="landingPage__ImageContainer">
                         <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
                     </section>
@@ -41,9 +41,9 @@ export default function Home(props) {
                             <h2 className="landingPage__headinTwo">
                                 {local[location].pages.homepage.title}
                             </h2>
-                            <p style={{maxWidth: "400px", lineHeight: "1.5em"}}>{local[location].pages.homepage.introduction}</p>
+                            <p style={{ maxWidth: "400px", lineHeight: "1.5em" }}>{local[location].pages.homepage.introduction}</p>
                             <a onClick={() => {
-                                setShowPopup({hideShow: !showPopup.hideShow, item: "Contact"})
+                                setShowPopup({ hideShow: !showPopup.hideShow, item: "Contact" })
                             }} className="cta">{local[location].pages.homepage.topCta}</a>
                         </section>
                     </section>
@@ -51,7 +51,10 @@ export default function Home(props) {
                 <section className="ppad content projects">
                     <div className="hero-intro__content grid">
                         {
-                            Projects.slice(0, 3).map((project, key) => {
+                            Projects.filter((project) => {
+                                return project.highlight
+                            }).slice(0, 3).map((project, key) => {
+                                console.log(project)
                                 return (
                                     <>
                                         <Link to={"/project/" + project.id} key={key} className="frontpage-projects">

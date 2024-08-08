@@ -24,10 +24,14 @@ module.exports = {
   ],
   module: {
     rules: [
+      /* {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      }, */
       {
         test: /\.(jsx|js)$/,
         include: path.resolve(__dirname, 'src'),
-        exclude: /node_modules/,
+        /* exclude: /node_modules/, */
         use: [{
           loader: 'babel-loader',
           options: {
@@ -48,11 +52,21 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif)$/,
-        include: path.resolve(__dirname, 'src'),
+        include: path.resolve(__dirname, 'src/assets/resource'),
+        type: 'asset/resource',
         use: [
           {
             loader: "url-loader",
           }
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: 'url-loader',
+          },
         ],
       },
       {

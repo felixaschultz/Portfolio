@@ -4,6 +4,7 @@ import "../Contact/Style/Contact.css";
 import { Projects } from "../../Projects/Projects";
 import { local } from "../../localization/local";
 import { LocationContext } from "../../modules/App";
+const Link = window.ReactRouterDOM.Link;
 
 export default function Project(props){
     const [location] = useContext(LocationContext);
@@ -24,10 +25,15 @@ export default function Project(props){
                                         <section key={key} className="project-description">
                                             <h2 className="project-name">{project.name}</h2>
                                             <p className="project-type">{project.type}</p>
-                                            <p>{project.description[location]}</p>
+                                            <p>{project.short_description[location]}</p>
                                             {
                                                 (project.url != null) ? <a className="cta" href={project.url} target="_blank">{local[location].pages.projects.visit_urls}</a> : null
+                                                
                                             }
+                                            {
+                                                (project.github != null) ? <a className="showMore" href={project.github} target="_blank">{local[location].pages.projects.visit_github}</a> : null
+                                            }
+                                            <a className="showMore" href={"/project/" + project.id}>Læs mere</a>
                                         </section>
                                     </>
                                 )

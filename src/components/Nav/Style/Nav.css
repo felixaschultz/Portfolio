@@ -1,14 +1,16 @@
 .navigation{
-    padding: 15px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    grid-column: 2/3;
+    border-radius: 15px 0px 0px 15px;
+    position: relative;
 }
 
 .navigation__link{
     text-decoration: none;
     color: #fff;
-    padding: 0px 30px;
+    padding: 30px 15px;
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -17,7 +19,6 @@
 
 .github--icon{
     filter: invert(1);
-    width: 25%;
     margin-right: -30px;
 }
 
@@ -27,5 +28,103 @@
     border: none;
     background-color: transparent;
     color: #fff;
+    overflow: hidden;
     cursor: pointer;
+    position: relative;
+}
+
+.language .locationPicker:hover{
+    background-color: #fff;
+    color: var(--headerColor);
+}
+
+.header-grid{
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    gap: 5px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.language{
+    position: absolute;
+    top: 76px;
+    background-color: var(--headerColor);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown{
+    position: relative;
+}
+
+.dropdownButton{
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 30px 15px;
+    cursor: pointer;
+}
+
+.dropdownContent{
+    /* display: none; */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--headerColor);
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px;
+    width: max-content;
+}
+
+.dropdownContent a{
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+}
+
+.iconContainer .navigation__link{
+    padding: 0px 15px;
+}
+
+.--active::before{
+    content: "";
+    width: 100%;
+    position: absolute;
+    height: 1px;
+    inset: -50% 0%;
+    transform: scaleX(.7);
+    background-color: #fff;
+}
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .navigation{
+        display: none;
+    }
+    .navigation__link{
+        padding: 0px 15px;
+    }
+    .header-grid{
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .logo img {
+        width: 100%;
+    }
+
+    .main-header{
+        padding: 15px;
+    }
+    
 }

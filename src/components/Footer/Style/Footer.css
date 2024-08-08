@@ -7,4 +7,19 @@
     width: 1400px;
     margin: auto;
     padding: 25px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer_content a{
+    color: #fff;
+    text-decoration: none;
+}
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .footer_content{
+        width: 100%;
+    }
+    
 }

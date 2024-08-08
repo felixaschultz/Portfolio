@@ -6,12 +6,16 @@
     --mainColor: #002540;
     --secondaryColor: #8BCFFF;
     --light: #CCEAFF;
-    --headerColor: #0080dbc9;
+    --headerColor: #005da0c9;
     --overlay: #003962;
     --borderRadius: 10px;
 }
 
-img{
+#fireworksCanvas{
+    position: fixed;
+}
+
+img, video{
     max-width: 100%;
 }
 
@@ -21,15 +25,30 @@ body{
     background-color: var(--mainColor);
     background-attachment: fixed;
     color: #fff;
+    scroll-behavior: smooth;
+    transition: all .2s ease-in-out;
+    
+}
+
+p{
+    line-height: 1.6em;
+}
+
+.main-content{
+    transform: perspective(1000px);
+    transition: all .2s ease-in-out;
 }
 
 .main-header{
-    position: absolute;
+    position: fixed;
     width: 100%;
     color: #fff;
     align-items: center;
-    padding: 73px 10px 73px 117px;
+    padding: 10px 100px;
     z-index: 10000;
+    background-color: var(--headerColor);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     transition: all .2s ease-in-out;
 }
 
@@ -37,6 +56,11 @@ body{
     font-size: 30px;
     text-decoration: none;
     color: #fff;
+    filter: invert(1);
+}
+
+.logo img{
+    width: 90%;
 }
 
 .grid{
@@ -65,4 +89,38 @@ body{
 
 .ppad{
     padding: 150px 0;
+}
+
+.content{
+    padding: 73px;
+}
+
+.profilePicture{
+    object-fit: cover;
+    border-radius: 50%;
+    width: 500px;
+    height: 500px;
+    margin: auto;
+}
+
+.pushDown{
+    transition: all .5s ease-out;
+}
+
+.flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cta-container{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+@media screen and (min-width: 340px) and (max-width: 900px){
+    .grid, .grid-4{
+        grid-template-columns: 1fr;
+    }
 }

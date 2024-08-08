@@ -1,4 +1,4 @@
-export const Recommendations = [
+export const recom = [
     {
         recommend: `Felix is a skilled frontend developer who demonstrated capabilities and initiative during his internship in Danfoss where he worked on several projects related to building IoT services. 
         I can only recommend Felix as an engaged and self-driven colleague!`,
@@ -11,5 +11,27 @@ export const Recommendations = [
     {
         recommend: "Felix has many years of front-end experience and that can be seen. He will happily help you, if help is needed",
         author: "Rasmus Polaszk, Study Friend"
+    },
+    {
+        recommend: `Vi har brugt Felix og Intastellar Solutions, International i forbindelse med Soleng Festival, hvor vi havde brug for én, der både var kompetent med video/billede/kamera, og teknisk viden indenfor broadcast/livestream til festivalen.
+        Efter en kort snak fandt vi hurtigt en løsning, og vi er meget positivt overrasket over fleksibiliteten, kvaliteten, deres venlige og åbne tilgang samt prisen.
+        Overordnet set en fornøjelse at arbejde sammen med, og jeg kan varmt anbefale at samarbejde med firmaet og deres kompetente medarbejdere, specielt indenfor video/teknik/livestream.`,
+        author: "Rasmus Madsen, Formand - Soleng Festivalforening"
+    },
+    {
+        recommend: `Vi fik udarbejdet et logo til vores kommende startup-virksomhed. Resultatet er vi mere end tilfredse med. Hos Intastellar oplevede vi blandt andet god kommunikation, hurtig respons, brugbare inputs , samt exceptionel forståelse for det visuelle. Kan Klart anbefales.`,
+        author: "Casper C. Christensen, grundlægger - The-Bark"
+    },
+    {
+        recommend: `Really professional and fast work. I hired Felix, to maintain and improve my website and I am very happy with my decision as I´m a small business owner and can now focus more on my daily business.`,
+        author: "Marvin Fox"
+    },
+    {
+        recommend: `Felix har arbejdet med at designe fire roll up’s på 0,85x2 meter til at præsentere Farmer’s Window (Digi-Eye) på Årets Business Event 2019 i Sønderborg, samt business cards til mig som grundlægger ink. logoet som ikon. Han har vist en ualmindelig fild og dedikation, særligt da deadlines for trykt nærmede sig og påkrævede meget sent nattearbejde.`,
+        author: "Philip Staib, Adm. dir. - Digi-Eye ApS"
+    },
+    {
+        recommend: `I can recommend Felix for propper work, he is flexibel and trustful.`,
+        author: "Gerhard Jacobsen, Formand - Foreningnen Cykelfaergens Venner"
     }
 ]

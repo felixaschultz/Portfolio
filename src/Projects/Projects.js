@@ -640,18 +640,28 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         screenshot: null,
         description: {
             de: "",
-            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
+            da: `
+            <section class="content-ppad">
+                <h2>Projektbeskrivelse</h2>
+                <p>Under min uddannelse som Multimediedesigner var jeg heldig at kunne være en del af Danfoss, samt skive min hovedopgave sammen med dem.</p>
+                <p>Jeg vælgte at går ind i at kode en af deres løsninger som Danfoss på den tid har udviklet på. Jeg fik udviklet løsning i ReactJS, som til dato var skrevet i AnagularJS. Jeg fik valgt ReactJS pga. at løsningen skulle på et tidspunkt sammles og integres i Danfoss Alsense.</p>
+                <p>Alsense er udviklet i ReactJS, så gav det for mig god mening at udvikle platformen, med det nye design i ReactJS.</p>
+            </section>
+            <section class="content-ppad">
+                <h2>Design</h2>
+            </section>
+            `,
             en: ""
         },
         short_description: {
             de: "",
-            da: "Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.",
+            da: `Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.`,
             en: ""
         },
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
         type: "Web design / development",
-        technology: "HTML, CSS, JS, ReactJS"
+        technology: "ReactJS"
     },
     {
         id: "sailmore",

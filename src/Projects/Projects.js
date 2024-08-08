@@ -448,6 +448,7 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
         id: "intastellar-consents-platform",
         name: "Intastellar Consents Platform",
         screenshot: intastellarConsentsLogin,
+        highlight: true,
         images: {
             dashboard: instastellarConsetnsDashboard
         },
@@ -580,7 +581,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "chat-bot",
         name: "Chat Bot",
         screenshot: null,
-        highlight: true,
         description: {
             de: "",
             da: `

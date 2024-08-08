@@ -5,6 +5,7 @@ import intastellarsolutions from "../statics/projects/intastellarsolutions/scree
 import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
 import intastellarSignIn from "../statics/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png";
+import candidatedk from "../statics/projects/candidate-analytics/Screenshot 2024-05-23 at 22.47.40.png";
 import dbStructrue from "./timetable/db-structure.png";
 
 export const Projects = [
@@ -12,7 +13,7 @@ export const Projects = [
         id: "cykelfaergen",
         name: "Cykelfærgen Flensborg Fjord",
         screenshot: cykelfaegen,
-        highlight: true,
+        highlight: false,
         description: {
             de: "",
             da: `
@@ -1022,7 +1023,7 @@ if($movedFiles){
     {
         id: "analytics-candidatedk",
         name: "Analytics for Candidate.dk",
-        screenshot: null,
+        screenshot: candidatedk,
         highlight: true,
         short_description: {
             de: "",

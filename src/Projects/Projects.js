@@ -141,29 +141,250 @@ export const Projects = [
     },
     {
         id: "instastellarsignin",
-        name: "Signin with Intastellar",
+        name: "'Sign in with Intastellar' - authenticator",
         screenshot: intastellarSignIn,
         description: {
             de: "",
             da: `
             <section class="content-ppad">
-                <p>Hvorfor udvikle en egen authentcation løsning, og ikke benytte en af de eksisterende, f.eks. Google?</p>
-                
-                <p>Efter jeg fik udviklet for nogle år siden et authencation system, med ikke kun simple e-mail & password verificering.
-                Indtastning af e-mail og kodeord, så kigge i database efter et match, derefter blive logget ind på et domæne. Det bliv mig ret hurtig for kedeligt, tilbage i 2018.</p>
-                
-                <p>Derfor besluttede jeg at udvikle en løsning der kunne implementeres på forskellige domæner.</p>
-                
-                <p>I dag har jeg en løsning som jeg kan benyttes i forskellige projekter, hvor jeg vil benytte mig noget authentication.</p>
-                
-                <p>Efter at en bruger har verificeret sig med enten e-mail & password og 2-faktor verificering (anbefaler jeg at have aktiveret på ens konto) eller e-mail, password & Passkey eller kun e-mail og passkey.
-                Bliver brugeren verificeret og logget ind på intastellaraccounts.com, hvorefter en token bliver sendt via Window.postMessage fra popup vinduet ned til parent. Token bliver så benyttet at hente brugerens informationer og verificering. Min første version inden verificering med token bestod i, af at sende brugerens profil til host f.eks. example.com.</p>
-                
-                <p>Brugeren skal inden han kan logge ind på siden lige verificer at denne Website må benytte ens offentlige profil (profil billedet, navn og e-mail), efter han af sagt ja til deling af informationen bliver han sendt vider.
-                Website ejeren har muligheden at definere i scopen, andre informationer, så som mobil-/telefonnummer eller fødselsdato, som brugeren skal godkendes.</p>
-                
-                <p>Nu benyttes token, som indeholder issueren samt brugerens id og e-mail, til at hente hele profilen ved at fetch verificerings serveren med token, som tjekker om den er i orden. Derefter sendes brugerens profilen til example.com.
-                Der bliver der så kaldt enten en funktion som håndter dataen, eller brugeren bliver sendt til example.com’s authentication server. Det er noget som udvikleren har muligheden til at bestemme, ved at definere i data- attributten en funktion eller url.</p></p>
+                <h2>Beskrivelse</h2>
+                <p>Med Intastellar Signin authentication har jeg udviklet en auth service for en af mine hjemmesider,
+                    intastellaracconts.com som holder styr af alt hvad authentication angår.
+                    Men hvorfor har jeg valgt at udvikle min egen authentication service, når der findes mange andre derude?
+                </p>
+                <p>Det startede tilbage i 2018 da jeg havde 2-3 forskellige hjemmesider, og hvor jeg meget gerne vil bruge en authentication løsning samt 1 konto till alle domæner.
+                    Derfor begyndte jeg at udvikle min egen authentication service som i første omgang var simple og kun kunne bruges på en hjemmeside. Dog hurtigt var jeg interessert i hvordan "Sign in with Google" fungerede og hvordan jeg kunne bruge det samme princip for mig selv.
+                </p>
+                <p>Jeg fandt ret hurtigt ud af at de benyttede sig postMessage metoden for at dele informationer cross-domain. Derfor begyndte jeg hurtigt i, at sætte mig ind i hvordan det fungerede og hvordan jeg kan benytte det.</p>
+            </section>
+            <section class="content-ppad">
+                <h2>PostMessage</h2>
+                <p>PostMessage er en metode som gør det muligt at sende beskeder mellem vinduer/frames på tværs af domæner. Metoden er en del af HTML5 og er en sikker metode for at kommunikere mellem forskellige domæner.</p>
+                <p>Metoden er bygget op af 2 parametre, en besked og en targetOrigin. Beskeden er den data som du gerne vil sende, og targetOrigin er den URL som du gerne vil sende beskeden til.</p>
+            </section>
+            <section class="content-ppad">
+                <h2>JWT</h2>
+                <p>Når en bruger logger sig ind på <a href="https://www.intastellaraccounts" target="_blank">intastellaraccounts.com</a>, med deres email og passkey, og han bliver verificeret uden problemer, bliver der generet en JWT.</p>
+                <p>JWT består af en header som indholder hvem er udstederen, med både navn og url. I body indholder den 2 informationer fra brugeren som er logget ind
+                    <ol>
+                        <li>Brugerens ID</li>
+                        <li>Brugerens email</li>
+                    </ol>
+                    Denne token bliver sendt ned til parent vinduet, hvor den bliver gemt og benyttet af scriptet for at sende den vider til verificering, inden hjemmesiden for adgang til brugerens data.
+                </p>
+                <h3>Genereing af JWT Token (Server-Side)</h3>
+                <code class="code-editor">
+<pre>
+$publichash = array(
+	"issuer" => "Intastellar Account",
+	"issuer_url" => "https://apis.intastellaraccounts.com",
+	"exp" => time() + 83400 * 360,
+);
+
+$data = array(
+	"user_id" => $newsalt['salt'],
+	"email" => $newsalt["email"],
+	"allowed_scope" => $_GET["scope"]
+);
+
+$headers = array(
+	"iss" => "Intastellar Account",
+	"iss_domain" => "apis.intastellaraccounts.com",
+	"exp" => time() + 83400 * 360,
+);
+
+$headers = json_encode($headers);
+$data = json_encode($data);
+
+$signing_key = "{en hemmelig nøgle}";
+$signiture = hash_hmac("sha256", base64_encode($headers) . "." . base64_encode($data), $signing_key, true);
+$token = base64_encode($headers) . "." . base64_encode($data) . "." . base64_encode($signiture);
+
+$publicjwt = base64_encode($token);
+$jwt = base64_encode(json_encode($hash));
+</pre>
+                </code>
+                <h3>Send token til parent (Client-Side)</h3>
+                <code class="code-editor">
+<pre>
+window.addEventListener("DOMContentLoaded", function() {
+    window.opener.postMessage("<?php echo $publicjwt; ?>", "*");
+    window.addEventListener("message", function(e) {
+        if (e.data == "iframe-token-recieved") {
+            window.parent.close();
+        }
+    })
+});
+</pre>
+                </code>
+            </section>
+            <section class="content-ppad">
+                <h2>Verifikation</h2>
+                <p>Token bliver sendt via Authentication header til verificerings server, hvor den bliver decoded og verificeret.</p>
+                <p>Under verificering bliver der checket om token er for gamlet (maks 30 min.) og om issueren er den korrekte samt om signaturen er korrekt.</p>
+                <p>Client-Side Verificering & udførelsen af bruger defineret funktion fra data- attributten.</p>
+                <code class="code-editor">
+<pre>
+fetch("https://apis.intastellaraccounts.com/verify", {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    }
+}).then(e => e.json()).then(e => {
+    if (e.statusCode == 200) {
+        const { phone, birthday } = e.account.user[0];
+        e.account.user.phone = phone;
+        e.account.user.birthday = birthday;
+        delete e.account.user[0];
+        fn(e.account);
+    } else {
+        throw new IntastellarSolutionsSDKError(e.error);
+    }
+})
+
+</pre>
+                </code>
+                <p>Client-Side Verificering & vidersendelse til hjemmesiden med brugerens information</p>
+                <code class="code-editor">
+<pre>
+fetch("https://apis.intastellaraccounts.com/verify", {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    }
+}).then(e => e.json()).then(e => {
+    if (e.statusCode == 200) {
+        const { phone, birthday } = e.account.user[0];
+        e.account.user.phone = phone;
+        e.account.user.birthday = birthday;
+        delete e.account.user[0];
+        throw new IntastellarSolutionsSDKSuccess("We´ve successfully send user data for: " + t.name);
+        if (window.location.href.indexOf("?") > -1) {
+            const query = "?" + window.location.href.split("?")[1];
+            // Add the query string to the url
+            window.location.href = window.location.protocol + "//" + document.querySelector("[data-login_uri]").getAttribute("data-login_uri") + query + "&token=" + JSON.stringify(t);
+        } else {
+            window.location.href = window.location.protocol + "//" + document.querySelector("[data-login_uri]").getAttribute("data-login_uri") + "?token=" + JSON.stringify(t);
+        }
+    } else {
+        throw new IntastellarSolutionsSDKError(e.error);
+    }
+})
+
+</pre>
+                </code>
+                <p>Server-Side verificering</p>
+                <code class="code-editor">
+<pre>
+// Check if the token is valid
+$issuer = "Intastellar Account";
+$issuer_url = "apis.intastellaraccounts.com";
+
+// Check if the origin is a domain & not an IP like 127.0.0.1 and remove the subdomain
+// Remove the subdomain if its not a ip address
+$access_id = $_SERVER['HTTP_ORIGIN'];
+
+$tokenFromHeader = $_SERVER['HTTP_AUTHORIZATION'];
+if (empty($tokenFromHeader)) {
+    http_response_code(401);
+    echo json_encode([
+        "account" => null,
+        "error" => "No token provided",
+        "statusCode" => 401,
+        "status" => "Unauthorized"
+    ]);
+    exit();
+}
+
+// Decode the token & remove the Bearer
+$tokenFromHeader = str_replace("Bearer ", "", $tokenFromHeader);
+$encodedToken = base64_decode($tokenFromHeader);
+$splitToken = explode(".", $encodedToken);
+
+$header = $splitToken[0];
+$payload = $splitToken[1];
+$signature = $splitToken[2];
+
+// Check if the signature is valid
+$hash = hash_hmac("sha256", $header . '.' . $payload, "intastellaraccounts.com", true);
+$hash = base64_encode($hash);
+
+if ($hash != $signature) {
+    http_response_code(401);
+    echo json_encode([
+        "error" => "Invalid token",
+        "statusCode" => 401,
+        "status" => "Unauthorized"
+    ]);
+    exit();
+}
+
+$header = json_decode(base64_decode($splitToken[0]), true);
+$payload = json_decode(base64_decode($splitToken[1]), true);
+
+$expires = $header["exp"];
+$iss = $header["iss"];
+$iss_url = $header["iss_domain"];
+
+if ($expires < time()) {
+    http_response_code(401);
+    echo json_encode([
+        "account" => null,
+        "error" => "Token expired",
+        "statusCode" => 401,
+        "status" => "Unauthorized"
+    ]);
+    exit();
+}
+
+// Remove the subdomain if its not a ip address
+if ($access_id != "localhost" && !filter_var($access_id, FILTER_VALIDATE_IP)) {
+    $access_id = preg_replace('/^(?:https?:\/\/)?(?:www\.)?/i', '', $access_id);
+}
+
+if ($iss == $issuer && $iss_url == $issuer_url) {
+    $salt = $payload["user_id"];
+    $email = $payload["email"];
+    $scopeFromToken = $payload["allowed_scope"];
+
+    // Getting the user from the database and sending it back to the client
+    $publichash = array(
+        "account_domain" => "my.intastellaraccounts.com",
+        "account_id" => (int)$newsalt["id"],
+        "account_url" => "https://my.intastellaraccounts.com",
+        "scope" => $scopeFromToken,
+        "user" => [
+            "user_id" => $newsalt['salt'],
+            "name" => ["firstName" => $newsalt["first_name"], "lastName" => $newsalt["last_name"]],
+            "username" => $newsalt["username"],
+            "email" => $newsalt["email"],
+            "lanuage" => $newsalt["language"],
+            $scope,
+            "avatar" => "https://scontent-uc-d2c-7.intastellaraccounts.com/a/s/ul/p/avtr46-img/" . $image,
+            "cover" => "https://scontent-uc-d2c-7.intastellaraccounts.com/a/s/ul/p/avtr46-img/" . $cover
+        ]
+    );
+
+    http_response_code(200);
+    echo json_encode([
+        "account" => $publichash,
+        "error" => null,
+        "statusCode" => 200,
+        "status" => "OK"
+    ]);
+} else {
+    http_response_code(401);
+    echo json_encode([
+        "account" => null,
+        "error" => "Invalid token",
+        "statusCode" => 401,
+        "status" => "Unauthorized"
+    ]);
+}
+</pre>
+                </code>
             </section>
                 `,
             en: ""

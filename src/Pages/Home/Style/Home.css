@@ -1,4 +1,3 @@
-
 .landingPage {
     width: 100%;
     min-height: 100vh;
@@ -10,7 +9,7 @@
     position: relative;
 }
 
-.landingPage__ImageContainer{
+.landingPage__ImageContainer {
     position: absolute;
     left: 0;
     top: 0;
@@ -35,7 +34,8 @@
     bottom: 0;
 }
 
-.landingPage__imageOne, .landingPage__imageTwo {
+.landingPage__imageOne,
+.landingPage__imageTwo {
     width: 50%;
     position: absolute;
     top: 0;
@@ -68,7 +68,9 @@
     top: 0;
     width: 70%;
     height: 100vh;
-    background: /* url("https://cdn.shopify.com/s/files/1/0314/1143/7703/files/hp-hero-6-d-large-tinted-moisturizer-1210x1566_1210x.jpg") */ var(--overlay);
+    background:
+        /* url("https://cdn.shopify.com/s/files/1/0314/1143/7703/files/hp-hero-6-d-large-tinted-moisturizer-1210x1566_1210x.jpg") */
+        var(--overlay);
     background-size: 86%;
     background-position: 191px -415px;
     background-blend-mode: multiply;
@@ -78,16 +80,16 @@
     clip-path: polygon(48% 0, 100% 0, 100% 100%, 0% 100%);
 }
 
-.landingPage__heading{
-    font-size: 80px;
-    max-width: 508px;
+.landingPage__heading {
+    font-size: 68px;
+    max-width: 800px;
     margin: 20px 0px;
     position: relative;
     font-weight: 100;
     text-transform: uppercase;
 }
 
-.cta{
+.cta {
     color: var(--overlay);
     text-decoration: none;
     padding: 20px 32px;
@@ -97,12 +99,12 @@
     cursor: pointer;
 }
 
-.hero-intro__content{
+.hero-intro__content {
     width: 1400px;
     margin: auto;
 }
 
-.frontpage-projects{
+.frontpage-projects {
     cursor: pointer;
     padding: 25px 0;
     text-align: center;
@@ -113,17 +115,17 @@
     display: block;
 }
 
-.frontpage-projects img{
+.frontpage-projects img {
     transition: all .5s ease-out;
     perspective: 1000px;
     max-width: 350px;
 }
 
-.frontpage-projects:hover img{
+.frontpage-projects:hover img {
     transform: rotate3d(1, 1, 1, -45deg);
 }
 
-.frontpage-projects::after{
+.frontpage-projects::after {
     content: "";
     position: absolute;
     top: 0;
@@ -139,7 +141,7 @@
     transform: scale(0.65) translate(-2.7%, -3%);
 }
 
-.frontpage-projects:hover::after{
+.frontpage-projects:hover::after {
     content: "";
     position: absolute;
     top: 0;
@@ -155,22 +157,22 @@
     z-index: -1;
 }
 
-.photography{
+.photography {
     background-color: #2f3a3e;
     color: #c5c5c5;
     padding: 100px 0;
 }
 
-.photography .grid{
+.photography .grid {
     place-items: center;
 }
 
-.projects{
+.projects {
     padding: 0;
     margin-top: -70px;
 }
 
-.landginPage-video{
+.landginPage-video {
     width: 100%;
     height: auto;
     border-radius: 10px;
@@ -179,14 +181,14 @@
 }
 
 @media screen and (min-width: 320px) and (max-width: 900px) {
-    .landingPage{
+    .landingPage {
         grid-template-columns: 1fr;
         overflow: hidden;
         scroll-behavior: smooth;
         height: auto;
     }
 
-    .landingPage__heading{
+    .landingPage__heading {
         font-size: 50px;
         max-width: 100%;
         margin: 20px 0px;
@@ -195,15 +197,16 @@
         text-transform: uppercase;
     }
 
-    .landingPage__content{
+    .landingPage__content {
         padding: 15px;
     }
-    .hero-intro__content{
+
+    .hero-intro__content {
         width: 100%;
         display: block;
     }
 
-    .landginPage-video{
+    .landginPage-video {
         width: 100%;
         height: auto;
         border-radius: 10px;

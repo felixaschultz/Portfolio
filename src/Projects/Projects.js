@@ -211,7 +211,8 @@ $jwt = base64_encode(json_encode($hash));
                 <code class="code-editor">
 <pre>
 window.addEventListener("DOMContentLoaded", function() {
-    window.opener.postMessage("<?php echo $publicjwt; ?>", "*");
+    const JWT = "[Genereret JWT]";
+    window.opener.postMessage(JWT, "*");
     window.addEventListener("message", function(e) {
         if (e.data == "iframe-token-recieved") {
             window.parent.close();

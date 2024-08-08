@@ -174,7 +174,7 @@ export const Projects = [
             en: ""
         },
         github: "https://github.com/Intastellar-Solutions-International/intastellar-signin",
-        url: "https://www.intastellarsolutions.com/solutions/signin",
+        url: "https://www.intastellaraccounts.com",
         type: "Web development",
         technology: "JS, MySQL, PHP"
     },

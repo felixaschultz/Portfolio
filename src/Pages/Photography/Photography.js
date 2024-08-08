@@ -2,15 +2,17 @@ const { useState, useEffect, useRef, useContext } = React;
 import "./Style.css";
 import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
-import importAll  from "../../utils/importAll";
+import importAll from "../../utils/importAll";
 
 const useParams = window.ReactRouterDOM.useParams;
 
 export default function Photography(props) {
     document.title = props.title;
     const [location, setLocation] = useContext(LocationContext);
-    
+
     const images = importAll(require.context("../../assets/resource", true, /\.jpg|png|jpeg$/));
+
+    console.log(images);
 
     return (
         <>
@@ -22,9 +24,9 @@ export default function Photography(props) {
                     </section>
                 </section>
                 <section className="belowthfold">
-                {images.map((photo, i) => (
-                   <img key={i} src={photo} alt={`photo-${i}`} />
-                ))}
+                    {images.map((photo, i) => (
+                        <img key={i} src={photo} alt={`photo-${i}`} />
+                    ))}
                 </section>
             </main>
         </>

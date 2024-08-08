@@ -5,6 +5,7 @@ import intastellarsolutions from "../statics/projects/intastellarsolutions/scree
 import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
 import intastellarSignIn from "../statics/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png";
+import candidatedk from "../statics/projects/candidate-analytics/Screenshot 2024-05-23 at 22.47.40.png";
 import dbStructrue from "./timetable/db-structure.png";
 
 export const Projects = [
@@ -12,7 +13,7 @@ export const Projects = [
         id: "cykelfaergen",
         name: "Cykelfærgen Flensborg Fjord",
         screenshot: cykelfaegen,
-        highlight: true,
+        highlight: false,
         description: {
             de: "",
             da: `
@@ -830,6 +831,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "balticfinance-uploadformular",
         name: "Baltic Finance Uploadformular",
         screenshot: null,
+        highlight: true,
         description: {
             de: "",
             da: `
@@ -1020,6 +1022,33 @@ if($movedFiles){
         technology: "HTML, CSS, JS, PHP"
     },
     /* {
+        id: "analytics-candidatedk",
+        name: "Analytics for Candidate.dk",
+        screenshot: candidatedk,
+        highlight: true,
+        short_description: {
+            de: "",
+            da: `Under min uddannelse hos EAAA har jeg arbejde på deres digitale platform candidate.dk, hvor deres studerene fra uddannelser, Multimedieuddannelse, PBA i Digital Concept Udvikling og PBA i Webudvikling.
+                Jeg fik udviklet en tracking script som trackede daily active users, logged in users. device, screen size, browser, screensize, user acquisition og user languages.
+                `,
+            en: ""
+        },
+        description: {
+            de: "",
+            da: `
+                <section class="content-ppad">
+                    <p>Jeg sad primært på at viderudvikle og bug fixing admin dashboard. Der blev implementeret Analytics data, via egen udviklet tracking script. Der trackes daily active users, logged in users. device, screen size, browser, screensize, user acquisition og user languages.</p>
+                    <p></p>
+                </section>
+                `,
+            en: ""
+        },
+        github: null,
+        url: "https://candidate.dk",
+        type: "Web Development",
+        technology: "MongoDB, RemixJS",
+    } */
+    /* {
         id: "event-planer",
         name: "Event Planner",
         screenshot: null,
@@ -1031,12 +1060,12 @@ if($movedFiles){
         description: {
             de: "",
             da: `
-                <section class="content-ppad">
+    < section class="content-ppad" >
                     <h2>Beskrivelse</h2>
                     <p>Som mit 2 Semester eksamensprojekt på Professionsbachelor i Webudvikling var opgaven at udvikle en Webapp hvor man kan planlægge et event.</p>
                     <p></p>
-                </section>
-            `
+                </ >
+    `
         },
         github: "https://github.com/felixaschultz/eventplaner",
         url: "https://event.inta.dev",

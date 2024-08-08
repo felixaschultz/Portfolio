@@ -56,12 +56,12 @@ export default function Home(props) {
                             }).slice(0, 3).map((project, key) => {
                                 return (
                                     <>
-                                        <Link to={"/project/" + project.id} key={key} className="frontpage-projects">
+                                        <a href={"/project/" + project.id} key={key} className="frontpage-projects">
                                             <img src={project.screenshot ?? responsive} />
                                             <h2>{project.name}</h2>
                                             <p>{project.type}</p>
                                             <p>Tech: {project.technology}</p>
-                                        </Link>
+                                        </a>
                                     </>
                                 )
                             })

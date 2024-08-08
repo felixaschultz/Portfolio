@@ -203,8 +203,7 @@ $signing_key = "{en hemmelig nøgle}";
 $signiture = hash_hmac("sha256", base64_encode($headers) . "." . base64_encode($data), $signing_key, true);
 $token = base64_encode($headers) . "." . base64_encode($data) . "." . base64_encode($signiture);
 
-$publicjwt = base64_encode($token);
-$jwt = base64_encode(json_encode($hash));
+$jwt = base64_encode($token);
 </pre>
                 </code>
                 <h3>Send token til parent (Client-Side)</h3>

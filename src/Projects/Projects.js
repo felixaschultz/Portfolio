@@ -576,7 +576,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         },
         github: "",
         url: "https://www.intastellarconsents.com",
-        type: "Web design / development",
+        type: "SaaS - Solutions",
         technology: "ReactJS, MySQL"
     },
     {
@@ -640,18 +640,36 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         screenshot: null,
         description: {
             de: "",
+<<<<<<< HEAD
+            da: `
+            <section class="content-ppad">
+                <h2>Projektbeskrivelse</h2>
+                <p>Under min uddannelse som Multimediedesigner var jeg heldig at kunne være en del af Danfoss, samt skive min hovedopgave sammen med dem.</p>
+                <p>Jeg vælgte at går ind i at kode en af deres løsninger som Danfoss på den tid har udviklet på. Jeg fik udviklet løsning i ReactJS, som til dato var skrevet i AnagularJS. Jeg fik valgt ReactJS pga. at løsningen skulle på et tidspunkt sammles og integres i Danfoss Alsense.</p>
+                <p>Alsense er udviklet i ReactJS, så gav det for mig god mening at udvikle platformen, med det nye design i ReactJS.</p>
+            </section>
+            <section class="content-ppad">
+                <h2>Design</h2>
+            </section>
+            `,
+=======
             da: "Denne side er ikke klar i nu!",
+>>>>>>> origin/master
             en: ""
         },
         short_description: {
             de: "",
+<<<<<<< HEAD
+            da: `Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.`,
+=======
             da: "Denne side er ikke klar i nu!",
+>>>>>>> origin/master
             en: ""
         },
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
-        type: "Web design / development",
-        technology: "HTML, CSS, JS, ReactJS"
+        type: "SaaS Solutions",
+        technology: "ReactJS"
     },
     {
         id: "sailmore",
@@ -831,7 +849,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "balticfinance-uploadformular",
         name: "Baltic Finance Uploadformular",
         screenshot: null,
-        highlight: true,
         description: {
             de: "",
             da: `
@@ -1021,7 +1038,7 @@ if($movedFiles){
         type: "Web Development",
         technology: "HTML, CSS, JS, PHP"
     },
-    /* {
+    {
         id: "analytics-candidatedk",
         name: "Analytics for Candidate.dk",
         screenshot: candidatedk,
@@ -1047,7 +1064,7 @@ if($movedFiles){
         url: "https://candidate.dk",
         type: "Web Development",
         technology: "MongoDB, RemixJS",
-    } */
+    }
     /* {
         id: "event-planer",
         name: "Event Planner",

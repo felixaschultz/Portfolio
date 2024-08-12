@@ -576,7 +576,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         },
         github: "",
         url: "https://www.intastellarconsents.com",
-        type: "Web design / development",
+        type: "SaaS - Solutions",
         technology: "ReactJS, MySQL"
     },
     {
@@ -660,7 +660,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         },
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
-        type: "Web design / development",
+        type: "SaaS Solutions",
         technology: "ReactJS"
     },
     {

@@ -640,7 +640,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         screenshot: null,
         description: {
             de: "",
-<<<<<<< HEAD
             da: `
             <section class="content-ppad">
                 <h2>Projektbeskrivelse</h2>
@@ -652,18 +651,11 @@ export default function useFetch(updateInterval, url, method, headers, body, han
                 <h2>Design</h2>
             </section>
             `,
-=======
-            da: "Denne side er ikke klar i nu!",
->>>>>>> origin/master
             en: ""
         },
         short_description: {
             de: "",
-<<<<<<< HEAD
             da: `Som min Hovedopgave fik jeg muligheden at skrive den sammen med Danfoss Climate Solutions. Jeg valgte opgaven at Redesigne og ny udvikle deres digitale platform Alsense InSite. Jeg udviklede det nye design i ReactJS.`,
-=======
-            da: "Denne side er ikke klar i nu!",
->>>>>>> origin/master
             en: ""
         },
         github: null,
@@ -689,25 +681,6 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         url: "https://sailmore-dev.felix-schultz.dk",
         type: "Web development",
         technology: "ReactJS"
-    },
-    {
-        id: "just-drink",
-        name: "Just Drink",
-        screenshot: null,
-        description: {
-            de: "",
-            da: "Under mit Studie som Mutlimediedesigner, fik jeg muligheden at udvikle en Webapp for en fiktiv kunde. Jeg valgte at udvikle en Webapp for en fiktiv kunde som sku.",
-            en: ""
-        },
-        short_description: {
-            de: "",
-            da: "Under mit Studie som Mutlimediedesigner, fik jeg muligheden at udvikle en Webapp for en fiktiv kunde. Jeg valgte at udvikle en Webapp for en fiktiv kunde som skule have en App hvor med man kan bestille drikkevarer til ens fest. Ala Just Eat,",
-            en: ""
-        },
-        github: "https://github.com/felixaschultz/Just-Drink",
-        url: null,
-        type: "Web Development",
-        technology: "HTML, CSS, JS"
     },
     {
         id: "cykelfaergen-api",

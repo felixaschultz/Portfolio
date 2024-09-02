@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = (req, res) => {
-    fs.readFile(path.resolve('./index.html'), 'utf-8', (err, data) => {
+    fs.readFile(path.resolve('./public/index.html'), 'utf-8', (err, data) => {
         if (err) {
             res.status(500).send('Internal Server Error');
             return;

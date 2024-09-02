@@ -1,4 +1,4 @@
-.navigation{
+.navigation {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -7,7 +7,7 @@
     position: relative;
 }
 
-.navigation__link{
+.navigation__link {
     text-decoration: none;
     color: #fff;
     padding: 30px 15px;
@@ -17,12 +17,12 @@
     align-items: center;
 }
 
-.github--icon{
+.github--icon {
     filter: invert(1);
     margin-right: -30px;
 }
 
-.locationPicker{
+.locationPicker {
     font-size: 16px;
     padding: 15px;
     border: none;
@@ -33,20 +33,20 @@
     position: relative;
 }
 
-.language .locationPicker:hover{
+.language .locationPicker:hover {
     background-color: #fff;
     color: var(--headerColor);
 }
 
-.header-grid{
+.header-grid {
     display: grid;
-    grid-template-columns: repeat(3, max-content);
+    grid-template-columns: repeat(2, max-content);
     gap: 5px;
     justify-content: space-between;
     align-items: center;
 }
 
-.language{
+.language {
     position: absolute;
     top: 76px;
     background-color: var(--headerColor);
@@ -59,11 +59,11 @@
     flex-direction: column;
 }
 
-.dropdown{
+.dropdown {
     position: relative;
 }
 
-.dropdownButton{
+.dropdownButton {
     background-color: transparent;
     border: none;
     color: #fff;
@@ -72,7 +72,7 @@
     cursor: pointer;
 }
 
-.dropdownContent{
+.dropdownContent {
     /* display: none; */
     position: absolute;
     top: 100%;
@@ -87,18 +87,18 @@
     width: max-content;
 }
 
-.dropdownContent a{
+.dropdownContent a {
     color: #fff;
     text-decoration: none;
     padding: 10px;
     display: block;
 }
 
-.iconContainer .navigation__link{
+.iconContainer .navigation__link {
     padding: 0px 15px;
 }
 
-.--active::before{
+.--active::before {
     content: "";
     width: 100%;
     position: absolute;
@@ -108,14 +108,16 @@
     background-color: #fff;
 }
 
-@media screen and (min-width: 340px) and (max-width: 900px){
-    .navigation{
+@media screen and (min-width: 340px) and (max-width: 900px) {
+    .navigation {
         display: none;
     }
-    .navigation__link{
+
+    .navigation__link {
         padding: 0px 15px;
     }
-    .header-grid{
+
+    .header-grid {
         grid-template-columns: 1fr 1fr;
     }
 
@@ -123,8 +125,8 @@
         width: 100%;
     }
 
-    .main-header{
+    .main-header {
         padding: 15px;
     }
-    
+
 }

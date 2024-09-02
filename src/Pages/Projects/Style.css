@@ -1,19 +1,19 @@
-.belowthfold{
+.belowthfold {
     color: #fff;
     text-decoration: none;
 }
 
-.belowthfold a{
+.belowthfold a {
     text-decoration: none;
 }
 
-.project-grid{
+.project-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(min-content, 1fr));
     gap: 50px;
 }
 
-.project{
+.project {
     background-color: #fff;
     border-radius: 10px;
     padding: 15px;
@@ -23,24 +23,29 @@
     margin: 15px 0px;
 }
 
-.landingPage__content{
+.landingPage__content {
     padding: 15px;
     margin-top: 100px;
 }
 
-.content-ppad{
+.content-ppad {
     padding: 10px 50px;
     width: 1050px;
     margin: auto;
 }
 
-.scroll-snap{
+.content-ppad a {
+    color: #3cb7dd;
+    text-decoration: underline;
+}
+
+.scroll-snap {
     scroll-snap-points-y: repeat(100vh);
     scroll-snap-type: y mandatory;
 
 }
 
-.code-editor{
+.code-editor {
     background-color: #3e3e3e;
     border-radius: 10px;
     padding: 15px;
@@ -50,37 +55,37 @@
     overflow-y: hidden;
 }
 
-video{
+video {
     width: 100%;
     height: auto;
     border-radius: 10px;
 }
 
-.landingPage__content.--span{
+.landingPage__content.--span {
     grid-column: 1/3;
     text-align: center;
     place-items: center;
 }
 
-.project-page h2{
+.project-page h2 {
     font-size: 2em;
     font-weight: 300;
     margin: 20px 0px;
     width: max-content;
 }
 
-@media screen and (min-width: 340px) and (max-width: 900px){
-    .content{
+@media screen and (min-width: 340px) and (max-width: 900px) {
+    .content {
         width: 100%;
         padding: 15px;
     }
-    
-    .content-ppad{
+
+    .content-ppad {
         width: 100%;
         padding: 10px 15px;
     }
 
-    .project-grid{
+    .project-grid {
         grid-template-columns: 1fr;
     }
 }

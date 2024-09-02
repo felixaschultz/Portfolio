@@ -392,6 +392,11 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
 </pre>
                 </code>
             </section>
+            <img src=${intastellarSignIn} />
+            <section class="content-ppad">
+                <h2>Integration</h2>
+                <a href="https://developers.intastellarsolutions.com/identity/sign-in/web/docs" rel="noopener" target="_blank">Find dokumentation på Intastellar Developers</a>
+            </section>
                 `,
             en: ""
         },

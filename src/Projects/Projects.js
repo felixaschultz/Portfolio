@@ -5,6 +5,7 @@ import intastellarsolutions from "../statics/projects/intastellarsolutions/scree
 import intastellarConsentsLogin from "../statics/projects/intastellarconsents/screenshot-login.png";
 import instastellarConsetnsDashboard from "../statics/projects/intastellarconsents/screenshot-dashboard.png";
 import intastellarSignIn from "../statics/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png";
+import intastellarSignInPopup from "../statics/projects/intastellarsignin/Screenshot 2024-09-02 at 11.55.53.png";
 import candidatedk from "../statics/projects/candidate-analytics/Screenshot 2024-05-23 at 22.47.40.png";
 import dbStructrue from "./timetable/db-structure.png";
 
@@ -160,6 +161,7 @@ export const Projects = [
                 </p>
                 <p>Jeg fandt ret hurtigt ud af at de benyttede sig postMessage metoden for at dele informationer cross-domain. Derfor begyndte jeg hurtigt i, at sætte mig ind i hvordan det fungerede og hvordan jeg kan benytte det.</p>
             </section>
+            <img src=${intastellarSignInPopup} />
             <section class="content-ppad">
                 <h2>PostMessage</h2>
                 <p>PostMessage er en metode som gør det muligt at sende beskeder mellem vinduer/frames på tværs af domæner. Metoden er en del af HTML5 og er en sikker metode for at kommunikere mellem forskellige domæner.</p>

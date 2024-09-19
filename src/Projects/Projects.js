@@ -829,6 +829,7 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         id: "balticfinance-uploadformular",
         name: "Baltic Finance Uploadformular",
         screenshot: null,
+        highlight: true,
         description: {
             de: "",
             da: `
@@ -1022,7 +1023,7 @@ if($movedFiles){
         id: "analytics-candidatedk",
         name: "Analytics for Candidate.dk",
         screenshot: candidatedk,
-        highlight: true,
+        highlight: false,
         short_description: {
             de: "",
             da: `Under min uddannelse hos EAAA har jeg arbejde på deres digitale platform candidate.dk, hvor deres studerene fra uddannelser, Multimedieuddannelse, PBA i Digital Concept Udvikling og PBA i Webudvikling.

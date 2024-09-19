@@ -65,7 +65,15 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
-                <CardsSlider />
+                <CardsSlider
+                    items={[
+                        {
+                            title: "Web",
+                            description: "Web development",
+                            image: responsive
+                        },
+                    ]}
+                />
                 <section className="photography">
                     <section className="grid content">
                         <section>

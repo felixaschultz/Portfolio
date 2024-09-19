@@ -65,6 +65,7 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
+                <CardsSlider />
                 <section className="photography">
                     <section className="grid content">
                         <section>

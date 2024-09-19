@@ -7,6 +7,7 @@ import { LocationContext } from "../../modules/App";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import Recommendations from "../../components/Recommendations";
+import CardsSlider from "../../components/CardsSlider";
 import responsive from "../../statics/assets/responsive.svg";
 import me from "../../statics/assets/me.jpg";
 
@@ -19,15 +20,10 @@ export default function Home(props) {
 
     const [project, setProject] = useState(null);
 
-    window.addEventListener("DOMContentLoaded", function () {
-        Intastellar.accounts.id.renderButton(
-            document.querySelector("#buttonDiv")
-        )
-    })
-
     return (
         <>
             <main>
+                <div id="login-button"></div>
                 <section className="landingPage" style={{ paddingBottom: "20px" }}>
                     <section className="landingPage__ImageContainer">
                         <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
@@ -69,6 +65,7 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
+                <CardsSlider />
                 <section className="photography">
                     <section className="grid content">
                         <section>

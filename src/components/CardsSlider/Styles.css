@@ -1,0 +1,29 @@
+.CardContainer {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 1200px;
+    position: relative;
+    padding: 90px 0;
+}
+
+.Card {
+    background-color: #fff;
+    color: #494949;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    overflow: hidden;
+    position: relative;
+    width: 500px;
+    max-height: 400px;
+    height: 350px;
+    flex: 2;
+    transition: all 0.5s cubic-bezier(0.05, 0.61, 0.41, 0.95);
+}
+
+/* Active card vs collapsed card */
+.Card.active {
+    width: 300px;
+    flex: 10;
+}

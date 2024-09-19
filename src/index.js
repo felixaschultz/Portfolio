@@ -1,2 +1,4 @@
+import React from "react";
 import App from "./modules/App.js";
-ReactDOM.hydrateRoot(<App />, document.getElementById('app'));
+const rootDOM = document.getElementById('app');
+ReactDOM.render(<App />, rootDOM);

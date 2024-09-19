@@ -33,7 +33,7 @@
     <script src="https://unpkg.com/react-router@5/umd/react-router.min.js"></script>
     <script src="https://unpkg.com/react-router-dom@5/umd/react-router-dom.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://account.api.intastellarsolutions.com/v1/insign/client.js"></script>
+    <script src="https://account.api.intastellarsolutions.com/v1/login.js"></script>
     <script>
         window.INTA = {
             policy_link: "https://www.intastellarsolutions.com/privacy-policy/",
@@ -43,16 +43,6 @@
         }
     </script>
     <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
-    <script>
-        window.addEventListener("load", function () {
-            /* Intastellar.accounts.id.renderButton(
-                document.querySelector("#login-button"),
-                {
-                    "picker": "popup"
-                }
-            ) */
-        })
-    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZTLK2LKHCH"></script>
     <script>
@@ -67,6 +57,14 @@
 <body>
     <div id="app"></div>
     <script src="/bundle.js"></script>
+    <script>
+        Intastellar.accounts.id.renderButton(
+            "login-button",
+            {
+                "picker": "popup"
+            }
+        )
+    </script>
 </body>
 
 </html>

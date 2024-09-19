@@ -23,10 +23,10 @@ export default function Home(props) {
     return (
         <>
             <main>
-                <div id="login-button"></div>
+                <div id="login-button" data-app-name="Felix A. | Portfolio" data-login_callback="login" data-client_id="d2eefd7f1564fa4c9714000456183a6b0f51e8c9519e1089ec41ce905ffc0c453dfac91ae8645c41ebae9c59e7a6e5233b1339e41a15723a9ba6d934bbb3e92d"></div>
                 <section className="landingPage" style={{ paddingBottom: "20px" }}>
                     <section className="landingPage__ImageContainer">
-                        <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video>
+                        {/* <video className="landginPage-video" playsInline muted autoPlay loop src="https://www.cykelfaergen.info/assets/vid/cykelfaergen-reklame.mp4"></video> */}
                     </section>
                     <section className="landingPage__content landingPage__left landingPage--TopLeft show">
                         <h1 className="landingPage__heading">&lt;Felix A. Schultz /&gt;</h1>
@@ -65,7 +65,6 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
-                <CardsSlider />
                 <section className="photography">
                     <section className="grid content">
                         <section>
@@ -77,9 +76,6 @@ export default function Home(props) {
                 </section>
                 <Recommendations />
             </main>
-            {
-                (showPopup.hideShow && showPopup.item == "Project") ? <Project setShowPopup={setShowPopup} showPopup={showPopup.hideShow} project={project} /> : null
-            }
         </>
     )
 }

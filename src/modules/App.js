@@ -1,10 +1,10 @@
 const { useState, useEffect, useRef, createContext, useMemo } = React;
 import "./App.css";
-const Router = window.ReactRouterDOM.BrowserRouter;
-const Route =  window.ReactRouterDOM.Route;
-const Link =  window.ReactRouterDOM.Link;
-const Prompt =  window.ReactRouterDOM.Prompt;
+const Route = window.ReactRouterDOM.Route;
+const Link = window.ReactRouterDOM.Link;
+const Prompt = window.ReactRouterDOM.Prompt;
 const Switch = window.ReactRouterDOM.Switch;
+const Routes = window.ReactRouterDOM.Routes;
 const Redirect = window.ReactRouterDOM.Redirect;
 
 import Home from "../Pages/Home/Home";
@@ -23,7 +23,7 @@ export const LocationContext = createContext(null);
 
 export default function App() {
     const [location, setLocation] = useState("da");
-    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
+    const [showPopup, setShowPopup] = useState({ hideShow: false, item: null });
 
     const provided = useMemo(() => ({
         value: location,
@@ -32,15 +32,15 @@ export default function App() {
 
     return (
         <>
-            <Router>
-                <LocationContext.Provider value={ provided }>
-                    <div className="pushDown">
-                        <header className="main-header">
-                            <section className="header-grid">
-                                <Nav />
-                            </section>
-                        </header>
-                        <div className="main-content">
+            <LocationContext.Provider value={provided}>
+                <div className="pushDown">
+                    <header className="main-header">
+                        <section className="header-grid">
+                            <Nav />
+                        </section>
+                    </header>
+                    <div className="main-content">
+                        <Routes>
                             <Switch>
                                 <Route path="/" exact>
                                     <Home title="Felix A. | Portfolio" showPopup={showPopup} setShowPopup={setShowPopup} />
@@ -70,14 +70,14 @@ export default function App() {
                                 </Route>
                                 <Redirect to="/" />
                             </Switch>
-                        </div>
-                        <Footer />
+                        </Routes>
                     </div>
-                    <canvas id="fireworksCanvas"></canvas>
-                    <EasterEgg />
-                    {(showPopup.hideShow && showPopup.item == "Contact") ? <Contact setShowPopup={setShowPopup} showPopup={showPopup.hideShow} /> : null}
-                </LocationContext.Provider>
-            </Router>
+                    <Footer />
+                </div>
+                <canvas id="fireworksCanvas"></canvas>
+                <EasterEgg />
+                {(showPopup.hideShow && showPopup.item == "Contact") ? <Contact setShowPopup={setShowPopup} showPopup={showPopup.hideShow} /> : null}
+            </LocationContext.Provider>
         </>
     )
 }

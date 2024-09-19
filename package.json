@@ -5,7 +5,8 @@
         "build": "webpack build",
         "dev:build-server": "NODE_ENV=development webpack --config webpack.server.js --mode=development -w",
         "dev:start": "nodemon ./server-build/index.js",
-        "dev": "npm-run-all --parallel build dev:*"
+        "dev": "npm-run-all --parallel build dev:*",
+        "ssr": "npm run build && node server/index.js"
     },
     "devDependencies": {
         "nodemon": "^3.0.2",

@@ -1,2 +1,7 @@
 import App from "./modules/App.js";
-ReactDOM.hydrateRoot(<App />, document.getElementById('app'));
+const Router = window.ReactRouterDOM.BrowserRouter;
+ReactDOM.hydrateRoot(document,
+    <Router>
+        <App />
+    </Router>
+);

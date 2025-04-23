@@ -1,6 +1,8 @@
 {
     "homepage": "https://github.com/felixaschultz/Portfolio",
     "main": "webpack.config.js",
+    "name": "portfolio",
+    "version": "1.0.0",
     "scripts": {
         "start": "webpack serve --open --mode development",
         "build": "webpack build --mode=production",

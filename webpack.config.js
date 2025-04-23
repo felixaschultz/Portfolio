@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const config = {
   entry: {
-    intastellarAnalytics: path.resolve(__dirname, '/src/index.js'),
+    portfolio: path.resolve(__dirname, '/index.js'),
   },
   output: {
     filename: '[name].bundle.js',

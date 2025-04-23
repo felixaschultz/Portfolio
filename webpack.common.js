@@ -1,29 +1,20 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+/* const nodeExternals = require('webpack-node-externals'); */
 
-const client = {
-  entry: path.resolve(__dirname, 'index.js'),
+const config = {
+  entry: {
+    intastellarAnalytics: path.resolve(__dirname, '/index.js'),
+  },
   output: {
-    path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
-    publicPath: '/'
+    path: path.resolve(__dirname, "./dist"),
+    clean: true,
+    publicPath: "/"
   },
-  mode: "development",
-  watch: true,
-  watchOptions: {
-    ignored: /node_modules/,
-  },
+
   externals: {
     "i18n-iso-countries": "i18n-iso-countries",
-  },
-  devServer: {
-    historyApiFallback: true,
-  },
-  resolve: {
-    modules: [
-      'node_modules',
-      path.resolve('node_modules')
-    ]
   },
   module: {
     rules: [
@@ -32,14 +23,17 @@ const client = {
         loader: "node-loader",
       },
       {
-        test: /\.(jsx|js|ts)$/,
+        test: /\.(jsx|js)$/,
         include: path.resolve(__dirname),
         exclude: /node_modules/,
         use: [{
           loader: 'babel-loader',
           options: {
             presets: [
-              '@babel/preset-env',
+              [
+                '@babel/preset-env',
+                { targets: "defaults" }
+              ],
               '@babel/preset-react'
             ]
           }
@@ -59,16 +53,14 @@ const client = {
         ],
       }
     ]
-  },
+  }
 };
-
-
 
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
-    client.devtool = 'source-map';
-    client.mode = 'development';
-    client.plugins = [
+    config.devtool = 'source-map';
+    config.mode = 'development';
+    config.plugins = [
       new HtmlWebpackPlugin({
         template: "./src/index.html",
       })
@@ -77,8 +69,8 @@ module.exports = (env, argv) => {
 
   if (argv.mode === 'production') {
     //...
-    client.mode = 'production';
-    client.plugins = [
+    config.mode = 'production';
+    config.plugins = [
       new HtmlWebpackPlugin({
         template: "./production.html",
       })
@@ -86,5 +78,5 @@ module.exports = (env, argv) => {
 
   }
 
-  return [client];
+  return config;
 };

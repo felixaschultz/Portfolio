@@ -1,11 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
+const client = {
   entry: path.resolve(__dirname, 'src', 'index.js'),
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     publicPath: '/'
   },
   mode: "development",
@@ -13,33 +13,33 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/,
   },
-
+  externals: {
+    "i18n-iso-countries": "i18n-iso-countries",
+  },
   devServer: {
     historyApiFallback: true,
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "src/index.html"
-    })
-  ],
+  resolve: {
+    modules: [
+      'node_modules',
+      path.resolve('node_modules')
+    ]
+  },
   module: {
     rules: [
-      /* {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-      }, */
       {
-        test: /\.(jsx|js)$/,
-        include: path.resolve(__dirname, 'src'),
-        /* exclude: /node_modules/, */
+        test: /\.node$/,
+        loader: "node-loader",
+      },
+      {
+        test: /\.(jsx|js|ts)$/,
+        include: path.resolve(__dirname),
+        exclude: /node_modules/,
         use: [{
           loader: 'babel-loader',
           options: {
             presets: [
-              [
-                '@babel/preset-env',
-                { targets: "defaults" }
-              ],
+              '@babel/preset-env',
               '@babel/preset-react'
             ]
           }
@@ -51,29 +51,40 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(png|jpe?g|gif)$/,
-        include: path.resolve(__dirname, 'src/assets/resource'),
-        type: 'asset/resource',
+        test: /\.(png|jpe?g|gif|svg)$/i,
         use: [
           {
-            loader: "url-loader",
-          }
-        ],
-      },
-      {
-        test: /\.(png|jpe?g|gif)$/i,
-        include: path.resolve(__dirname, 'src'),
-        use: [
-          {
-            loader: 'url-loader',
+            loader: 'file-loader',
           },
         ],
-      },
-      {
-        test: /\.(svg)$/,
-        include: path.resolve(__dirname, 'src'),
-        use: ['svg-url-loader'],
       }
     ]
   },
+};
+
+
+
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    client.devtool = 'source-map';
+    client.mode = 'development';
+    client.plugins = [
+      new HtmlWebpackPlugin({
+        template: "./src/index.html",
+      })
+    ]
+  }
+
+  if (argv.mode === 'production') {
+    //...
+    client.mode = 'production';
+    client.plugins = [
+      new HtmlWebpackPlugin({
+        template: "./production.html",
+      })
+    ]
+
+  }
+
+  return [client];
 };

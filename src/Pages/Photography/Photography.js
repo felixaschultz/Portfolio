@@ -4,11 +4,11 @@ import { LocationContext } from "../../modules/App";
 import { local } from "../../localization/local";
 import importAll from "../../utils/importAll";
 
-const useParams = window.ReactRouterDOM.useParams;
 
 export default function Photography(props) {
     document.title = props.title;
     const [location, setLocation] = useContext(LocationContext);
+    const useParams = window.ReactRouterDOM.useParams;
 
     const images = importAll(require.context("../../assets/resource", true, /\.jpg|png|jpeg$/));
 

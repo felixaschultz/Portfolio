@@ -5,13 +5,12 @@ import { local } from "../../localization/local";
 import { Projects } from "../../Projects/Projects";
 import Project from "../../components/Project/Project";
 import responsive from "../../statics/assets/responsive.svg";
-const useParams = window.ReactRouterDOM.useParams;
-const Link = window.ReactRouterDOM.Link;
 
 export default function ProjectsPage(props) {
+    const useParams = window.ReactRouterDOM.useParams;
     document.title = props.title;
     const [location, setLocation] = useContext(LocationContext);
-    const [showPopup, setShowPopup] = useState({hideShow: false, item: null});
+    const [showPopup, setShowPopup] = useState({ hideShow: false, item: null });
     const [project, setProject] = useState(null);
     return (
         <>
@@ -24,13 +23,13 @@ export default function ProjectsPage(props) {
                 </section>
                 <section className="belowthfold">
                     <article className="content project-grid">
-                    {
+                        {
                             Projects.map((project, key) => {
                                 return (
                                     <>
                                         <a href={"/project/" + project.id} key={key} className="frontpage-projects" onClick={
                                             (e) => {
-                                                (window.location.pathname != "/projects") ?? e.preventDefault(), setShowPopup({hideShow: !showPopup.hideShow, item: "Project"})
+                                                (window.location.pathname != "/projects") ?? e.preventDefault(), setShowPopup({ hideShow: !showPopup.hideShow, item: "Project" })
                                             }
                                         }>
                                             <img src={(project.screenshot === null) ? responsive : project.screenshot} />

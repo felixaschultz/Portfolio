@@ -1,6 +1,3 @@
-const Link = window.ReactRouterDOM.Link;
-const NavLink = window.ReactRouterDOM.NavLink;
-const useLocation = window.ReactRouterDOM.useLocation;
 const { useState, useEffect, useRef, useContext } = React;
 import "./Style/Nav.css";
 import { LocationContext } from "../../modules/App";
@@ -9,6 +6,9 @@ import logo from "../../statics/assets/felix-schultz-logo-icon.svg";
 import { GitHub, LinkedIn } from "../Icons";
 
 export default function Nav() {
+    const Link = window.ReactRouterDOM.Link;
+    const NavLink = window.ReactRouterDOM.NavLink;
+    const useLocation = window.ReactRouterDOM.useLocation;
     const [location, setLocation] = useContext(LocationContext);
     const locationPath = useLocation();
     const [showLanguage, setShowLanguage] = useState(false);

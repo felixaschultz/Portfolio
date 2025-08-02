@@ -1,5 +1,5 @@
 const { useState, useEffect, useRef, useContext } = React;
-const Link = window.ReactRouterDOM.Link;
+
 import "./Style/Home.css";
 import DanfossLogo from "./Danfoss_logo.svg";
 import { local } from "../../localization/local";
@@ -10,15 +10,13 @@ import Recommendations from "../../components/Recommendations";
 import CardsSlider from "../../components/CardsSlider";
 import responsive from "../../statics/assets/responsive.svg";
 import me from "../../statics/assets/me.jpg";
-
 export default function Home(props) {
     document.title = props.title;
+    const { Link } = window.ReactRouterDOM;
     const [location] = useContext(LocationContext);
     const showPopup = props.showPopup
     const setShowPopup = props.setShowPopup
     const item = props.item;
-
-    const [project, setProject] = useState(null);
 
     return (
         <>
@@ -65,15 +63,6 @@ export default function Home(props) {
                     </div>
                     <Link to="/projects" className="showMore">Show more</Link>
                 </section>
-                <CardsSlider
-                    items={[
-                        {
-                            title: "Web",
-                            description: "Web development",
-                            image: responsive
-                        },
-                    ]}
-                />
                 <section className="photography">
                     <section className="grid content">
                         <section>

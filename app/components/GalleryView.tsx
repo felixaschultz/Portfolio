@@ -29,7 +29,6 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
 
   const openPhoto = useCallback((key: string) => {
-    console.log(key);
     setActiveKey(key);
   }, []);
 
@@ -103,7 +102,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         open={activeImage !== null}
         onClose={closePhoto}
         ariaLabel={title}
-        positionClassName="items-center justify-center p-2 sm:p-4"
+        positionClassName="modal-overlay--center"
         panelClassName="relative max-w-5xl px-1 sm:px-0"
       >
         <button

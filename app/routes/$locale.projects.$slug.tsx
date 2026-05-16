@@ -5,6 +5,7 @@ import { HtmlContent } from "../components/HtmlContent";
 import { getProjectBySlug } from "../lib/projects.server";
 import { getLocalizedText } from "../lib/projects";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { sanitizePortfolioHtml } from "../lib/sanitize-html.server";
 import { buildPageMeta, stripHtml } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
@@ -13,7 +14,12 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!project) {
     throw new Response("Not Found", { status: 404 });
   }
-  return { project };
+
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  const rawDescription = getLocalizedText(project.description, locale);
+  const descriptionHtml = rawDescription ? sanitizePortfolioHtml(rawDescription) : "";
+
+  return { project, descriptionHtml };
 }
 
 export function meta({ data, params }: Route.MetaArgs) {
@@ -34,12 +40,11 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function ProjectDetail() {
-  const { project } = useLoaderData<typeof loader>();
+  const { project, descriptionHtml } = useLoaderData<typeof loader>();
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
   const base = `/${locale}`;
-  const description = getLocalizedText(project.description, lng);
   const shortDesc = getLocalizedText(project.short_description, lng);
   const image = project.screenshot ?? "/assets/responsive.svg";
 
@@ -73,9 +78,7 @@ export default function ProjectDetail() {
         alt={project.name}
         className="mt-10 w-full rounded-2xl border border-[var(--color-border)]"
       />
-      {description && (
-        <HtmlContent html={description} className="mt-12" />
-      )}
+      {descriptionHtml ? <HtmlContent html={descriptionHtml} className="mt-12" /> : null}
     </article>
   );
 }

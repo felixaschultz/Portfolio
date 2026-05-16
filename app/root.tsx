@@ -34,7 +34,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div id="root-app">{children}</div>
-        <div id="modal-root" />
         <ScrollRestoration />
         <Scripts />
       </body>

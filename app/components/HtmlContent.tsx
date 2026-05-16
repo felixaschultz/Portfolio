@@ -1,5 +1,3 @@
-import { sanitizePortfolioHtml } from "../lib/sanitize-html";
-
 type HtmlContentProps = {
   html: string;
   className?: string;
@@ -21,13 +19,12 @@ function fixAssetUrls(html: string): string {
   );
 }
 
+/** Renders HTML sanitized on the server (see project detail loader). */
 export function HtmlContent({ html, className = "" }: HtmlContentProps) {
-  const clean = sanitizePortfolioHtml(html);
-
   return (
     <div
       className={`prose-portfolio ${className}`}
-      dangerouslySetInnerHTML={{ __html: fixAssetUrls(clean) }}
+      dangerouslySetInnerHTML={{ __html: fixAssetUrls(html) }}
     />
   );
 }

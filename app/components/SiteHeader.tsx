@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useBodyScrollLock } from "../lib/useBodyScrollLock";
@@ -20,10 +21,15 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const base = `/${locale}`;
   const currentLocale = (locale ?? "da") as Locale;
 
   useBodyScrollLock(menuOpen);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -152,18 +158,19 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
         </div>
       </div>
 
-      {menuOpen ? (
-        <div id="mobile-nav" className="lg:hidden">
-          <button
-            type="button"
-            className="fixed inset-0 z-40 bg-black/60"
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-          />
-          <nav
-            className="relative z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
-            aria-label="Main"
-          >
+      {menuOpen && mounted
+        ? createPortal(
+            <div id="mobile-nav" className="fixed inset-0 z-[9998] lg:hidden">
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/60"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+              />
+              <nav
+                className="absolute inset-x-0 top-14 z-10 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+                aria-label="Main"
+              >
             <div className="flex flex-col gap-1">
               <NavLink
                 to={`${base}/projects`}
@@ -204,10 +211,12 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
               <button type="button" onClick={openContact} className="btn-primary mt-3 w-full">
                 {t("nav.contact")}
               </button>
-            </div>
-          </nav>
-        </div>
-      ) : null}
+                </div>
+              </nav>
+            </div>,
+            document.body,
+          )
+        : null}
     </header>
   );
 }

@@ -32,6 +32,7 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
       open={open}
       onClose={onClose}
       ariaLabelledBy="contact-title"
+      positionClassName="modal-overlay--responsive"
       panelClassName="relative max-w-lg overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5 shadow-2xl sm:rounded-2xl sm:p-6"
     >
       <button

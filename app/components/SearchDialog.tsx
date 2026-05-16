@@ -73,6 +73,7 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
       open={open}
       onClose={onClose}
       ariaLabel={t("search.title")}
+      positionClassName="modal-overlay--responsive"
       panelClassName="max-w-xl overflow-hidden rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-2xl sm:rounded-2xl"
     >
       <div className="flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3">

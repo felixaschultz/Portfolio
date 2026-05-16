@@ -1,6 +1,5 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 
 type ModalProps = {
   open: boolean;
@@ -12,73 +11,72 @@ type ModalProps = {
   ariaLabelledBy?: string;
 };
 
-const FOCUSABLE =
-  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-function getModalRoot(): HTMLElement {
-  return document.getElementById("modal-root") ?? document.body;
-}
-
 export function Modal({
   open,
   onClose,
   children,
   panelClassName = "",
-  positionClassName = "items-end sm:items-center justify-center p-0 sm:p-4",
+  positionClassName = "modal-overlay--center",
   ariaLabel,
   ariaLabelledBy,
 }: ModalProps) {
   const titleId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
-
-  useBodyScrollLock(open);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
+    setMounted(true);
+  }, []);
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onCloseRef.current();
-      }
-    };
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
-    document.addEventListener("keydown", onKeyDown);
-
-    requestAnimationFrame(() => {
-      const panel = panelRef.current;
-      if (!panel) return;
-      const focusable = panel.querySelector<HTMLElement>(FOCUSABLE);
-      (focusable ?? panel).focus();
-    });
-
-    return () => document.removeEventListener("keydown", onKeyDown);
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
   }, [open]);
 
-  if (!open || typeof document === "undefined") return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      if (dialog.open) onCloseRef.current();
+    };
+
+    dialog.addEventListener("close", handleClose);
+    dialog.addEventListener("cancel", handleClose);
+    return () => {
+      dialog.removeEventListener("close", handleClose);
+      dialog.removeEventListener("cancel", handleClose);
+    };
+  }, []);
+
+  if (!mounted) return null;
 
   return createPortal(
-    <div
-      className={`fixed inset-0 z-[10000] flex ${positionClassName}`}
-      role="presentation"
+    <dialog
+      ref={dialogRef}
+      className={`modal-overlay ${positionClassName}`}
+      aria-modal="true"
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : titleId)}
+      onClick={(event) => {
+        if (event.target === dialogRef.current) {
+          onCloseRef.current();
+        }
+      }}
     >
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default bg-black/75 backdrop-blur-sm"
-        aria-label="Close"
-        tabIndex={-1}
-        onClick={() => onCloseRef.current()}
-      />
       <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : titleId)}
-        tabIndex={-1}
-        className={`relative z-10 mx-auto w-full max-h-[100dvh] overflow-y-auto overscroll-contain outline-none sm:max-h-[min(90dvh,720px)] ${panelClassName}`}
+        className={`modal-panel ${panelClassName}`}
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onTouchStart={(event) => event.stopPropagation()}
       >
         {!ariaLabel && !ariaLabelledBy ? (
           <span id={titleId} className="sr-only">
@@ -87,7 +85,7 @@ export function Modal({
         ) : null}
         {children}
       </div>
-    </div>,
-    getModalRoot(),
+    </dialog>,
+    document.body,
   );
 }

@@ -55,14 +55,14 @@ export default function ProjectDetail() {
           {t("projects.tech")}: {project.technology}
         </p>
         {shortDesc && <p className="mt-4 text-[var(--color-muted)]">{shortDesc}</p>}
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {project.url && (
-            <a href={project.url} target="_blank" rel="noreferrer" className="btn-primary">
+            <a href={project.url} target="_blank" rel="noreferrer" className="btn-primary w-full sm:w-auto">
               {t("projects.visitSite")}
             </a>
           )}
           {project.github && (
-            <a href={project.github} target="_blank" rel="noreferrer" className="btn-ghost">
+            <a href={project.github} target="_blank" rel="noreferrer" className="btn-ghost w-full sm:w-auto">
               {t("projects.visitGithub")}
             </a>
           )}

@@ -15,10 +15,20 @@
   --color-accent-soft: rgba(21, 176, 171, 0.12);
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 html,
 body {
   @apply bg-[var(--color-bg)] text-[var(--color-text)] antialiased;
   color-scheme: dark;
+  overflow-x: hidden;
+}
+
+#modal-root {
+  position: relative;
+  z-index: 10000;
 }
 
 .font-display {
@@ -26,7 +36,11 @@ body {
 }
 
 .nav-link {
-  @apply rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-muted)] transition hover:text-[var(--color-text)];
+  @apply inline-flex min-h-10 items-center rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-muted)] transition hover:text-[var(--color-text)];
+}
+
+.nav-link-mobile {
+  @apply flex min-h-11 items-center rounded-xl px-3 py-3 text-base font-medium text-[var(--color-text)] transition hover:bg-[var(--color-accent-soft)];
 }
 
 .nav-link-active {
@@ -34,15 +48,19 @@ body {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-[#0a0f0e] transition hover:brightness-110;
+  @apply inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-semibold text-[#0a0f0e] transition hover:brightness-110 sm:px-6 sm:py-3;
 }
 
 .btn-ghost {
-  @apply inline-flex items-center justify-center rounded-full border border-[var(--color-border)] px-6 py-3 text-sm font-medium text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
+  @apply inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] sm:px-6 sm:py-3;
+}
+
+.btn-icon {
+  @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
 }
 
 .input {
-  @apply w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-accent)];
+  @apply w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition focus:border-[var(--color-accent)] sm:text-sm;
 }
 
 .prose-portfolio {

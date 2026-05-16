@@ -81,13 +81,13 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         open={Boolean(activeImage)}
         onClose={closePhoto}
         ariaLabel={title}
-        positionClassName="items-center justify-center p-4"
-        panelClassName="max-w-5xl"
+        positionClassName="items-center justify-center p-2 sm:p-4"
+        panelClassName="relative max-w-5xl px-1 sm:px-0"
       >
         <button
           type="button"
           onClick={closePhoto}
-          className="absolute right-2 top-2 z-20 rounded-full bg-black/50 px-3 py-2 text-white hover:bg-black/70 sm:right-0 sm:top-0"
+          className="absolute right-1 top-1 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-lg text-white hover:bg-black/80 sm:right-0 sm:top-0"
           aria-label={t("photography.close")}
         >
           ✕
@@ -95,7 +95,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         {activeImage && activeIndex > 0 && (
           <button
             type="button"
-            className="absolute left-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 px-4 py-3 text-white hover:bg-black/70"
+            className="absolute left-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:left-2"
             onClick={() =>
               openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
             }
@@ -106,7 +106,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         {activeImage && activeIndex < gallery.images.length - 1 && (
           <button
             type="button"
-            className="absolute right-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 px-4 py-3 text-white hover:bg-black/70"
+            className="absolute right-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:right-2"
             onClick={() =>
               openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
             }

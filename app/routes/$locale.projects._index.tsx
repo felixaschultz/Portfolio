@@ -28,10 +28,10 @@ export default function ProjectsIndex() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <header className="max-w-2xl">
-        <h1 className="font-display text-4xl font-bold">{t("projects.title")}</h1>
+        <h1 className="font-display text-3xl font-bold sm:text-4xl">{t("projects.title")}</h1>
         <p className="mt-4 text-[var(--color-muted)]">{t("projects.description")}</p>
       </header>
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}

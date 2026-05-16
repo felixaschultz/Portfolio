@@ -32,12 +32,12 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
       open={open}
       onClose={onClose}
       ariaLabelledBy="contact-title"
-      panelClassName="max-w-lg overflow-y-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-6 shadow-2xl"
+      panelClassName="relative max-w-lg overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5 shadow-2xl sm:rounded-2xl sm:p-6"
     >
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-4 top-4 text-[var(--color-muted)] hover:text-[var(--color-text)]"
+        className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-[var(--color-muted)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-text)]"
         aria-label={t("contact.close")}
       >
         ✕

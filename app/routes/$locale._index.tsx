@@ -52,32 +52,34 @@ export default function HomePage() {
     <>
       <section className="relative overflow-hidden border-b border-[var(--color-border)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-accent-soft)_0%,_transparent_55%)]" />
-        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-28">
-          <div>
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:py-28">
+          <div className="order-2 lg:order-1">
             <p className="font-mono text-sm text-[var(--color-accent)]">
               &lt;{t("hero.name")} /&gt;
             </p>
-            <h1 className="mt-4 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               {t("hero.role")}
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-[var(--color-muted)]">{t("hero.intro")}</p>
-            <button type="button" onClick={openContact} className="btn-primary mt-8">
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-[var(--color-muted)] sm:text-lg">
+              {t("hero.intro")}
+            </p>
+            <button type="button" onClick={openContact} className="btn-primary mt-8 w-full sm:w-auto">
               {t("hero.cta")}
             </button>
           </div>
-          <div className="flex items-end justify-center lg:justify-end">
+          <div className="order-1 flex justify-center lg:order-2 lg:items-end lg:justify-end">
             <img
               src="/assets/me.jpg"
               alt="Felix Schultz"
-              className="h-56 w-56 rounded-3xl border-4 border-[var(--color-border)] object-cover shadow-2xl lg:h-72 lg:w-72"
+              className="h-44 w-44 rounded-3xl border-4 border-[var(--color-border)] object-cover shadow-2xl sm:h-56 sm:w-56 lg:h-72 lg:w-72"
             />
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="font-display text-3xl font-semibold">{t("featured.projects")}</h2>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("featured.projects")}</h2>
           <Link to={`${base}/projects`} className="text-sm text-[var(--color-accent)] hover:underline">
             {t("projects.showMore")} →
           </Link>
@@ -91,8 +93,8 @@ export default function HomePage() {
 
       <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="font-display text-3xl font-semibold">{t("featured.photos")}</h2>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("featured.photos")}</h2>
             <Link
               to={`${base}/photography`}
               className="text-sm text-[var(--color-accent)] hover:underline"

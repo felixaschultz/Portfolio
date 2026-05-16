@@ -73,11 +73,14 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
       open={open}
       onClose={onClose}
       ariaLabel={t("search.title")}
-      panelClassName="max-w-xl overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-2xl"
+      panelClassName="max-w-xl overflow-hidden rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-2xl sm:rounded-2xl"
     >
       <div className="flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3">
-        <span className="text-[var(--color-muted)]" aria-hidden>
+        <span className="hidden text-[var(--color-muted)] sm:inline" aria-hidden>
           ⌘K
+        </span>
+        <span className="text-[var(--color-muted)] sm:hidden" aria-hidden>
+          ⌕
         </span>
         <input
           ref={inputRef}
@@ -85,14 +88,14 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("search.placeholder")}
-          className="flex-1 bg-transparent text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)]"
+          className="min-h-11 flex-1 bg-transparent text-base text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)] sm:text-sm"
           autoComplete="off"
           spellCheck={false}
         />
         <button
           type="button"
           onClick={onClose}
-          className="text-sm text-[var(--color-muted)] hover:text-[var(--color-text)]"
+          className="min-h-11 shrink-0 px-2 text-sm text-[var(--color-muted)] hover:text-[var(--color-text)]"
         >
           {t("search.close")}
         </button>

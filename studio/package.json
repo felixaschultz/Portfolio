@@ -2,10 +2,14 @@
   "name": "portfolio-studio",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "node scripts/with-env.mjs dev",
+    "build": "node scripts/with-env.mjs build",
     "deploy": "node scripts/with-env.mjs deploy",
-    "build": "node scripts/with-env.mjs build"
+    "register": "node scripts/register-production.mjs"
   },
   "dependencies": {
     "@sanity/vision": "^5.25.1",

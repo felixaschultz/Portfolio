@@ -11,7 +11,9 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "studio": "npm run dev --prefix studio",
+    "studio:build": "npm run build --prefix studio",
     "studio:deploy": "npm run deploy --prefix studio",
+    "studio:register": "npm run register --prefix studio",
     "seed:projects": "tsx scripts/seed-projects.ts"
   },
   "dependencies": {

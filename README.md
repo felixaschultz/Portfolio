@@ -48,12 +48,29 @@ The studio loads env vars from the root `.env` file.
 
 **If image uploads fail** (request error to `*.api.sanity.io`):
 
-1. **CORS** — [sanity.io/manage](https://www.sanity.io/manage) → your project → **API** → **CORS origins** → add `http://localhost:3333` with **Allow credentials** enabled.
+1. **CORS** — [sanity.io/manage](https://www.sanity.io/manage) → your project → **API** → **CORS origins** → add `http://localhost:3333`, `http://127.0.0.1:3333`, and `https://studio.felix-schultz.net` with **Allow credentials** enabled.
 2. **Sign in** — In Studio (top right), log in with your Sanity account.
 3. **Or use a write token** — Create an API token with **Editor** permissions, add to `.env` as `SANITY_STUDIO_API_TOKEN=sk...` (or reuse `SANITY_API_TOKEN` if it has write access). Restart `npm run studio`.
 
 4. Create **Gallery** documents — in **Photos**, click **Upload folder** to add every image from a folder at once, or drag multiple files onto the grid. Mark `featured` for the home page.
-5. Deploy studio: `npm run studio:deploy`
+
+### Production Studio (`studio.felix-schultz.net`)
+
+Studio is a **separate Vercel project** (root directory `studio/`), not embedded in the portfolio app.
+
+1. In [Vercel](https://vercel.com), **Add New Project** → same GitHub repo → set **Root Directory** to `studio`.
+2. **Environment variables** (Production + Preview): `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET`, and optionally `SANITY_STUDIO_API_TOKEN` (Editor).
+3. Deploy, then add domain **`studio.felix-schultz.net`** in that project’s Domains settings. Point DNS (CNAME) to Vercel as instructed.
+4. **CORS** — [sanity.io/manage](https://www.sanity.io/manage) → API → CORS origins → add `https://studio.felix-schultz.net` with **Allow credentials**.
+5. Register the URL with Sanity (once, after the site is live):
+
+```bash
+npm run studio:register
+```
+
+Local dev: `npm run studio` → [http://localhost:3333](http://localhost:3333).
+
+Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 
 ## Environment variables
 

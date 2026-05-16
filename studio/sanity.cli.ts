@@ -18,4 +18,6 @@ export default defineCliConfig({
       process.env.SANITY_DATASET ??
       "production",
   },
+  /** Hostname for `sanity deploy` (Sanity-hosted *.sanity.studio). Not used for Vercel subdomain. */
+  studioHost: process.env.SANITY_STUDIO_HOSTNAME ?? "felix-portfolio",
 });

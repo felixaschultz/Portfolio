@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "projects": "Projekte",
+    "photography": "Fotografie",
+    "websites": "Websites",
+    "contact": "Kontakt"
+  },
+  "hero": {
+    "name": "Felix A. Schultz",
+    "role": "Fullstack Entwickler | Fotograf",
+    "title": "Front-end Entwickler mit Leidenschaft",
+    "intro": "Ich habe eine Leidenschaft für die Front-End-Webentwicklung. Ich arbeite seit mehr als 10 Jahren an der Website-Entwicklung — die ersten 5 Jahre nur als Hobby neben der Schule.",
+    "cta": "Kontaktieren Sie mich"
+  },
+  "about": {
+    "title": "Das bin ich",
+    "body": "Im Jahr 2016 wurde bei mir eine Nierenerkrankung diagnostiziert. Im Juli 2019 wurde ich ohne Komplikationen transplantiert. In meiner Freizeit gehe ich gerne mit Kamera und Drohne raus. Im August 2023 habe ich meinen Professional Bachelor in Webentwicklung begonnen."
+  },
+  "projects": {
+    "title": "Projekte",
+    "description": "Hier sehen Sie einige der Projekte, an denen ich gearbeitet habe.",
+    "showMore": "Alle Projekte anzeigen",
+    "visitSite": "Website besuchen",
+    "visitGithub": "GitHub besuchen",
+    "tech": "Tech"
+  },
+  "photography": {
+    "title": "Fotografie",
+    "description": "Hier sehen Sie einige der Fotos, die ich aufgenommen habe.",
+    "showMore": "Galerie anzeigen",
+    "empty": "Fotos folgen in Kürze. Bilder in Sanity Studio hinzufügen.",
+    "back": "Zurück zur Galerie"
+  },
+  "recommendations": {
+    "title": "Empfehlungen"
+  },
+  "contact": {
+    "title": "Lassen Sie uns sprechen!",
+    "description": "Füllen Sie das Formular aus und ich melde mich so schnell wie möglich.",
+    "name": "Name",
+    "email": "E-Mail",
+    "message": "Ihre Nachricht",
+    "submit": "Nachricht senden",
+    "success": "Ihre Nachricht wurde gesendet.",
+    "error": "Ihre Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "close": "Schließen"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten"
+  },
+  "featured": {
+    "projects": "Ausgewählte Projekte",
+    "photos": "Ausgewählte Fotos"
+  }
+}

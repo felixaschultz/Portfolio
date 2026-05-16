@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "projects": "Projects",
+    "photography": "Photography",
+    "websites": "Websites",
+    "contact": "Contact"
+  },
+  "hero": {
+    "name": "Felix A. Schultz",
+    "role": "Fullstack developer | Photographer",
+    "title": "Front-end developer with passion",
+    "intro": "I have a passion for front-end web development. I have worked for more than 10 years with website development — the first 5 years as a hobby alongside school. The last 5 years I have focused on going full professional into web development.",
+    "cta": "Contact me"
+  },
+  "about": {
+    "title": "Hi! My name is Felix. I'm a Frontend Webdeveloper based in Sønderborg",
+    "body": "In 2016, at the age of 18, I was diagnosed with kidney disease. In July 2019 I was transplanted without complications. In 2020 I started my education as a multimedia designer and finished in 2022. In my free time I go out with my camera and drone. In August 2023 I started my Professional Bachelor in Web Development at Erhvervsakademiet Aarhus."
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "Here you can see some of the projects I have worked on.",
+    "showMore": "View all projects",
+    "visitSite": "Visit website",
+    "visitGithub": "Visit GitHub",
+    "tech": "Tech"
+  },
+  "photography": {
+    "title": "Photography",
+    "description": "Here you can see some of the photos I have taken.",
+    "showMore": "View gallery",
+    "empty": "Photos coming soon. Add images in Sanity Studio.",
+    "back": "Back to gallery"
+  },
+  "recommendations": {
+    "title": "Recommendations"
+  },
+  "contact": {
+    "title": "Let's talk!",
+    "description": "Fill out the form and I will get back to you as soon as possible.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Your message",
+    "submit": "Send message",
+    "success": "Your message has been sent. Thank you.",
+    "error": "There was an error sending your message. Please try again.",
+    "close": "Close"
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  },
+  "featured": {
+    "projects": "Featured projects",
+    "photos": "Featured photos"
+  }
+}

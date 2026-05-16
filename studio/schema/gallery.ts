@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
   defineField({
@@ -42,9 +43,12 @@ export const gallery = defineType({
       name: "images",
       title: "Photos",
       description:
-        "Drag multiple files onto this field or use “Upload” to add many images at once.",
+        "Use “Upload folder” to add every image from a folder, drag multiple files onto the grid, or multi-select in Upload (Cmd/Ctrl+A).",
       type: "array",
       of: [defineArrayMember({ type: "galleryImage" })],
+      components: {
+        input: GalleryImagesInput,
+      },
       options: {
         layout: "grid",
       },

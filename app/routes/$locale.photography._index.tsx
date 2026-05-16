@@ -6,7 +6,12 @@ import { fetchGalleriesForList, isSanityConfigured } from "../lib/sanity.server"
 
 export async function loader() {
   const galleries = await fetchGalleriesForList();
-  return { galleries, sanityConfigured: isSanityConfigured() };
+  return {
+    galleries,
+    /** @deprecated Stale bundles may still read this */
+    photos: galleries,
+    sanityConfigured: isSanityConfigured(),
+  };
 }
 
 export function meta() {
@@ -14,7 +19,9 @@ export function meta() {
 }
 
 export default function PhotographyIndex() {
-  const { galleries, sanityConfigured } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const galleries = data.galleries ?? data.photos ?? [];
+  const sanityConfigured = data.sanityConfigured ?? false;
   const { t } = useTranslation();
 
   return (

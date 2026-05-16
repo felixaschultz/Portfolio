@@ -9,7 +9,11 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!gallery) {
     throw new Response("Not Found", { status: 404 });
   }
-  return { gallery };
+  return {
+    gallery,
+    /** @deprecated Stale bundles may still read this */
+    photo: gallery,
+  };
 }
 
 export function meta({ data }: Route.MetaArgs) {
@@ -21,6 +25,10 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export default function PhotographyGalleryPage() {
-  const { gallery } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const gallery = data.gallery ?? data.photo;
+  if (!gallery) {
+    throw new Error("Gallery not found");
+  }
   return <GalleryView gallery={gallery} />;
 }

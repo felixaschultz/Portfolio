@@ -46,7 +46,7 @@ npm run studio
 
 The studio loads env vars from the root `.env` file.
 
-4. Create **Gallery** documents — use the **Photos** field to drag in or upload **multiple images at once** (grid layout). Mark `featured` for the home page.
+4. Create **Gallery** documents — in **Photos**, click **Upload folder** to add every image from a folder at once, or drag multiple files onto the grid. Mark `featured` for the home page.
 5. Deploy studio: `npm run studio:deploy`
 
 ## Environment variables

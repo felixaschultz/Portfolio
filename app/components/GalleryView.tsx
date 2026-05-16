@@ -1,4 +1,5 @@
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
+import { useEffect, useRef } from "react";
+import { Link, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail } from "../lib/galleries";
 import { localizedField, type Locale } from "../lib/i18n";
@@ -13,9 +14,8 @@ function photoParam(image: { _key?: string }, index: number): string {
 
 export function GalleryView({ gallery }: GalleryViewProps) {
   const { locale } = useParams();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
   const base = `/${locale}`;
@@ -24,26 +24,27 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   const activeKey = searchParams.get("photo");
 
   const activeIndex = activeKey
-    ? gallery.images.findIndex(
-        (img, index) => photoParam(img, index) === activeKey,
-      )
+    ? gallery.images.findIndex((img, index) => photoParam(img, index) === activeKey)
     : -1;
   const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
 
   function openPhoto(key: string) {
-    const params = new URLSearchParams(searchParams);
-    params.set("photo", key);
-    navigate({ search: params.toString() }, { preventScrollReset: true });
+    setSearchParams({ photo: key }, { preventScrollReset: true });
   }
 
   function closePhoto() {
-    const params = new URLSearchParams(searchParams);
-    params.delete("photo");
-    navigate(
-      { pathname: location.pathname, search: params.toString() },
-      { preventScrollReset: true },
-    );
+    setSearchParams({}, { preventScrollReset: true });
   }
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (activeImage) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [activeImage]);
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -87,46 +88,48 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         ))}
       </div>
 
-      {activeImage && (
-        <div
-          className="fixed inset-0 z-[300] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
+      <dialog
+        ref={dialogRef}
+        className="gallery-lightbox m-0 max-h-none max-w-none border-0 bg-transparent p-4 backdrop:bg-black/85 open:flex open:items-center open:justify-center"
+        aria-label={title}
+        onClose={closePhoto}
+        onClick={(e) => {
+          if (e.target === dialogRef.current) closePhoto();
+        }}
+      >
+        <button
+          type="button"
           onClick={closePhoto}
-          onKeyDown={(e) => e.key === "Escape" && closePhoto()}
+          className="absolute right-4 top-4 z-10 rounded-full bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          aria-label={t("photography.close")}
         >
+          ✕
+        </button>
+        {activeImage && activeIndex > 0 && (
           <button
             type="button"
-            onClick={closePhoto}
-            className="absolute right-4 top-4 z-10 rounded-full bg-white/10 px-3 py-2 text-white hover:bg-white/20"
-            aria-label={t("photography.close")}
+            className="absolute left-4 z-10 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1));
+            }}
           >
-            ✕
+            ‹
           </button>
-          {activeIndex > 0 && (
-            <button
-              type="button"
-              className="absolute left-4 z-10 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
-              onClick={(e) => {
-                e.stopPropagation();
-                openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1));
-              }}
-            >
-              ‹
-            </button>
-          )}
-          {activeIndex < gallery.images.length - 1 && (
-            <button
-              type="button"
-              className="absolute right-4 z-10 mr-12 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
-              onClick={(e) => {
-                e.stopPropagation();
-                openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1));
-              }}
-            >
-              ›
-            </button>
-          )}
+        )}
+        {activeImage && activeIndex < gallery.images.length - 1 && (
+          <button
+            type="button"
+            className="absolute right-4 z-10 mr-12 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1));
+            }}
+          >
+            ›
+          </button>
+        )}
+        {activeImage && (
           <figure
             className="max-h-[90vh] max-w-5xl"
             onClick={(e) => e.stopPropagation()}
@@ -144,8 +147,8 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               </figcaption>
             )}
           </figure>
-        </div>
-      )}
+        )}
+      </dialog>
     </article>
   );
 }

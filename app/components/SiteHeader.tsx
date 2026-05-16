@@ -1,7 +1,6 @@
-import { Link, NavLink, useParams } from "react-router";
+import { Link, NavLink, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Locale } from "../lib/i18n";
-import { useSearch } from "./SearchProvider";
+import { type Locale } from "../lib/i18n";
 
 const websiteLinks = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
@@ -11,18 +10,20 @@ const websiteLinks = [
 
 type SiteHeaderProps = {
   onContactClick: () => void;
+  onSearchClick: () => void;
 };
 
-export function SiteHeader({ onContactClick }: SiteHeaderProps) {
+export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   const { locale } = useParams();
+  const location = useLocation();
   const { t, i18n } = useTranslation();
-  const { openSearch } = useSearch();
   const base = `/${locale}`;
+  const currentLocale = (locale ?? "da") as Locale;
 
-  const switchLocale = (next: Locale) => {
-    const path = window.location.pathname.replace(`/${locale}`, `/${next}`);
-    window.location.href = path || `/${next}`;
-  };
+  function localeHref(next: Locale): string {
+    const path = location.pathname.replace(`/${currentLocale}`, `/${next}`);
+    return path || `/${next}`;
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-md">
@@ -73,7 +74,7 @@ export function SiteHeader({ onContactClick }: SiteHeaderProps) {
 
           <button
             type="button"
-            onClick={openSearch}
+            onClick={onSearchClick}
             className="btn-ghost inline-flex items-center gap-1.5"
             aria-label={t("search.open")}
           >
@@ -92,10 +93,9 @@ export function SiteHeader({ onContactClick }: SiteHeaderProps) {
 
           <div className="ml-1 flex items-center gap-1 rounded-full border border-[var(--color-border)] p-1">
             {(["da", "de", "en"] as Locale[]).map((lng) => (
-              <button
+              <Link
                 key={lng}
-                type="button"
-                onClick={() => switchLocale(lng)}
+                to={localeHref(lng)}
                 className={`rounded-full px-2 py-1 text-xs font-medium uppercase transition ${
                   i18n.language === lng
                     ? "bg-[var(--color-accent)] text-white"
@@ -103,7 +103,7 @@ export function SiteHeader({ onContactClick }: SiteHeaderProps) {
                 }`}
               >
                 {lng}
-              </button>
+              </Link>
             ))}
           </div>
         </nav>

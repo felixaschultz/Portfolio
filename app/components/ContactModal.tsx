@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ContactModalProps = {
@@ -8,9 +8,18 @@ type ContactModalProps = {
 
 export function ContactModal({ open, onClose }: ContactModalProps) {
   const { t } = useTranslation();
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
-  if (!open) return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,12 +38,16 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      className="contact-dialog mx-auto w-[min(100%,32rem)] max-h-[90vh] overflow-y-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-0 text-[var(--color-text)] shadow-2xl backdrop:bg-black/60 open:block"
+      aria-labelledby="contact-title"
+      onClose={onClose}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onClose();
+      }}
     >
-      <div className="relative w-full max-w-lg rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-6 shadow-2xl">
+      <div className="relative p-6">
         <button
           type="button"
           onClick={onClose}
@@ -43,7 +56,9 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
         >
           ✕
         </button>
-        <h2 className="font-display text-2xl font-semibold">{t("contact.title")}</h2>
+        <h2 id="contact-title" className="font-display text-2xl font-semibold">
+          {t("contact.title")}
+        </h2>
         <p className="mt-2 text-sm text-[var(--color-muted)]">{t("contact.description")}</p>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <label className="block">
@@ -69,6 +84,6 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
           )}
         </form>
       </div>
-    </div>
+    </dialog>
   );
 }

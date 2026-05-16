@@ -6,3 +6,4 @@
 .vercel
 /build
 .react-router
+node_modules

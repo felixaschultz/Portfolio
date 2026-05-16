@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizePortfolioHtml } from "../lib/sanitize-html";
 
 type HtmlContentProps = {
   html: string;
@@ -22,10 +22,7 @@ function fixAssetUrls(html: string): string {
 }
 
 export function HtmlContent({ html, className = "" }: HtmlContentProps) {
-  const clean = DOMPurify.sanitize(html, {
-    ADD_TAGS: ["video", "source"],
-    ADD_ATTR: ["target", "rel", "playsinline", "muted", "autoplay", "loop", "controls"],
-  });
+  const clean = sanitizePortfolioHtml(html);
 
   return (
     <div

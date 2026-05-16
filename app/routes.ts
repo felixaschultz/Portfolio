@@ -6,6 +6,8 @@ import {
 
 export default [
   index("routes/_index.tsx"),
+  route("sitemap.xml", "routes/sitemap[.]xml.ts"),
+  route("robots.txt", "routes/robots[.]txt.ts"),
   route("fotografi", "routes/fotografi.tsx"),
   route(":locale", "routes/$locale.tsx", [
     index("routes/$locale._index.tsx"),

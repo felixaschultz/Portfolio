@@ -1,4 +1,25 @@
 {
+  "search": {
+    "title": "Search",
+    "placeholder": "Search projects, galleries…",
+    "close": "Close",
+    "noResults": "No results found",
+    "open": "Search",
+    "shortcut": "⌘K",
+    "types": {
+      "project": "Project",
+      "gallery": "Gallery",
+      "page": "Page"
+    }
+  },
+  "seo": {
+    "homeTitle": "Fullstack developer & photographer",
+    "homeDescription": "Portfolio of Felix A. Schultz — web projects, photography galleries, and contact.",
+    "projectsTitle": "Projects",
+    "projectsDescription": "Web development and design projects by Felix A. Schultz.",
+    "photographyTitle": "Photography",
+    "photographyDescription": "Photo galleries from Felix A. Schultz."
+  },
   "nav": {
     "projects": "Projects",
     "photography": "Photography",

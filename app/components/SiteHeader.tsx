@@ -1,6 +1,7 @@
 import { Link, NavLink, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Locale } from "../lib/i18n";
+import { openSearchPalette } from "./SearchProvider";
 
 const websiteLinks = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
@@ -68,6 +69,18 @@ export function SiteHeader({ onContactClick }: SiteHeaderProps) {
               ))}
             </div>
           </details>
+
+          <button
+            type="button"
+            onClick={openSearchPalette}
+            className="btn-ghost hidden items-center gap-1.5 sm:inline-flex"
+            aria-label={t("search.open")}
+          >
+            <span>{t("search.open")}</span>
+            <kbd className="hidden rounded border border-[var(--color-border)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--color-muted)] md:inline">
+              {t("search.shortcut")}
+            </kbd>
+          </button>
 
           <button type="button" onClick={onContactClick} className="btn-ghost hidden sm:inline-flex">
             {t("nav.contact")}

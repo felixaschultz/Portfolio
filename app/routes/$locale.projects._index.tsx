@@ -3,13 +3,22 @@ import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale.projects._index";
 import { ProjectCard } from "../components/ProjectCard";
 import { getProjects } from "../lib/projects.server";
+import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { buildPageMeta } from "../lib/seo";
+import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
   return { projects: getProjects() };
 }
 
 export function meta({ params }: Route.MetaArgs) {
-  return [{ title: `Projects | Felix A. Schultz` }];
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  return buildPageMeta({
+    title: seoCopy(locale, "projectsTitle"),
+    description: seoCopy(locale, "projectsDescription"),
+    locale,
+    path: "/projects",
+  });
 }
 
 export default function ProjectsIndex() {

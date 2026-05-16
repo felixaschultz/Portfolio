@@ -1,4 +1,25 @@
 {
+  "search": {
+    "title": "Søg",
+    "placeholder": "Søg projekter, gallerier…",
+    "close": "Luk",
+    "noResults": "Ingen resultater",
+    "open": "Søg",
+    "shortcut": "⌘K",
+    "types": {
+      "project": "Projekt",
+      "gallery": "Galleri",
+      "page": "Side"
+    }
+  },
+  "seo": {
+    "homeTitle": "Fullstack udvikler & fotograf",
+    "homeDescription": "Portfolio for Felix A. Schultz — webprojekter, fotogallerier og kontakt.",
+    "projectsTitle": "Projekter",
+    "projectsDescription": "Webudviklings- og designprojekter af Felix A. Schultz.",
+    "photographyTitle": "Fotografi",
+    "photographyDescription": "Fotogallerier af Felix A. Schultz."
+  },
   "nav": {
     "projects": "Projekter",
     "photography": "Fotografi",

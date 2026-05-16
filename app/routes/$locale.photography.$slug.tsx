@@ -2,7 +2,9 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography.$slug";
 import { GalleryView } from "../components/GalleryView";
 import { fetchGalleryDetailBySlug } from "../lib/sanity.server";
-import { localizedField } from "../lib/i18n";
+import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
+import { buildPageMeta } from "../lib/seo";
+import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const gallery = await fetchGalleryDetailBySlug(params.slug!);
@@ -16,12 +18,21 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  const title =
-    localizedField(data?.gallery?.title, "en") ||
-    localizedField(data?.gallery?.title, "da") ||
-    "Gallery";
-  return [{ title: `${title} | Felix A. Schultz` }];
+export function meta({ data, params }: Route.MetaArgs) {
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  const gallery = data?.gallery ?? data?.photo;
+  const title = localizedField(gallery?.title, locale) || seoCopy(locale, "photographyTitle");
+  const description =
+    localizedField(gallery?.description, locale) ||
+    gallery?.location ||
+    seoCopy(locale, "photographyDescription");
+  return buildPageMeta({
+    title,
+    description,
+    locale,
+    path: gallery ? `/photography/${gallery.slug}` : "/photography",
+    image: gallery?.coverUrl || gallery?.images?.[0]?.imageUrl,
+  });
 }
 
 export default function PhotographyGalleryPage() {

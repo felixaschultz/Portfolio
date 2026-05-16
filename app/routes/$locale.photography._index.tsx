@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale.photography._index";
 import { GalleryCard } from "../components/GalleryCard";
 import { fetchGalleriesForList, isSanityConfigured } from "../lib/sanity.server";
+import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { buildPageMeta } from "../lib/seo";
+import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
   const galleries = await fetchGalleriesForList();
@@ -14,8 +17,14 @@ export async function loader() {
   };
 }
 
-export function meta() {
-  return [{ title: "Photography | Felix A. Schultz" }];
+export function meta({ params }: Route.MetaArgs) {
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  return buildPageMeta({
+    title: seoCopy(locale, "photographyTitle"),
+    description: seoCopy(locale, "photographyDescription"),
+    locale,
+    path: "/photography",
+  });
 }
 
 export default function PhotographyIndex() {

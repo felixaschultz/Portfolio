@@ -4,7 +4,9 @@ import type { Route } from "./+types/$locale.projects.$slug";
 import { HtmlContent } from "../components/HtmlContent";
 import { getProjectBySlug } from "../lib/projects.server";
 import { getLocalizedText } from "../lib/projects";
-import type { Locale } from "../lib/i18n";
+import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { buildPageMeta, stripHtml } from "../lib/seo";
+import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const project = getProjectBySlug(params.slug!);
@@ -14,8 +16,21 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { project };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  return [{ title: `${data?.project.name ?? "Project"} | Felix A. Schultz` }];
+export function meta({ data, params }: Route.MetaArgs) {
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  const project = data?.project;
+  const short = project ? getLocalizedText(project.short_description, locale) : "";
+  const description =
+    short ||
+    (project ? stripHtml(getLocalizedText(project.description, locale)) : "") ||
+    seoCopy(locale, "projectsDescription");
+  return buildPageMeta({
+    title: project?.name ?? seoCopy(locale, "projectsTitle"),
+    description,
+    locale,
+    path: project ? `/projects/${project.id}` : "/projects",
+    image: project?.screenshot ?? undefined,
+  });
 }
 
 export default function ProjectDetail() {

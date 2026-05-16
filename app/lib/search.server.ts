@@ -1,0 +1,91 @@
+import type { Locale } from "./i18n";
+import { localizedField } from "./i18n";
+import { getProjects } from "./projects.server";
+import { getLocalizedText } from "./projects";
+import { fetchGalleries } from "./sanity.server";
+import { stripHtml } from "./seo";
+
+export type SearchResultType = "project" | "gallery" | "page";
+
+export type SearchIndexItem = {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  excerpt: string;
+  href: string;
+  keywords: string;
+};
+
+function pageItem(
+  locale: Locale,
+  id: string,
+  title: string,
+  excerpt: string,
+  path: string,
+  keywords = "",
+): SearchIndexItem {
+  return {
+    id: `page-${id}`,
+    type: "page",
+    title,
+    excerpt,
+    href: `/${locale}${path}`,
+    keywords,
+  };
+}
+
+export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[]> {
+  const items: SearchIndexItem[] = [];
+  const projects = getProjects();
+  const galleries = await fetchGalleries();
+
+  items.push(
+    pageItem(locale, "home", "Home", "Portfolio home", "", "home portfolio"),
+    pageItem(
+      locale,
+      "projects",
+      "Projects",
+      "Web development projects",
+      "/projects",
+      "projects web development",
+    ),
+    pageItem(
+      locale,
+      "photography",
+      "Photography",
+      "Photo galleries",
+      "/photography",
+      "photography photos galleries",
+    ),
+  );
+
+  for (const project of projects) {
+    const title = project.name;
+    const short = getLocalizedText(project.short_description, locale);
+    const excerpt = short || stripHtml(getLocalizedText(project.description, locale));
+    items.push({
+      id: `project-${project.id}`,
+      type: "project",
+      title,
+      excerpt: excerpt || project.type,
+      href: `/${locale}/projects/${project.id}`,
+      keywords: [project.technology, project.type, title].join(" "),
+    });
+  }
+
+  for (const gallery of galleries) {
+    const title = localizedField(gallery.title, locale) || "Gallery";
+    const description = localizedField(gallery.description, locale);
+    const tags = (gallery.tags ?? []).join(" ");
+    items.push({
+      id: `gallery-${gallery.slug}`,
+      type: "gallery",
+      title,
+      excerpt: description || gallery.location || "",
+      href: `/${locale}/photography/${gallery.slug}`,
+      keywords: [title, gallery.location, tags].filter(Boolean).join(" "),
+    });
+  }
+
+  return items;
+}

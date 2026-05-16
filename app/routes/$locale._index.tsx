@@ -6,7 +6,9 @@ import { Recommendations } from "../components/Recommendations";
 import { getFeaturedProjects } from "../lib/projects.server";
 import { fetchFeaturedGalleriesForList } from "../lib/sanity.server";
 import type { GalleryListItem } from "../lib/galleries";
-import { localizedField, type Locale } from "../lib/i18n";
+import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
+import { buildPageMeta } from "../lib/seo";
+import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
   const [featuredProjects, featuredGalleries] = await Promise.all([
@@ -22,7 +24,15 @@ export async function loader() {
 }
 
 export function meta({ params }: Route.MetaArgs) {
-  return [{ title: "Felix A. Schultz | Portfolio" }];
+  const locale: Locale = isValidLocale(params.locale ?? "")
+    ? (params.locale as Locale)
+    : defaultLocale;
+  return buildPageMeta({
+    title: seoCopy(locale, "homeTitle"),
+    description: seoCopy(locale, "homeDescription"),
+    locale,
+    path: "",
+  });
 }
 
 type OutletContext = { openContact: () => void };

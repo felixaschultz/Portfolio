@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-mono: ui-monospace, monospace;
+
+  --color-bg: #0a0f0e;
+  --color-surface: #0f1615;
+  --color-surface-elevated: #141f1e;
+  --color-border: #1e2e2c;
+  --color-text: #e8f0ef;
+  --color-muted: #8aa8a4;
+  --color-accent: #15b0ab;
+  --color-accent-soft: rgba(21, 176, 171, 0.12);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  @apply bg-[var(--color-bg)] text-[var(--color-text)] antialiased;
+  color-scheme: dark;
+  overflow-x: hidden;
+}
+
+#modal-root {
+  pointer-events: none;
+}
+
+#modal-root > * {
+  pointer-events: auto;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Header: desktop nav hidden below lg; hamburger hidden at lg+ */
+.header-nav-desktop {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-menu-button {
+  display: inline-flex;
+}
+
+@media (min-width: 64rem) {
+  .header-nav-desktop {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .header-menu-button {
+    display: none !important;
+  }
+}
+
+.nav-link {
+  @apply inline-flex min-h-10 items-center rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-muted)] transition hover:text-[var(--color-text)];
+}
+
+.nav-link-mobile {
+  @apply flex min-h-11 items-center rounded-xl px-3 py-3 text-base font-medium text-[var(--color-text)] transition hover:bg-[var(--color-accent-soft)];
+}
+
+.nav-link-active {
+  @apply text-[var(--color-accent)];
+}
+
+.btn-primary {
+  @apply inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-semibold text-[#0a0f0e] transition hover:brightness-110 sm:px-6 sm:py-3;
+}
+
+.btn-ghost {
+  @apply inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] sm:px-6 sm:py-3;
+}
+
+.btn-icon {
+  @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
+}
+
+.input {
+  @apply w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition focus:border-[var(--color-accent)] sm:text-sm;
+}
+
+.prose-portfolio {
+  @apply text-[var(--color-muted)] leading-relaxed;
+}
+
+.prose-portfolio h2,
+.prose-portfolio h3 {
+  @apply mt-10 mb-4 font-display text-2xl font-semibold text-[var(--color-text)];
+}
+
+.prose-portfolio p {
+  @apply mb-4;
+}
+
+.prose-portfolio ul,
+.prose-portfolio ol {
+  @apply mb-4 ml-6 list-disc space-y-2;
+}
+
+.prose-portfolio a {
+  @apply text-[var(--color-accent)] underline;
+}
+
+.prose-portfolio img,
+.prose-portfolio video {
+  @apply my-6 max-w-full rounded-xl border border-[var(--color-border)];
+}
+
+.prose-portfolio pre,
+.prose-portfolio code {
+  @apply overflow-x-auto rounded-lg bg-black/40 p-4 font-mono text-sm text-emerald-200/90;
+}
+
+.prose-portfolio .code-editor {
+  @apply my-6 block;
+}
+

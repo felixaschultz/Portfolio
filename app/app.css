@@ -27,12 +27,37 @@ body {
 }
 
 #modal-root {
-  position: relative;
-  z-index: 10000;
+  pointer-events: none;
+}
+
+#modal-root > * {
+  pointer-events: auto;
 }
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Header: desktop nav hidden below lg; hamburger hidden at lg+ */
+.header-nav-desktop {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-menu-button {
+  display: inline-flex;
+}
+
+@media (min-width: 64rem) {
+  .header-nav-desktop {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .header-menu-button {
+    display: none !important;
+  }
 }
 
 .nav-link {

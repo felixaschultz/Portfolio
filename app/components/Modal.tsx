@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 
 type ModalProps = {
   open: boolean;
@@ -29,6 +30,10 @@ export function Modal({
 }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     if (!open) return;
@@ -36,17 +41,11 @@ export function Modal({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
       }
     };
 
     document.addEventListener("keydown", onKeyDown);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const appRoot = document.getElementById("root-app");
-    const prevAriaHidden = appRoot?.getAttribute("aria-hidden") ?? null;
-    appRoot?.setAttribute("aria-hidden", "true");
 
     requestAnimationFrame(() => {
       const panel = panelRef.current;
@@ -55,34 +54,31 @@ export function Modal({
       (focusable ?? panel).focus();
     });
 
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = prevOverflow;
-      if (!appRoot) return;
-      if (prevAriaHidden === null) appRoot.removeAttribute("aria-hidden");
-      else appRoot.setAttribute("aria-hidden", prevAriaHidden);
-    };
-  }, [open, onClose]);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[10000] flex touch-manipulation ${positionClassName}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : titleId)}
-      onClick={onClose}
+      className={`fixed inset-0 z-[10000] flex ${positionClassName}`}
+      role="presentation"
     >
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" aria-hidden />
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default bg-black/75 backdrop-blur-sm"
+        aria-label="Close"
+        tabIndex={-1}
+        onClick={() => onCloseRef.current()}
+      />
       <div
         ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : titleId)}
         tabIndex={-1}
         className={`relative z-10 mx-auto w-full max-h-[100dvh] overflow-y-auto overscroll-contain outline-none sm:max-h-[min(90dvh,720px)] ${panelClassName}`}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
       >
         {!ariaLabel && !ariaLabelledBy ? (
           <span id={titleId} className="sr-only">

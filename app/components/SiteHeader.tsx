@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 import { type Locale } from "../lib/i18n";
 
 const websiteLinks = [
@@ -22,18 +23,11 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   const base = `/${locale}`;
   const currentLocale = (locale ?? "da") as Locale;
 
+  useBodyScrollLock(menuOpen);
+
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [menuOpen]);
 
   function localeHref(next: Locale): string {
     const path = location.pathname.replace(`/${currentLocale}`, `/${next}`);
@@ -60,7 +54,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex md:gap-2" aria-label="Main">
+        <nav className="header-nav-desktop" aria-label="Main">
           <NavLink
             to={`${base}/projects`}
             className={({ isActive }) => `nav-link ${isActive ? "nav-link-active" : ""}`}
@@ -129,13 +123,12 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
 
           <button
             type="button"
-            className="btn-icon md:hidden"
+            className="header-menu-button btn-icon"
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
             {menuOpen ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path
@@ -160,16 +153,15 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
       </div>
 
       {menuOpen ? (
-        <>
+        <div id="mobile-nav" className="lg:hidden">
           <button
             type="button"
-            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            className="fixed inset-0 z-40 bg-black/60"
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
           />
           <nav
-            id="mobile-nav"
-            className="relative z-50 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden"
+            className="relative z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
             aria-label="Main"
           >
             <div className="flex flex-col gap-1">
@@ -178,6 +170,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 className={({ isActive }) =>
                   `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
                 }
+                onClick={() => setMenuOpen(false)}
               >
                 {t("nav.projects")}
               </NavLink>
@@ -186,6 +179,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 className={({ isActive }) =>
                   `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
                 }
+                onClick={() => setMenuOpen(false)}
               >
                 {t("nav.photography")}
               </NavLink>
@@ -199,6 +193,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                   target="_blank"
                   rel="noreferrer"
                   className="nav-link-mobile"
+                  onClick={() => setMenuOpen(false)}
                 >
                   {link.name}
                 </a>
@@ -211,7 +206,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
               </button>
             </div>
           </nav>
-        </>
+        </div>
       ) : null}
     </header>
   );

@@ -1,4 +1,5 @@
-import { Link, useParams, useSearchParams } from "react-router";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail } from "../lib/galleries";
 import { localizedField, type Locale } from "../lib/i18n";
@@ -14,26 +15,44 @@ function photoParam(image: { _key?: string }, index: number): string {
 
 export function GalleryView({ gallery }: GalleryViewProps) {
   const { locale } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
   const base = `/${locale}`;
   const title = localizedField(gallery.title, lng) || "Gallery";
   const description = localizedField(gallery.description, lng);
-  const activeKey = searchParams.get("photo");
+
+  const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const activeIndex = activeKey
     ? gallery.images.findIndex((img, index) => photoParam(img, index) === activeKey)
     : -1;
   const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
 
-  function openPhoto(key: string) {
-    setSearchParams({ photo: key }, { preventScrollReset: true });
-  }
+  const openPhoto = useCallback((key: string) => {
+    setActiveKey(key);
+  }, []);
 
-  function closePhoto() {
-    setSearchParams({}, { preventScrollReset: true });
-  }
+  const closePhoto = useCallback(() => {
+    setActiveKey(null);
+  }, []);
+
+  useEffect(() => {
+    if (activeKey === null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && activeIndex > 0) {
+        e.preventDefault();
+        const prev = gallery.images[activeIndex - 1];
+        setActiveKey(photoParam(prev, activeIndex - 1));
+      }
+      if (e.key === "ArrowRight" && activeIndex < gallery.images.length - 1) {
+        e.preventDefault();
+        const next = gallery.images[activeIndex + 1];
+        setActiveKey(photoParam(next, activeIndex + 1));
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeKey, activeIndex, gallery.images]);
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -67,18 +86,20 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               srcSet={image.imageSrcSet}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               alt={image.alt || title}
-              className="w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
               loading="lazy"
             />
             {image.caption && (
-              <p className="p-3 text-sm text-[var(--color-muted)]">{image.caption}</p>
+              <p className="pointer-events-none p-3 text-sm text-[var(--color-muted)]">
+                {image.caption}
+              </p>
             )}
           </button>
         ))}
       </div>
 
       <Modal
-        open={Boolean(activeImage)}
+        open={activeImage !== null}
         onClose={closePhoto}
         ariaLabel={title}
         positionClassName="items-center justify-center p-2 sm:p-4"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Outlet, redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale";
 import { SiteHeader } from "../components/SiteHeader";
@@ -29,6 +29,11 @@ export default function LocaleLayout() {
   const [contactOpen, setContactOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const openContact = useCallback(() => setContactOpen(true), []);
+  const closeContact = useCallback(() => setContactOpen(false), []);
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -43,20 +48,13 @@ export default function LocaleLayout() {
   return (
     <LocaleProvider locale={locale}>
       <div className="flex min-h-screen flex-col">
-        <SiteHeader
-          onContactClick={() => setContactOpen(true)}
-          onSearchClick={() => setSearchOpen(true)}
-        />
+        <SiteHeader onContactClick={openContact} onSearchClick={openSearch} />
         <main className="flex-1">
-          <Outlet context={{ openContact: () => setContactOpen(true) }} />
+          <Outlet context={{ openContact }} />
         </main>
         <SiteFooter />
-        <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
-        <SearchDialog
-          open={searchOpen}
-          onClose={() => setSearchOpen(false)}
-          items={searchIndex ?? []}
-        />
+        <ContactModal open={contactOpen} onClose={closeContact} />
+        <SearchDialog open={searchOpen} onClose={closeSearch} items={searchIndex ?? []} />
       </div>
     </LocaleProvider>
   );

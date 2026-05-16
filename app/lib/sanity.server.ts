@@ -1,5 +1,7 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { GalleryDetail, GalleryImageItem, GalleryListItem } from "./galleries";
+import type { Locale } from "./i18n";
+import { resolveSanityString } from "./i18n";
 import type { Project } from "./projects";
 
 const projectId = process.env.SANITY_PROJECT_ID;
@@ -32,7 +34,7 @@ export type GalleryImageDocument = {
   _key: string;
   image: SanityImageRef;
   alt?: string;
-  caption?: string;
+  caption?: string | LocalizedString;
 };
 
 export type GalleryDocument = {
@@ -109,18 +111,22 @@ async function mapGalleryToListItem(
   };
 }
 
-async function mapGalleryToDetail(gallery: GalleryDocument): Promise<GalleryDetail | null> {
+async function mapGalleryToDetail(
+  gallery: GalleryDocument,
+  locale: Locale,
+): Promise<GalleryDetail | null> {
   const list = await mapGalleryToListItem(gallery, [600, 900]);
   if (!list) return null;
   const { photoSrcSet } = await import("./image.server");
   const images: GalleryImageItem[] = (gallery.images ?? []).map((item) => {
     const { src, srcSet } = photoSrcSet(item.image, [400, 800, 1200, 1600]);
+    const caption = resolveSanityString(item.caption, locale);
     return {
       _key: item._key,
       imageUrl: src,
       imageSrcSet: srcSet,
       alt: item.alt,
-      caption: item.caption,
+      caption: caption || undefined,
     };
   });
   return { ...list, images };
@@ -168,10 +174,13 @@ export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]
   }
 }
 
-export async function fetchGalleryDetailBySlug(slug: string): Promise<GalleryDetail | null> {
+export async function fetchGalleryDetailBySlug(
+  slug: string,
+  locale: Locale,
+): Promise<GalleryDetail | null> {
   const gallery = await fetchGalleryBySlug(slug);
   if (!gallery) return null;
-  return mapGalleryToDetail(gallery);
+  return mapGalleryToDetail(gallery, locale);
 }
 
 export type SanityProjectDocument = {

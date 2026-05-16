@@ -7,7 +7,8 @@ import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gallery = await fetchGalleryDetailBySlug(params.slug!);
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  const gallery = await fetchGalleryDetailBySlug(params.slug!, locale);
   if (!gallery) {
     throw new Response("Not Found", { status: 404 });
   }

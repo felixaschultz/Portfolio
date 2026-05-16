@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail } from "../lib/galleries";
-import { localizedField, type Locale } from "../lib/i18n";
+import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
 import { Modal } from "./Modal";
 
 type GalleryViewProps = {
@@ -54,6 +54,10 @@ export function GalleryView({ gallery }: GalleryViewProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeKey, activeIndex, gallery.images]);
 
+  function imageCaption(caption: GalleryDetail["images"][number]["caption"]): string {
+    return resolveSanityString(caption, lng);
+  }
+
   return (
     <article className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <Link
@@ -65,7 +69,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
 
       <header className="mt-8 max-w-2xl">
         <h1 className="font-display text-4xl font-bold">{title}</h1>
-        {description && <p className="mt-4 text-[var(--color-muted)]">{description}</p>}
+        {description ? <p className="mt-4 text-[var(--color-muted)]">{description}</p> : null}
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           {t("photography.photoCount", { count: gallery.imageCount })}
           {gallery.location ? ` · ${gallery.location}` : ""}
@@ -73,69 +77,70 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         </p>
       </header>
 
-      <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
-        {gallery.images.map((image, index) => (
-          <button
-            key={photoParam(image, index)}
-            type="button"
-            onClick={() => openPhoto(photoParam(image, index))}
-            className="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-left transition hover:border-[var(--color-accent)]"
-          >
-            <img
-              src={image.imageUrl}
-              srcSet={image.imageSrcSet}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              alt={image.alt || title}
-              className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-              loading="lazy"
-            />
-            {image.caption && (
-              <p className="pointer-events-none p-3 text-sm text-[var(--color-muted)]">
-                {image.caption}
-              </p>
-            )}
-          </button>
-        ))}
+      <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {gallery.images.map((image, index) => {
+          const caption = imageCaption(image.caption);
+          return (
+            <button
+              key={photoParam(image, index)}
+              type="button"
+              onClick={() => openPhoto(photoParam(image, index))}
+              className="group block w-full cursor-pointer overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-left transition hover:border-[var(--color-accent)]"
+            >
+              <img
+                src={image.imageUrl}
+                srcSet={image.imageSrcSet}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                alt={image.alt || title}
+                className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+              {caption ? (
+                <p className="pointer-events-none p-3 text-sm text-[var(--color-muted)]">{caption}</p>
+              ) : null}
+            </button>
+          );
+        })}
       </div>
 
-      <Modal
-        open={activeImage !== null}
-        onClose={closePhoto}
-        ariaLabel={title}
-        positionClassName="modal-overlay--center"
-        panelClassName="relative max-w-5xl px-1 sm:px-0"
-      >
-        <button
-          type="button"
-          onClick={closePhoto}
-          className="absolute right-1 top-1 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-lg text-white hover:bg-black/80 sm:right-0 sm:top-0"
-          aria-label={t("photography.close")}
+      {activeImage ? (
+        <Modal
+          open
+          onClose={closePhoto}
+          ariaLabel={title}
+          positionClassName="modal-overlay--center"
+          panelClassName="relative max-w-5xl px-1 sm:px-0"
         >
-          ✕
-        </button>
-        {activeImage && activeIndex > 0 && (
           <button
             type="button"
-            className="absolute left-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:left-2"
-            onClick={() =>
-              openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
-            }
+            onClick={closePhoto}
+            className="absolute right-1 top-1 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-lg text-white hover:bg-black/80 sm:right-0 sm:top-0"
+            aria-label={t("photography.close")}
           >
-            ‹
+            ✕
           </button>
-        )}
-        {activeImage && activeIndex < gallery.images.length - 1 && (
-          <button
-            type="button"
-            className="absolute right-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:right-2"
-            onClick={() =>
-              openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
-            }
-          >
-            ›
-          </button>
-        )}
-        {activeImage && (
+          {activeIndex > 0 ? (
+            <button
+              type="button"
+              className="absolute left-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:left-2"
+              onClick={() =>
+                openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
+              }
+            >
+              ‹
+            </button>
+          ) : null}
+          {activeIndex < gallery.images.length - 1 ? (
+            <button
+              type="button"
+              className="absolute right-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:right-2"
+              onClick={() =>
+                openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
+              }
+            >
+              ›
+            </button>
+          ) : null}
           <figure className="flex flex-col items-center">
             <img
               src={activeImage.imageUrl}
@@ -144,14 +149,14 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               alt={activeImage.alt || title}
               className="max-h-[85vh] w-full rounded-lg object-contain"
             />
-            {activeImage.caption && (
+            {imageCaption(activeImage.caption) ? (
               <figcaption className="mt-4 text-center text-sm text-white/90">
-                {activeImage.caption}
+                {imageCaption(activeImage.caption)}
               </figcaption>
-            )}
+            ) : null}
           </figure>
-        )}
-      </Modal>
+        </Modal>
+      ) : null}
     </article>
   );
 }

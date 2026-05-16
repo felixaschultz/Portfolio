@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 
 type ModalProps = {
   open: boolean;
@@ -21,63 +22,47 @@ export function Modal({
   ariaLabelledBy,
 }: ModalProps) {
   const titleId = useId();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const [mounted, setMounted] = useState(false);
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (open) {
-      if (!dialog.open) dialog.showModal();
-    } else if (dialog.open) {
-      dialog.close();
-    }
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onCloseRef.current();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+  if (!mounted || !open) return null;
 
-    const handleClose = () => {
-      if (dialog.open) onCloseRef.current();
-    };
-
-    dialog.addEventListener("close", handleClose);
-    dialog.addEventListener("cancel", handleClose);
-    return () => {
-      dialog.removeEventListener("close", handleClose);
-      dialog.removeEventListener("cancel", handleClose);
-    };
-  }, []);
-
-  if (!mounted) return null;
+  const labelledBy = ariaLabelledBy ?? (ariaLabel ? undefined : titleId);
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      className={`modal-overlay ${positionClassName}`}
+    <div
+      role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy ?? (ariaLabel ? undefined : titleId)}
-      onClick={(event) => {
-        if (event.target === dialogRef.current) {
-          onCloseRef.current();
-        }
-      }}
+      aria-labelledby={labelledBy}
+      className={`modal-overlay ${positionClassName}`}
     >
-      <div
-        className={`modal-panel ${panelClassName}`}
-        onClick={(event) => event.stopPropagation()}
-        onMouseDown={(event) => event.stopPropagation()}
-        onTouchStart={(event) => event.stopPropagation()}
-      >
+      <button
+        type="button"
+        className="modal-overlay__backdrop"
+        aria-label="Close dialog"
+        onClick={() => onCloseRef.current()}
+      />
+      <div className={`modal-panel ${panelClassName}`}>
         {!ariaLabel && !ariaLabelledBy ? (
           <span id={titleId} className="sr-only">
             Dialog
@@ -85,7 +70,7 @@ export function Modal({
         ) : null}
         {children}
       </div>
-    </dialog>,
+    </div>,
     document.body,
   );
 }

@@ -37,3 +37,13 @@ export function localizedField<T extends Record<string, string | undefined>>(
   if (!field) return "";
   return field[locale] || field.da || field.en || field.de || "";
 }
+
+/** Sanity fields may be a plain string or a localized object (including legacy data). */
+export function resolveSanityString(
+  value: string | Record<string, string | undefined> | undefined | null,
+  locale: Locale,
+): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  return localizedField(value, locale);
+}

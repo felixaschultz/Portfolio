@@ -2,7 +2,7 @@ import { matchSorter } from "match-sorter";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { SearchIndexItem } from "../lib/search.server";
+import type { SearchIndexItem } from "../lib/search";
 
 type SearchDialogProps = {
   open: boolean;

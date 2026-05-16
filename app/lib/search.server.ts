@@ -2,19 +2,11 @@ import type { Locale } from "./i18n";
 import { localizedField } from "./i18n";
 import { getProjects } from "./projects.server";
 import { getLocalizedText } from "./projects";
+import type { SearchIndexItem } from "./search";
 import { fetchGalleries } from "./sanity.server";
 import { stripHtml } from "./seo";
 
-export type SearchResultType = "project" | "gallery" | "page";
-
-export type SearchIndexItem = {
-  id: string;
-  type: SearchResultType;
-  title: string;
-  excerpt: string;
-  href: string;
-  keywords: string;
-};
+export type { SearchIndexItem, SearchResultType } from "./search";
 
 function pageItem(
   locale: Locale,
@@ -62,7 +54,9 @@ export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[
   for (const project of projects) {
     const title = project.name;
     const short = getLocalizedText(project.short_description, locale);
-    const excerpt = short || stripHtml(getLocalizedText(project.description, locale));
+    const excerpt = (
+      short || stripHtml(getLocalizedText(project.description, locale))
+    ).slice(0, 200);
     items.push({
       id: `project-${project.id}`,
       type: "project",

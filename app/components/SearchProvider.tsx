@@ -1,6 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
-import type { SearchIndexItem } from "../lib/search.server";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { SearchIndexItem } from "../lib/search";
 import { SearchDialog } from "./SearchDialog";
+
+type SearchContextValue = {
+  openSearch: () => void;
+};
+
+const SearchContext = createContext<SearchContextValue | null>(null);
 
 type SearchProviderProps = {
   items: SearchIndexItem[];
@@ -9,9 +22,12 @@ type SearchProviderProps = {
 
 export function SearchProvider({ items, children }: SearchProviderProps) {
   const [open, setOpen] = useState(false);
+  const safeItems = useMemo(() => items ?? [], [items]);
 
   const openSearch = useCallback(() => setOpen(true), []);
   const closeSearch = useCallback(() => setOpen(false), []);
+
+  const contextValue = useMemo(() => ({ openSearch }), [openSearch]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -24,23 +40,18 @@ export function SearchProvider({ items, children }: SearchProviderProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  useEffect(() => {
-    (window as Window & { __openPortfolioSearch?: () => void }).__openPortfolioSearch =
-      openSearch;
-    return () => {
-      delete (window as Window & { __openPortfolioSearch?: () => void })
-        .__openPortfolioSearch;
-    };
-  }, [openSearch]);
-
   return (
-    <>
+    <SearchContext.Provider value={contextValue}>
       {children}
-      <SearchDialog open={open} onClose={closeSearch} items={items} />
-    </>
+      <SearchDialog open={open} onClose={closeSearch} items={safeItems} />
+    </SearchContext.Provider>
   );
 }
 
-export function openSearchPalette() {
-  (window as Window & { __openPortfolioSearch?: () => void }).__openPortfolioSearch?.();
+export function useSearch() {
+  const ctx = useContext(SearchContext);
+  if (!ctx) {
+    throw new Error("useSearch must be used within SearchProvider");
+  }
+  return ctx;
 }

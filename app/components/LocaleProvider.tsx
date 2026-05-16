@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import { createI18n, type Locale } from "../lib/i18n";
 
@@ -8,7 +8,7 @@ type LocaleProviderProps = {
 };
 
 export function LocaleProvider({ locale, children }: LocaleProviderProps) {
-  const i18n = createI18n(locale);
+  const i18n = useMemo(() => createI18n(locale), [locale]);
 
   useEffect(() => {
     document.documentElement.lang = locale;

@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import type { Route } from "./+types/root";
+import { ThirdPartyScripts } from "./components/ThirdPartyScripts";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -31,28 +32,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-ZTLK2LKHCH"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-ZTLK2LKHCH');
-            `,
-          }}
-        />
-        <script
-          async
-          src="https://downloads.intastellarsolutions.com/cookieconsents/assets/v1.0.0/cookieconsent.min.js"
-        />
-        <script
-          async
-          src="https://accounts.intastellar.com/v1/login.js"
-        />
       </head>
       <body>
         <div
@@ -64,6 +43,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <ThirdPartyScripts />
       </body>
     </html>
   );

@@ -77,7 +77,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         </p>
       </header>
 
-      <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 items-center justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {gallery.images.map((image, index) => {
           const caption = imageCaption(image.caption);
           return (
@@ -92,7 +92,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
                 srcSet={image.imageSrcSet}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 alt={image.alt || title}
-                className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                className="pointer-events-none w-full transition duration-500 group-hover:scale-[1.02]"
                 loading="lazy"
               />
               {caption ? (

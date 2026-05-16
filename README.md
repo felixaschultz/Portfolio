@@ -46,6 +46,12 @@ npm run studio
 
 The studio loads env vars from the root `.env` file.
 
+**If image uploads fail** (request error to `*.api.sanity.io`):
+
+1. **CORS** — [sanity.io/manage](https://www.sanity.io/manage) → your project → **API** → **CORS origins** → add `http://localhost:3333` with **Allow credentials** enabled.
+2. **Sign in** — In Studio (top right), log in with your Sanity account.
+3. **Or use a write token** — Create an API token with **Editor** permissions, add to `.env` as `SANITY_STUDIO_API_TOKEN=sk...` (or reuse `SANITY_API_TOKEN` if it has write access). Restart `npm run studio`.
+
 4. Create **Gallery** documents — in **Photos**, click **Upload folder** to add every image from a folder at once, or drag multiple files onto the grid. Mark `featured` for the home page.
 5. Deploy studio: `npm run studio:deploy`
 

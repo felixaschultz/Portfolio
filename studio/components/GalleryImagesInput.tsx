@@ -1,15 +1,17 @@
 import { UploadIcon } from "@sanity/icons";
 import { Button, Flex, Stack, Text } from "@sanity/ui";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ArrayOfObjectsInput,
   type ArrayOfObjectsInputProps,
   PatchEvent,
   set,
   useClient,
+  useCurrentUser,
 } from "sanity";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
+const UPLOAD_CONCURRENCY = 3;
 
 function isImageFile(file: File): boolean {
   return file.type.startsWith("image/") || IMAGE_EXT.test(file.name);
@@ -19,31 +21,99 @@ function newKey(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
+function safeFilename(name: string): string {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await fn(items[i]);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
+  );
+  return results;
+}
+
+function formatUploadError(err: unknown): string {
+  if (err && typeof err === "object") {
+    const e = err as {
+      message?: string;
+      statusCode?: number;
+      details?: { type?: string; description?: string };
+    };
+    const parts = [
+      e.message,
+      e.statusCode ? `HTTP ${e.statusCode}` : null,
+      e.details?.description,
+    ].filter(Boolean);
+    if (parts.length) return parts.join(" — ");
+  }
+  return err instanceof Error ? err.message : "Upload failed";
+}
+
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
-  const client = useClient({ apiVersion: "2024-05-16" });
+  const user = useCurrentUser();
+  const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
+
+  const client = useClient({ apiVersion: "2024-05-16" }).withConfig({
+    useCdn: false,
+    ...(writeToken ? { token: writeToken } : {}),
+  });
+
+  const canUpload = Boolean(user || writeToken);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const value = Array.isArray(props.value) ? props.value : [];
+  const value = useMemo(
+    () => (Array.isArray(props.value) ? props.value : []),
+    [props.value],
+  );
 
   const uploadFiles = useCallback(
     async (files: File[]) => {
+      if (!canUpload) {
+        setError(
+          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env with Editor access.",
+        );
+        return;
+      }
+
       const images = files.filter(isImageFile);
       if (!images.length) {
-        setError("No image files found.");
+        setError("No image files found in that selection.");
         return;
       }
 
       setUploading(true);
       setError(null);
+      setProgress(`0 / ${images.length}`);
 
       try {
-        const assets = await Promise.all(
-          images.map((file) =>
-            client.assets.upload("image", file, { filename: file.name }),
-          ),
-        );
+        let done = 0;
+        const assets = await mapPool(images, UPLOAD_CONCURRENCY, async (file) => {
+          const asset = await client.assets.upload("image", file, {
+            filename: safeFilename(file.name),
+            contentType: file.type || "image/jpeg",
+          });
+          done += 1;
+          setProgress(`${done} / ${images.length}`);
+          return asset;
+        });
 
         const newItems = assets.map((asset) => ({
           _type: "galleryImage" as const,
@@ -58,13 +128,16 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         }));
 
         props.onChange(PatchEvent.from(set([...value, ...newItems])));
+        setProgress("");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Upload failed");
+        setError(
+          `${formatUploadError(err)}. If uploads keep failing: add http://localhost:3333 to CORS origins at sanity.io/manage → API, and/or set SANITY_STUDIO_API_TOKEN in .env (Editor token).`,
+        );
       } finally {
         setUploading(false);
       }
     },
-    [client, props, value],
+    [canUpload, client, props, value],
   );
 
   const onFolderChange = useCallback(
@@ -85,12 +158,13 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
           text={uploading ? "Uploading…" : "Upload folder"}
           tone="primary"
           mode="ghost"
-          disabled={uploading || Boolean(props.readOnly)}
+          disabled={uploading || Boolean(props.readOnly) || !canUpload}
           onClick={() => inputRef.current?.click()}
         />
         <Text size={1} muted>
-          Selects every image in a folder (Chrome, Safari, Edge). You can also drag many
-          files onto the grid or multi-select in the normal Upload dialog.
+          {canUpload
+            ? "Pick a folder (Chrome/Safari/Edge) or drag files onto the grid below."
+            : "Sign in to Sanity (top right) to enable folder upload."}
         </Text>
       </Flex>
 
@@ -100,10 +174,15 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         accept="image/*"
         multiple
         hidden
-        // Folder upload (non-standard; supported in Chromium & Safari)
         {...({ webkitdirectory: "", directory: "" } as React.InputHTMLAttributes<HTMLInputElement>)}
         onChange={onFolderChange}
       />
+
+      {progress ? (
+        <Text size={1} muted>
+          Uploaded {progress}
+        </Text>
+      ) : null}
 
       {error ? (
         <Text size={1} style={{ color: "var(--card-badge-critical-fg-color, #f03e2e)" }}>

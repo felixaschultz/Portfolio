@@ -67,9 +67,10 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
 
+  // Signed-in Studio users already have upload rights — only attach a token when not logged in.
   const client = useClient({ apiVersion: "2024-05-16" }).withConfig({
     useCdn: false,
-    ...(writeToken ? { token: writeToken } : {}),
+    ...(!user && writeToken ? { token: writeToken } : {}),
   });
 
   const canUpload = Boolean(user || writeToken);
@@ -88,7 +89,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     async (files: File[]) => {
       if (!canUpload) {
         setError(
-          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env with Editor access.",
+          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env (Editor or Administrator — not Viewer or Access Manager).",
         );
         return;
       }
@@ -131,7 +132,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         setProgress("");
       } catch (err) {
         setError(
-          `${formatUploadError(err)}. If uploads keep failing: add http://localhost:3333 to CORS origins at sanity.io/manage → API, and/or set SANITY_STUDIO_API_TOKEN in .env (Editor token).`,
+          `${formatUploadError(err)}. If uploads keep failing: sign in to Studio (top right), use an Editor/Administrator API token as SANITY_STUDIO_API_TOKEN (not Access Manager), restart npm run studio, and add both http://localhost:3333 and http://127.0.0.1:3333 to CORS at sanity.io/manage → API.`,
         );
       } finally {
         setUploading(false);

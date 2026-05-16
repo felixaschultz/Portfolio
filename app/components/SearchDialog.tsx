@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { SearchIndexItem } from "../lib/search";
+import { Modal } from "./Modal";
 
 type SearchDialogProps = {
   open: boolean;
@@ -13,7 +14,6 @@ type SearchDialogProps = {
 export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,15 +37,10 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
   );
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
     if (open) {
-      if (!dialog.open) dialog.showModal();
       setQuery("");
       setActiveIndex(0);
       requestAnimationFrame(() => inputRef.current?.focus());
-    } else if (dialog.open) {
-      dialog.close();
     }
   }, [open]);
 
@@ -74,14 +69,11 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
   }, [open, results, activeIndex, goTo]);
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="search-dialog mx-auto w-[min(100%,36rem)] max-h-[min(90vh,520px)] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-0 text-[var(--color-text)] shadow-2xl backdrop:bg-black/60 open:flex open:flex-col"
-      aria-label={t("search.title")}
+    <Modal
+      open={open}
       onClose={onClose}
-      onClick={(e) => {
-        if (e.target === dialogRef.current) onClose();
-      }}
+      ariaLabel={t("search.title")}
+      panelClassName="max-w-xl overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-2xl"
     >
       <div className="flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3">
         <span className="text-[var(--color-muted)]" aria-hidden>
@@ -93,7 +85,7 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("search.placeholder")}
-          className="flex-1 bg-transparent outline-none placeholder:text-[var(--color-muted)]"
+          className="flex-1 bg-transparent text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)]"
           autoComplete="off"
           spellCheck={false}
         />
@@ -138,6 +130,6 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
           ))
         )}
       </ul>
-    </dialog>
+    </Modal>
   );
 }

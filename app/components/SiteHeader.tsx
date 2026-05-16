@@ -87,7 +87,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
             </kbd>
           </button>
 
-          <button type="button" onClick={onContactClick} className="btn-ghost hidden sm:inline-flex">
+          <button type="button" onClick={onContactClick} className="btn-ghost inline-flex">
             {t("nav.contact")}
           </button>
 

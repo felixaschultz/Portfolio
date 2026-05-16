@@ -150,7 +150,7 @@ export const projects = [
                 </p>
                 <p>Jeg fandt ret hurtigt ud af at de benyttede sig postMessage metoden for at dele informationer cross-domain. Derfor begyndte jeg hurtigt i, at sætte mig ind i hvordan det fungerede og hvordan jeg kan benytte det.</p>
             </section>
-            <img src=/projects/intastellarsignin/Screenshot 2024-09-02 at 11.55.53.png />
+            <img src="/projects/intastellarsignin/Screenshot 2024-09-02 at 11.55.53.png" alt="" />
             <section class="content-ppad">
                 <h2>PostMessage</h2>
                 <p>PostMessage er en metode som gør det muligt at sende beskeder mellem vinduer/frames på tværs af domæner. Metoden er en del af HTML5 og er en sikker metode for at kommunikere mellem forskellige domæner.</p>

@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail } from "../lib/galleries";
 import { localizedField, type Locale } from "../lib/i18n";
+import { Modal } from "./Modal";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
@@ -15,7 +15,6 @@ function photoParam(image: { _key?: string }, index: number): string {
 export function GalleryView({ gallery }: GalleryViewProps) {
   const { locale } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
   const base = `/${locale}`;
@@ -35,16 +34,6 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   function closePhoto() {
     setSearchParams({}, { preventScrollReset: true });
   }
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (activeImage) {
-      if (!dialog.open) dialog.showModal();
-    } else if (dialog.open) {
-      dialog.close();
-    }
-  }, [activeImage]);
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -88,19 +77,17 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         ))}
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="gallery-lightbox m-0 max-h-none max-w-none border-0 bg-transparent p-4 backdrop:bg-black/85 open:flex open:items-center open:justify-center"
-        aria-label={title}
+      <Modal
+        open={Boolean(activeImage)}
         onClose={closePhoto}
-        onClick={(e) => {
-          if (e.target === dialogRef.current) closePhoto();
-        }}
+        ariaLabel={title}
+        positionClassName="items-center justify-center p-4"
+        panelClassName="max-w-5xl"
       >
         <button
           type="button"
           onClick={closePhoto}
-          className="absolute right-4 top-4 z-10 rounded-full bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          className="absolute right-2 top-2 z-20 rounded-full bg-black/50 px-3 py-2 text-white hover:bg-black/70 sm:right-0 sm:top-0"
           aria-label={t("photography.close")}
         >
           ✕
@@ -108,11 +95,10 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         {activeImage && activeIndex > 0 && (
           <button
             type="button"
-            className="absolute left-4 z-10 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
-            onClick={(e) => {
-              e.stopPropagation();
-              openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1));
-            }}
+            className="absolute left-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 px-4 py-3 text-white hover:bg-black/70"
+            onClick={() =>
+              openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
+            }
           >
             ‹
           </button>
@@ -120,20 +106,16 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         {activeImage && activeIndex < gallery.images.length - 1 && (
           <button
             type="button"
-            className="absolute right-4 z-10 mr-12 rounded-full bg-white/10 px-4 py-3 text-white hover:bg-white/20"
-            onClick={(e) => {
-              e.stopPropagation();
-              openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1));
-            }}
+            className="absolute right-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 px-4 py-3 text-white hover:bg-black/70"
+            onClick={() =>
+              openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
+            }
           >
             ›
           </button>
         )}
         {activeImage && (
-          <figure
-            className="max-h-[90vh] max-w-5xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <figure className="flex flex-col items-center">
             <img
               src={activeImage.imageUrl}
               srcSet={activeImage.imageSrcSet}
@@ -142,13 +124,13 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               className="max-h-[85vh] w-full rounded-lg object-contain"
             />
             {activeImage.caption && (
-              <figcaption className="mt-4 text-center text-sm text-white/80">
+              <figcaption className="mt-4 text-center text-sm text-white/90">
                 {activeImage.caption}
               </figcaption>
             )}
           </figure>
         )}
-      </dialog>
+      </Modal>
     </article>
   );
 }

@@ -1,4 +1,5 @@
 import { createClient, type SanityClient } from "@sanity/client";
+import type { GalleryDetail, GalleryImageItem, GalleryListItem } from "./galleries";
 
 const projectId = process.env.SANITY_PROJECT_ID;
 const dataset = process.env.SANITY_DATASET ?? "production";
@@ -22,6 +23,31 @@ export function getSanityClient(): SanityClient | null {
 
 export type LocalizedString = { da?: string; de?: string; en?: string };
 
+type SanityImageRef = {
+  asset: { _ref: string };
+};
+
+export type GalleryImageDocument = {
+  _key: string;
+  image: SanityImageRef;
+  alt?: string;
+  caption?: string;
+};
+
+export type GalleryDocument = {
+  _id: string;
+  slug: string;
+  title: LocalizedString;
+  description?: LocalizedString;
+  takenAt?: string;
+  location?: string;
+  tags?: string[];
+  featured?: boolean;
+  sortOrder?: number;
+  images: GalleryImageDocument[];
+};
+
+/** @deprecated Use gallery documents instead */
 export type PhotoDocument = {
   _id: string;
   slug: string;
@@ -32,137 +58,117 @@ export type PhotoDocument = {
   tags?: string[];
   featured?: boolean;
   sortOrder?: number;
-  image: {
-    asset: { _ref: string };
-  };
+  image: SanityImageRef;
 };
 
-export const PHOTOS_QUERY = `*[_type == "photo"] | order(coalesce(sortOrder, 999) asc, takenAt desc) {
+const galleryProjection = `{
   _id,
   "slug": slug.current,
   title,
-  caption,
+  description,
   takenAt,
   location,
   tags,
   featured,
   sortOrder,
-  image
+  images[] {
+    _key,
+    alt,
+    caption,
+    image
+  }
 }`;
 
-export const FEATURED_PHOTOS_QUERY = `*[_type == "photo" && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] {
-  _id,
-  "slug": slug.current,
-  title,
-  caption,
-  takenAt,
-  location,
-  tags,
-  featured,
-  sortOrder,
-  image
-}`;
+export const GALLERIES_QUERY = `*[_type == "gallery"] | order(coalesce(sortOrder, 999) asc, takenAt desc) ${galleryProjection}`;
 
-export const PHOTO_BY_SLUG_QUERY = `*[_type == "photo" && slug.current == $slug][0] {
-  _id,
-  "slug": slug.current,
-  title,
-  caption,
-  takenAt,
-  location,
-  tags,
-  featured,
-  sortOrder,
-  image
-}`;
+export const FEATURED_GALLERIES_QUERY = `*[_type == "gallery" && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
 
-export async function fetchPhotos(): Promise<PhotoDocument[]> {
+export const GALLERY_BY_SLUG_QUERY = `*[_type == "gallery" && slug.current == $slug][0] ${galleryProjection}`;
+
+async function mapGalleryToListItem(
+  gallery: GalleryDocument,
+  widths: number[],
+): Promise<GalleryListItem | null> {
+  const { photoSrcSet } = await import("./image.server");
+  const first = gallery.images?.[0]?.image;
+  if (!first) return null;
+  const { src, srcSet } = photoSrcSet(first, widths);
+  return {
+    _id: gallery._id,
+    slug: gallery.slug,
+    title: gallery.title,
+    description: gallery.description,
+    takenAt: gallery.takenAt,
+    location: gallery.location,
+    tags: gallery.tags,
+    featured: gallery.featured,
+    imageCount: gallery.images?.length ?? 0,
+    coverUrl: src,
+    coverSrcSet: srcSet,
+  };
+}
+
+async function mapGalleryToDetail(gallery: GalleryDocument): Promise<GalleryDetail | null> {
+  const list = await mapGalleryToListItem(gallery, [600, 900]);
+  if (!list) return null;
+  const { photoSrcSet } = await import("./image.server");
+  const images: GalleryImageItem[] = (gallery.images ?? []).map((item) => {
+    const { src, srcSet } = photoSrcSet(item.image, [400, 800, 1200, 1600]);
+    return {
+      _key: item._key,
+      imageUrl: src,
+      imageSrcSet: srcSet,
+      alt: item.alt,
+      caption: item.caption,
+    };
+  });
+  return { ...list, images };
+}
+
+export async function fetchGalleries(): Promise<GalleryDocument[]> {
   const client = getSanityClient();
   if (!client) return [];
   try {
-    return await client.fetch(PHOTOS_QUERY);
+    return await client.fetch(GALLERIES_QUERY);
   } catch {
     return [];
   }
 }
 
-export async function fetchFeaturedPhotos(): Promise<PhotoDocument[]> {
-  const client = getSanityClient();
-  if (!client) return [];
-  try {
-    return await client.fetch(FEATURED_PHOTOS_QUERY);
-  } catch {
-    return [];
-  }
-}
-
-export async function fetchPhotoBySlug(slug: string): Promise<PhotoDocument | null> {
+export async function fetchGalleryBySlug(slug: string): Promise<GalleryDocument | null> {
   const client = getSanityClient();
   if (!client) return null;
   try {
-    return await client.fetch(PHOTO_BY_SLUG_QUERY, { slug });
+    return await client.fetch(GALLERY_BY_SLUG_QUERY, { slug });
   } catch {
     return null;
   }
 }
 
-export async function fetchPhotosForList(): Promise<import("./photos").PhotoListItem[]> {
-  const { photoSrcSet } = await import("./image.server");
-  const photos = await fetchPhotos();
-  return photos.map((photo) => {
-    const { src, srcSet } = photoSrcSet(photo.image);
-    return {
-      _id: photo._id,
-      slug: photo.slug,
-      title: photo.title,
-      caption: photo.caption,
-      takenAt: photo.takenAt,
-      location: photo.location,
-      tags: photo.tags,
-      featured: photo.featured,
-      imageUrl: src,
-      imageSrcSet: srcSet,
-    };
-  });
+export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
+  const galleries = await fetchGalleries();
+  const items = await Promise.all(
+    galleries.map((g) => mapGalleryToListItem(g, [400, 600, 800])),
+  );
+  return items.filter((g): g is GalleryListItem => g !== null);
 }
 
-export async function fetchFeaturedPhotosForList(): Promise<import("./photos").PhotoListItem[]> {
-  const { photoSrcSet } = await import("./image.server");
-  const photos = await fetchFeaturedPhotos();
-  return photos.map((photo) => {
-    const { src, srcSet } = photoSrcSet(photo.image, [400, 600, 800]);
-    return {
-      _id: photo._id,
-      slug: photo.slug,
-      title: photo.title,
-      caption: photo.caption,
-      takenAt: photo.takenAt,
-      location: photo.location,
-      tags: photo.tags,
-      featured: photo.featured,
-      imageUrl: src,
-      imageSrcSet: srcSet,
-    };
-  });
+export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {
+  const client = getSanityClient();
+  if (!client) return [];
+  try {
+    const galleries: GalleryDocument[] = await client.fetch(FEATURED_GALLERIES_QUERY);
+    const items = await Promise.all(
+      galleries.map((g) => mapGalleryToListItem(g, [400, 600, 800])),
+    );
+    return items.filter((g): g is GalleryListItem => g !== null);
+  } catch {
+    return [];
+  }
 }
 
-export async function fetchPhotoDetailBySlug(
-  slug: string,
-): Promise<import("./photos").PhotoDetail | null> {
-  const photo = await fetchPhotoBySlug(slug);
-  if (!photo) return null;
-  const { photoSrcSet } = await import("./image.server");
-  const { src, srcSet } = photoSrcSet(photo.image, [800, 1200, 1800, 2400]);
-  return {
-    _id: photo._id,
-    slug: photo.slug,
-    title: photo.title,
-    caption: photo.caption,
-    takenAt: photo.takenAt,
-    location: photo.location,
-    tags: photo.tags,
-    featured: photo.featured,
-    imageUrl: src,
-    imageSrcSet: srcSet,
-  };
+export async function fetchGalleryDetailBySlug(slug: string): Promise<GalleryDetail | null> {
+  const gallery = await fetchGalleryBySlug(slug);
+  if (!gallery) return null;
+  return mapGalleryToDetail(gallery);
 }

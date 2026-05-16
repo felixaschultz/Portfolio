@@ -26,10 +26,12 @@
   },
   "photography": {
     "title": "Photography",
-    "description": "Here you can see some of the photos I have taken.",
-    "showMore": "View gallery",
-    "empty": "Photos coming soon. Add images in Sanity Studio.",
-    "back": "Back to gallery"
+    "description": "Browse photo galleries. Each gallery can hold many images uploaded at once in Sanity Studio.",
+    "showMore": "View all galleries",
+    "empty": "Galleries coming soon. Create a Gallery in Sanity Studio and upload multiple photos at once.",
+    "back": "Back to galleries",
+    "photoCount": "{{count}} photos",
+    "close": "Close"
   },
   "recommendations": {
     "title": "Recommendations"
@@ -50,6 +52,6 @@
   },
   "featured": {
     "projects": "Featured projects",
-    "photos": "Featured photos"
+    "photos": "Featured galleries"
   }
 }

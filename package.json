@@ -10,8 +10,8 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "studio": "sanity dev",
-    "studio:deploy": "sanity deploy"
+    "studio": "npm run dev --prefix studio",
+    "studio:deploy": "npm run deploy --prefix studio"
   },
   "dependencies": {
     "@react-router/node": "7.15.1",
@@ -29,12 +29,10 @@
   },
   "devDependencies": {
     "@react-router/dev": "7.15.1",
-    "@sanity/vision": "^5.25.1",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "sanity": "^5.25.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.3"

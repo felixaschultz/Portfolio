@@ -38,13 +38,15 @@ Open [http://localhost:5173](http://localhost:5173).
 
 1. Create a project at [sanity.io](https://www.sanity.io).
 2. Copy `SANITY_PROJECT_ID` and `SANITY_DATASET` into `.env`.
-3. Run the studio locally:
+3. Run the studio locally (isolated in `studio/` so it does not conflict with the app's Vite 8):
 
 ```bash
 npm run studio
 ```
 
-4. Add **Photo** documents with images, titles, and optional `featured` flag for the home page.
+The studio loads env vars from the root `.env` file.
+
+4. Create **Gallery** documents — use the **Photos** field to drag in or upload **multiple images at once** (grid layout). Mark `featured` for the home page.
 5. Deploy studio: `npm run studio:deploy`
 
 ## Environment variables

@@ -26,10 +26,12 @@
   },
   "photography": {
     "title": "Fotografie",
-    "description": "Hier sehen Sie einige der Fotos, die ich aufgenommen habe.",
-    "showMore": "Galerie anzeigen",
-    "empty": "Fotos folgen in Kürze. Bilder in Sanity Studio hinzufügen.",
-    "back": "Zurück zur Galerie"
+    "description": "Fotogalerien durchstöbern. In Sanity Studio können Sie viele Bilder auf einmal in eine Galerie hochladen.",
+    "showMore": "Alle Galerien anzeigen",
+    "empty": "Galerien folgen in Kürze. Erstellen Sie eine Galerie in Sanity Studio und laden Sie mehrere Fotos auf einmal hoch.",
+    "back": "Zurück zu den Galerien",
+    "photoCount": "{{count}} Fotos",
+    "close": "Schließen"
   },
   "recommendations": {
     "title": "Empfehlungen"
@@ -50,6 +52,6 @@
   },
   "featured": {
     "projects": "Ausgewählte Projekte",
-    "photos": "Ausgewählte Fotos"
+    "photos": "Ausgewählte Galerien"
   }
 }

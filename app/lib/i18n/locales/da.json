@@ -26,10 +26,12 @@
   },
   "photography": {
     "title": "Fotografi",
-    "description": "Her kan du se nogle af de fotografier jeg har taget.",
-    "showMore": "Se galleriet",
-    "empty": "Fotografier kommer snart. Tilføj billeder i Sanity Studio.",
-    "back": "Tilbage til galleriet"
+    "description": "Se fotogallerier. I Sanity Studio kan du uploade mange billeder til ét galleri på én gang.",
+    "showMore": "Se alle gallerier",
+    "empty": "Gallerier kommer snart. Opret et Galleri i Sanity Studio og upload flere billeder på én gang.",
+    "back": "Tilbage til gallerier",
+    "photoCount": "{{count}} billeder",
+    "close": "Luk"
   },
   "recommendations": {
     "title": "Anbefalinger"
@@ -50,6 +52,6 @@
   },
   "featured": {
     "projects": "Udvalgte projekter",
-    "photos": "Udvalgte fotografier"
+    "photos": "Udvalgte gallerier"
   }
 }

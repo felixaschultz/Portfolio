@@ -10,7 +10,11 @@ type SitemapEntry = {
   priority: string;
 };
 
-function entriesForLocale(locale: Locale, projects: ReturnType<typeof getProjects>, galleries: Awaited<ReturnType<typeof fetchGalleries>>): SitemapEntry[] {
+function entriesForLocale(
+  locale: Locale,
+  projects: Awaited<ReturnType<typeof getProjects>>,
+  galleries: Awaited<ReturnType<typeof fetchGalleries>>,
+): SitemapEntry[] {
   const list: SitemapEntry[] = [
     { loc: pageUrl(locale, ""), changefreq: "weekly", priority: "1.0" },
     { loc: pageUrl(locale, "/projects"), changefreq: "weekly", priority: "0.9" },
@@ -35,7 +39,7 @@ function entriesForLocale(locale: Locale, projects: ReturnType<typeof getProject
 }
 
 export async function loader({}: Route.LoaderArgs) {
-  const projects = getProjects();
+  const projects = await getProjects();
   const galleries = await fetchGalleries();
   const all = supportedLocales.flatMap((locale) =>
     entriesForLocale(locale, projects, galleries),

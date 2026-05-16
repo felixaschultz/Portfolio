@@ -47,9 +47,9 @@
   },
   "photography": {
     "title": "Photography",
-    "description": "Browse photo galleries. Each gallery can hold many images uploaded at once in Sanity Studio.",
+    "description": "Photo galleries from travels, nature, and everyday life.",
     "showMore": "View all galleries",
-    "empty": "Galleries coming soon. Create a Gallery in Sanity Studio and upload multiple photos at once.",
+    "empty": "Galleries coming soon.",
     "back": "Back to galleries",
     "photoCount": "{{count}} photos",
     "close": "Close"

@@ -8,7 +8,7 @@ import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  return { projects: getProjects() };
+  return { projects: await getProjects() };
 }
 
 export function meta({ params }: Route.MetaArgs) {

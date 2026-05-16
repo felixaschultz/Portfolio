@@ -1,5 +1,6 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { GalleryDetail, GalleryImageItem, GalleryListItem } from "./galleries";
+import type { Project } from "./projects";
 
 const projectId = process.env.SANITY_PROJECT_ID;
 const dataset = process.env.SANITY_DATASET ?? "production";
@@ -171,4 +172,66 @@ export async function fetchGalleryDetailBySlug(slug: string): Promise<GalleryDet
   const gallery = await fetchGalleryBySlug(slug);
   if (!gallery) return null;
   return mapGalleryToDetail(gallery);
+}
+
+export type SanityProjectDocument = {
+  id: string;
+  name: string;
+  screenshot?: string;
+  highlight?: boolean;
+  description?: LocalizedString;
+  shortDescription?: LocalizedString;
+  github?: string | null;
+  url?: string | null;
+  type?: string;
+  technology?: string;
+  sortOrder?: number;
+};
+
+const PROJECTS_QUERY = `*[_type == "project"] | order(coalesce(sortOrder, 999) asc, name asc) {
+  "id": slug.current,
+  name,
+  screenshot,
+  highlight,
+  description,
+  shortDescription,
+  github,
+  url,
+  type,
+  technology,
+  sortOrder
+}`;
+
+function localizedField(field: LocalizedString | undefined): Project["description"] {
+  return {
+    da: field?.da ?? "",
+    de: field?.de ?? "",
+    en: field?.en ?? "",
+  };
+}
+
+function mapSanityProject(doc: SanityProjectDocument): Project {
+  return {
+    id: doc.id,
+    name: doc.name,
+    screenshot: doc.screenshot?.trim() ? doc.screenshot : null,
+    highlight: Boolean(doc.highlight),
+    description: localizedField(doc.description),
+    short_description: localizedField(doc.shortDescription),
+    github: doc.github || null,
+    url: doc.url || null,
+    type: doc.type ?? "",
+    technology: doc.technology ?? "",
+  };
+}
+
+export async function fetchProjectsFromSanity(): Promise<Project[]> {
+  const client = getSanityClient();
+  if (!client) return [];
+  try {
+    const docs: SanityProjectDocument[] = await client.fetch(PROJECTS_QUERY);
+    return docs.filter((d) => d?.id).map(mapSanityProject);
+  } catch {
+    return [];
+  }
 }

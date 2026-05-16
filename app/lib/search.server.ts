@@ -28,7 +28,7 @@ function pageItem(
 
 export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[]> {
   const items: SearchIndexItem[] = [];
-  const projects = getProjects();
+  const projects = await getProjects();
   const galleries = await fetchGalleries();
 
   items.push(

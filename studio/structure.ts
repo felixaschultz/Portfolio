@@ -5,6 +5,10 @@ export const structure: StructureResolver = (S) =>
     .title("Portfolio")
     .items([
       S.listItem()
+        .title("Projects")
+        .schemaType("project")
+        .child(S.documentTypeList("project").title("Projects")),
+      S.listItem()
         .title("Galleries")
         .schemaType("gallery")
         .child(S.documentTypeList("gallery").title("Galleries")),

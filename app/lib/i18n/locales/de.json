@@ -47,9 +47,9 @@
   },
   "photography": {
     "title": "Fotografie",
-    "description": "Fotogalerien durchstöbern. In Sanity Studio können Sie viele Bilder auf einmal in eine Galerie hochladen.",
+    "description": "Fotogalerien von Reisen, Natur und Alltagsmomenten.",
     "showMore": "Alle Galerien anzeigen",
-    "empty": "Galerien folgen in Kürze. Erstellen Sie eine Galerie in Sanity Studio und laden Sie mehrere Fotos auf einmal hoch.",
+    "empty": "Galerien folgen in Kürze.",
     "back": "Zurück zu den Galerien",
     "photoCount": "{{count}} Fotos",
     "close": "Schließen"

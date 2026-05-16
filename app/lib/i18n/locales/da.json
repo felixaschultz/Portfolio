@@ -47,9 +47,9 @@
   },
   "photography": {
     "title": "Fotografi",
-    "description": "Se fotogallerier. I Sanity Studio kan du uploade mange billeder til ét galleri på én gang.",
+    "description": "Fotogallerier fra rejser, natur og hverdagen.",
     "showMore": "Se alle gallerier",
-    "empty": "Gallerier kommer snart. Opret et Galleri i Sanity Studio og upload flere billeder på én gang.",
+    "empty": "Gallerier kommer snart.",
     "back": "Tilbage til gallerier",
     "photoCount": "{{count}} billeder",
     "close": "Luk"

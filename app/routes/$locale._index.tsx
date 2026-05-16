@@ -12,7 +12,7 @@ import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
   const [featuredProjects, featuredGalleries] = await Promise.all([
-    Promise.resolve(getFeaturedProjects(3)),
+    getFeaturedProjects(3),
     fetchFeaturedGalleriesForList(),
   ]);
   return {

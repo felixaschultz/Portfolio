@@ -9,7 +9,7 @@ import { buildPageMeta, stripHtml } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const project = getProjectBySlug(params.slug!);
+  const project = await getProjectBySlug(params.slug!);
   if (!project) {
     throw new Response("Not Found", { status: 404 });
   }

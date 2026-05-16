@@ -1,4 +1,5 @@
-import { defineArrayMember, defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType, type PreviewValue } from "sanity";
+import { CoverImageInput } from "../components/CoverImageInput";
 import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
@@ -54,6 +55,15 @@ export const gallery = defineType({
       },
       validation: (rule) => rule.min(1).error("Add at least one image"),
     }),
+    defineField({
+      name: "coverImageKey",
+      title: "Cover photo",
+      type: "string",
+      description: "Used on the photography index, home page, and social previews.",
+      components: {
+        input: CoverImageInput,
+      },
+    }),
     defineField({ name: "takenAt", title: "Date", type: "date" }),
     defineField({ name: "location", title: "Location", type: "string" }),
     defineField({
@@ -74,16 +84,21 @@ export const gallery = defineType({
     select: {
       title: "title.en",
       location: "location",
-      media: "images.0.image",
-      count: "images",
+      coverImageKey: "coverImageKey",
+      images: "images",
     },
-    prepare({ title, location, media, count }) {
-      const n = Array.isArray(count) ? count.length : 0;
+    prepare({ title, location, coverImageKey, images }) {
+      const list = (images ?? []) as { _key?: string; image?: unknown }[];
+      const n = list.length;
+      const cover =
+        (coverImageKey
+          ? list.find((item) => item._key === coverImageKey)?.image
+          : undefined) ?? list[0]?.image;
       return {
         title: title || "Gallery",
         subtitle: [location, n ? `${n} photos` : "No photos"].filter(Boolean).join(" · "),
-        media,
-      };
+        media: cover,
+      } as PreviewValue;
     },
   },
 });

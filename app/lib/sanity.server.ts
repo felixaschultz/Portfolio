@@ -1,5 +1,6 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { GalleryDetail, GalleryImageItem, GalleryListItem } from "./galleries";
+import { resolveGalleryCoverImage } from "./gallery-cover";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
 import type { Project } from "./projects";
@@ -47,6 +48,7 @@ export type GalleryDocument = {
   tags?: string[];
   featured?: boolean;
   sortOrder?: number;
+  coverImageKey?: string;
   images: GalleryImageDocument[];
 };
 
@@ -74,6 +76,7 @@ const galleryProjection = `{
   tags,
   featured,
   sortOrder,
+  coverImageKey,
   images[] {
     _key,
     alt,
@@ -93,9 +96,9 @@ async function mapGalleryToListItem(
   widths: number[],
 ): Promise<GalleryListItem | null> {
   const { photoSrcSet } = await import("./image.server");
-  const first = gallery.images?.[0]?.image;
-  if (!first) return null;
-  const { src, srcSet } = photoSrcSet(first, widths);
+  const cover = resolveGalleryCoverImage(gallery);
+  if (!cover) return null;
+  const { src, srcSet } = photoSrcSet(cover, widths);
   return {
     _id: gallery._id,
     slug: gallery.slug,

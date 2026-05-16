@@ -18,7 +18,7 @@ export function SiteFooter() {
             GitHub
           </a>
           <a
-            href="https://www.linkedin.com/in/felix-a-schultz/"
+            href="https://www.linkedin.com/in/felixaschultz/"
             target="_blank"
             rel="noreferrer"
             className="hover:text-[var(--color-accent)]"
@@ -26,7 +26,7 @@ export function SiteFooter() {
             LinkedIn
           </a>
           <a
-            href="https://instagram.com"
+            href="https://instagram.com/felixaschultz"
             target="_blank"
             rel="noreferrer"
             className="hover:text-[var(--color-accent)]"

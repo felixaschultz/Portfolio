@@ -29,6 +29,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
 
   const openPhoto = useCallback((key: string) => {
+    console.log(key);
     setActiveKey(key);
   }, []);
 

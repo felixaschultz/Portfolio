@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail } from "../lib/galleries";
+import { formatGalleryDate } from "../lib/format-gallery-date";
+import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
 import { Modal } from "./Modal";
 
@@ -20,6 +22,8 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   const base = `/${locale}`;
   const title = localizedField(gallery.title, lng) || "Gallery";
   const description = localizedField(gallery.description, lng);
+  const dateLabel = formatGalleryDate(gallery.takenAt, lng);
+  const tags = gallery.tags?.filter((tag) => tag.trim()) ?? [];
 
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
@@ -39,6 +43,10 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   useEffect(() => {
     if (activeKey === null) return;
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closePhoto();
+        return;
+      }
       if (e.key === "ArrowLeft" && activeIndex > 0) {
         e.preventDefault();
         const prev = gallery.images[activeIndex - 1];
@@ -52,7 +60,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeKey, activeIndex, gallery.images]);
+  }, [activeKey, activeIndex, gallery.images, closePhoto]);
 
   function imageCaption(caption: GalleryDetail["images"][number]["caption"]): string {
     return resolveSanityString(caption, lng);
@@ -69,15 +77,28 @@ export function GalleryView({ gallery }: GalleryViewProps) {
 
       <header className="mt-8 max-w-2xl">
         <h1 className="font-display text-4xl font-bold">{title}</h1>
-        {description ? <p className="mt-4 text-[var(--color-muted)]">{description}</p> : null}
-        <p className="mt-2 text-sm text-[var(--color-muted)]">
+        {description ? <p className="mt-4 text-lg leading-relaxed text-[var(--color-muted)]">{description}</p> : null}
+        <p className="mt-3 text-sm text-[var(--color-muted)]">
           {t("photography.photoCount", { count: gallery.imageCount })}
+          {dateLabel ? ` · ${dateLabel}` : ""}
           {gallery.location ? ` · ${gallery.location}` : ""}
-          {gallery.takenAt ? ` · ${gallery.takenAt}` : ""}
         </p>
+        {tags.length > 0 ? (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <Link
+                key={tagToParam(tag)}
+                to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
+                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs font-medium text-[var(--color-muted)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+              >
+                {tag}
+              </Link>
+            ))}
+          </div>
+        ) : null}
       </header>
 
-      <div className="mt-12 grid grid-cols-1 items-center justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {gallery.images.map((image, index) => {
           const caption = imageCaption(image.caption);
           return (
@@ -92,7 +113,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
                 srcSet={image.imageSrcSet}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 alt={image.alt || title}
-                className="pointer-events-none w-full transition duration-500 group-hover:scale-[1.02]"
+                className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
                 loading="lazy"
               />
               {caption ? (
@@ -111,6 +132,12 @@ export function GalleryView({ gallery }: GalleryViewProps) {
           positionClassName="modal-overlay--center"
           panelClassName="relative max-w-5xl px-1 sm:px-0"
         >
+          <p className="absolute left-1 top-1 z-20 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white sm:left-0 sm:top-0">
+            {t("photography.lightboxCounter", {
+              current: activeIndex + 1,
+              total: gallery.images.length,
+            })}
+          </p>
           <button
             type="button"
             onClick={closePhoto}
@@ -126,6 +153,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               onClick={() =>
                 openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
               }
+              aria-label={t("photography.previous")}
             >
               ‹
             </button>
@@ -137,6 +165,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               onClick={() =>
                 openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
               }
+              aria-label={t("photography.next")}
             >
               ›
             </button>
@@ -150,7 +179,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               className="max-h-[85vh] w-full rounded-lg object-contain"
             />
             {imageCaption(activeImage.caption) ? (
-              <figcaption className="mt-4 text-center text-sm text-white/90">
+              <figcaption className="mt-4 max-w-2xl text-center text-sm text-white/90">
                 {imageCaption(activeImage.caption)}
               </figcaption>
             ) : null}

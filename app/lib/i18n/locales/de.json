@@ -52,7 +52,14 @@
     "empty": "Galerien folgen in Kürze.",
     "back": "Zurück zu den Galerien",
     "photoCount": "{{count}} Fotos",
-    "close": "Schließen"
+    "close": "Schließen",
+    "filterLabel": "Nach Tag filtern",
+    "filterAll": "Alle",
+    "filterEmpty": "Keine Galerien mit diesem Tag.",
+    "filterCount": "{{count}} Galerien mit Tag «{{tag}}»",
+    "lightboxCounter": "{{current}} / {{total}}",
+    "previous": "Vorheriges Foto",
+    "next": "Nächstes Foto"
   },
   "recommendations": {
     "title": "Empfehlungen"

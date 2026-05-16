@@ -52,7 +52,14 @@
     "empty": "Galleries coming soon.",
     "back": "Back to galleries",
     "photoCount": "{{count}} photos",
-    "close": "Close"
+    "close": "Close",
+    "filterLabel": "Filter by tag",
+    "filterAll": "All",
+    "filterEmpty": "No galleries with this tag.",
+    "filterCount": "{{count}} galleries tagged «{{tag}}»",
+    "lightboxCounter": "{{current}} / {{total}}",
+    "previous": "Previous photo",
+    "next": "Next photo"
   },
   "recommendations": {
     "title": "Recommendations"

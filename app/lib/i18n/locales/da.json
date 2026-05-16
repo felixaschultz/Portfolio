@@ -52,7 +52,14 @@
     "empty": "Gallerier kommer snart.",
     "back": "Tilbage til gallerier",
     "photoCount": "{{count}} billeder",
-    "close": "Luk"
+    "close": "Luk",
+    "filterLabel": "Filtrer efter tag",
+    "filterAll": "Alle",
+    "filterEmpty": "Ingen gallerier med dette tag.",
+    "filterCount": "{{count}} gallerier med tagget «{{tag}}»",
+    "lightboxCounter": "{{current}} / {{total}}",
+    "previous": "Forrige billede",
+    "next": "Næste billede"
   },
   "recommendations": {
     "title": "Anbefalinger"

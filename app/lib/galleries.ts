@@ -4,8 +4,16 @@ export type GalleryImageItem = {
   _key: string;
   imageUrl: string;
   imageSrcSet: string;
+  imageBlurUrl?: string;
   alt?: string;
   caption?: string;
+};
+
+export type GalleryNavItem = {
+  slug: string;
+  title: LocalizedString;
+  coverUrl: string;
+  coverBlurUrl?: string;
 };
 
 export type GalleryListItem = {
@@ -20,6 +28,7 @@ export type GalleryListItem = {
   imageCount: number;
   coverUrl: string;
   coverSrcSet: string;
+  coverBlurUrl?: string;
   coverImageKey?: string;
 };
 

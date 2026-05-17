@@ -95,10 +95,10 @@ async function mapGalleryToListItem(
   gallery: GalleryDocument,
   widths: number[],
 ): Promise<GalleryListItem | null> {
-  const { photoSrcSet } = await import("./image.server");
+  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
   const cover = resolveGalleryCoverImage(gallery);
   if (!cover) return null;
-  const { src, srcSet } = photoSrcSet(cover, widths);
+  const { src, srcSet } = photoSrcSet(cover, widths, { crop16x9: true });
   return {
     _id: gallery._id,
     slug: gallery.slug,
@@ -111,6 +111,7 @@ async function mapGalleryToListItem(
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,
     coverSrcSet: srcSet,
+    coverBlurUrl: photoBlurPlaceholder(cover),
     coverImageKey: gallery.coverImageKey,
   };
 }
@@ -119,9 +120,9 @@ async function mapGalleryToDetail(
   gallery: GalleryDocument,
   locale: Locale,
 ): Promise<GalleryDetail | null> {
-  const list = await mapGalleryToListItem(gallery, [600, 900]);
+  const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400]);
   if (!list) return null;
-  const { photoSrcSet } = await import("./image.server");
+  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
   const images: GalleryImageItem[] = (gallery.images ?? []).map((item) => {
     const { src, srcSet } = photoSrcSet(item.image, [1200, 1800, 2400, 3200]);
     const caption = resolveSanityString(item.caption, locale);
@@ -129,6 +130,7 @@ async function mapGalleryToDetail(
       _key: item._key,
       imageUrl: src,
       imageSrcSet: srcSet,
+      imageBlurUrl: photoBlurPlaceholder(item.image),
       alt: item.alt,
       caption: caption || undefined,
     };

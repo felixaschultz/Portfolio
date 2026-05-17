@@ -52,6 +52,11 @@ body {
   cursor: default;
 }
 
+.modal-overlay__backdrop--gallery {
+  background: rgb(0 0 0 / 0.94);
+  backdrop-filter: none;
+}
+
 .modal-overlay--center {
   align-items: center;
   justify-content: center;
@@ -230,18 +235,26 @@ body {
   background: #000;
 }
 
-.gallery-album__hero-img {
+.gallery-album__hero-media .gallery-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-album__hero-img,
+.gallery-album__hero-media .gallery-image__main {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  transition: transform 1.2s ease-out;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.gallery-album__hero-media:hover .gallery-album__hero-img {
-  transform: scale(1.03);
+.gallery-album__hero-media:hover .gallery-image__main {
+  transform: scale(1.01);
 }
 
 .gallery-album__hero-shade {
@@ -326,6 +339,7 @@ body {
 }
 
 .gallery-album__frame {
+  position: relative;
   display: block;
   width: 100%;
   min-height: min(42svh, 520px);
@@ -334,19 +348,24 @@ body {
   background: #000;
 }
 
-.gallery-album__img {
+.gallery-album__frame .gallery-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-album__img,
+.gallery-album__frame .gallery-image__main {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition:
-    opacity 0.4s ease,
-    transform 0.6s ease;
+  transition: opacity 0.45s ease;
 }
 
-.gallery-album__shot:hover .gallery-album__img {
-  opacity: 0.9;
-  transform: scale(1.02);
+.gallery-album__shot:hover .gallery-image__main {
+  opacity: 0.92;
 }
 
 .gallery-album__caption {
@@ -401,8 +420,21 @@ body {
 .gallery-overview__list {
   display: flex;
   flex-direction: column;
-  gap: clamp(3.5rem, 8vw, 6rem);
+  gap: clamp(4rem, 9vw, 7rem);
   padding-bottom: clamp(5rem, 12vw, 8rem);
+}
+
+.gallery-overview__list--enter {
+  animation: gallery-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes gallery-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .gallery-overview__item {
@@ -426,17 +458,25 @@ body {
   background: #000;
 }
 
-.gallery-overview__item-img {
+.gallery-overview__item-visual .gallery-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-overview__item-img,
+.gallery-overview__item-visual .gallery-image__main {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 1.2s ease-out;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.gallery-overview__item:hover .gallery-overview__item-img {
-  transform: scale(1.03);
+.gallery-overview__item:hover .gallery-image__main {
+  transform: scale(1.01);
 }
 
 .gallery-overview__item-shade {
@@ -456,7 +496,7 @@ body {
 }
 
 .gallery-overview__item-title {
-  @apply font-display text-[clamp(1.75rem,5vw,3.5rem)] leading-tight font-normal tracking-tight text-[var(--color-text)] transition group-hover:text-[var(--color-accent)];
+  @apply font-display text-[clamp(1.75rem,5vw,3.5rem)] leading-tight font-normal tracking-tight text-[var(--color-text)];
 }
 
 .gallery-overview__item-meta {
@@ -510,6 +550,266 @@ body {
     transform: none;
     transition: none;
     will-change: auto;
+  }
+
+  .gallery-overview__list--enter {
+    animation: none;
+  }
+
+  .gallery-lightbox__img {
+    transition: none !important;
+  }
+}
+
+/* Progressive image loading */
+.gallery-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.gallery-image__blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: blur(24px);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.gallery-image__main {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-image--loaded .gallery-image__main {
+  opacity: 1;
+}
+
+.gallery-image--loaded .gallery-image__blur {
+  opacity: 0;
+}
+
+/* Lightbox */
+.gallery-lightbox {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+}
+
+.gallery-lightbox__chrome {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .gallery-lightbox__chrome {
+    padding: 1.25rem 1.75rem;
+  }
+}
+
+.gallery-lightbox__counter,
+.gallery-lightbox__btn {
+  pointer-events: auto;
+}
+
+.gallery-lightbox__counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.gallery-lightbox__btn {
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.gallery-lightbox__btn:hover {
+  color: rgb(255 255 255 / 0.95);
+}
+
+.gallery-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 30;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: rgb(255 255 255 / 0.35);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.gallery-lightbox__nav:hover {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.gallery-lightbox__nav--prev {
+  left: 0.25rem;
+}
+
+.gallery-lightbox__nav--next {
+  right: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-lightbox__nav--prev {
+    left: 0.75rem;
+  }
+
+  .gallery-lightbox__nav--next {
+    right: 0.75rem;
+  }
+}
+
+.gallery-lightbox__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 3.5rem 2.5rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-lightbox__stage {
+    padding: 4rem 4.5rem 2.5rem;
+  }
+}
+
+.gallery-lightbox__img {
+  max-width: 100%;
+  max-height: calc(100dvh - 7rem);
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-lightbox__img--visible {
+  opacity: 1;
+}
+
+.gallery-lightbox__caption {
+  margin-top: 1.25rem;
+  max-width: 40rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: rgb(255 255 255 / 0.65);
+}
+
+/* Album prev / next */
+.gallery-album__nav {
+  display: grid;
+  gap: 1px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-border);
+}
+
+@media (min-width: 768px) {
+  .gallery-album__nav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gallery-album__nav-item {
+  background: var(--color-bg);
+}
+
+.gallery-album__nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.25s ease;
+}
+
+.gallery-album__nav-link:hover {
+  background: var(--color-surface);
+}
+
+.gallery-album__nav-link--next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.gallery-album__nav-link--next .gallery-album__nav-body {
+  flex-direction: row-reverse;
+}
+
+.gallery-album__nav-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.gallery-album__nav-body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gallery-album__nav-visual {
+  position: relative;
+  width: 5.5rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+
+.gallery-album__nav-img {
+  object-fit: cover;
+}
+
+.gallery-album__nav-title {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+@media (min-width: 640px) {
+  .gallery-album__nav-title {
+    font-size: 1.5rem;
   }
 }
 

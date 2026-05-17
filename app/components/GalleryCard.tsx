@@ -5,6 +5,7 @@ import { formatGalleryDate } from "../lib/format-gallery-date";
 import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
+import { GalleryImage } from "./GalleryImage";
 import { Reveal } from "./Reveal";
 
 type GalleryCardProps = {
@@ -45,11 +46,12 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
         className="gallery-overview__item-visual"
         aria-label={title}
       >
-        <img
+        <GalleryImage
           src={gallery.coverUrl}
           srcSet={gallery.coverSrcSet}
           sizes="100vw"
           alt={title}
+          blurSrc={gallery.coverBlurUrl}
           className="gallery-overview__item-img"
           loading={index < 2 ? "eager" : "lazy"}
           fetchPriority={index === 0 ? "high" : undefined}

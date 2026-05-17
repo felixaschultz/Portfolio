@@ -8,6 +8,7 @@ type ModalProps = {
   children: React.ReactNode;
   panelClassName?: string;
   positionClassName?: string;
+  backdropClassName?: string;
   ariaLabel?: string;
   ariaLabelledBy?: string;
 };
@@ -18,6 +19,7 @@ export function Modal({
   children,
   panelClassName = "",
   positionClassName = "modal-overlay--center",
+  backdropClassName = "",
   ariaLabel,
   ariaLabelledBy,
 }: ModalProps) {
@@ -58,7 +60,7 @@ export function Modal({
     >
       <button
         type="button"
-        className="modal-overlay__backdrop"
+        className={`modal-overlay__backdrop ${backdropClassName}`.trim()}
         aria-label="Close dialog"
         onClick={() => onCloseRef.current()}
       />

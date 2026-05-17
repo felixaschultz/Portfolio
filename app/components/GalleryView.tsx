@@ -1,16 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { GalleryDetail, GalleryImageItem } from "../lib/galleries";
+import type { GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
 import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
-import { Modal } from "./Modal";
+import { GalleryAlbumNav } from "./GalleryAlbumNav";
+import { GalleryImage } from "./GalleryImage";
+import { GalleryLightbox, useGalleryLightbox } from "./GalleryLightbox";
 import { Reveal } from "./Reveal";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
+  nextGallery?: GalleryNavItem | null;
+  prevGallery?: GalleryNavItem | null;
 };
 
 function resolveCoverImage(gallery: GalleryDetail): GalleryImageItem | null {
@@ -47,11 +51,12 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
         aria-label={caption || `${title} — ${indexLabel}`}
       >
         <span className="gallery-album__frame">
-          <img
+          <GalleryImage
             src={image.imageUrl}
             srcSet={image.imageSrcSet}
             sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
             alt={image.alt || title}
+            blurSrc={image.imageBlurUrl}
             className="gallery-album__img"
             loading="lazy"
           />
@@ -62,11 +67,12 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
   );
 }
 
-export function GalleryView({ gallery }: GalleryViewProps) {
+export function GalleryView({ gallery, nextGallery = null, prevGallery = null }: GalleryViewProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
   const base = `/${locale}`;
+  const openPhoto = useGalleryLightbox();
   const title = localizedField(gallery.title, lng) || "Gallery";
   const description = localizedField(gallery.description, lng);
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
@@ -78,44 +84,10 @@ export function GalleryView({ gallery }: GalleryViewProps) {
     return gallery.images.filter((img) => img._key !== coverImage._key);
   }, [gallery.images, coverImage]);
 
-  const [activeKey, setActiveKey] = useState<string | null>(null);
-
-  const activeIndex = activeKey
-    ? gallery.images.findIndex((img) => img._key === activeKey)
-    : -1;
-  const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
-
-  const openPhoto = useCallback((key: string) => {
-    setActiveKey(key);
-  }, []);
-
-  const closePhoto = useCallback(() => {
-    setActiveKey(null);
-  }, []);
-
-  useEffect(() => {
-    if (activeKey === null) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closePhoto();
-        return;
-      }
-      if (e.key === "ArrowLeft" && activeIndex > 0) {
-        e.preventDefault();
-        setActiveKey(gallery.images[activeIndex - 1]._key);
-      }
-      if (e.key === "ArrowRight" && activeIndex < gallery.images.length - 1) {
-        e.preventDefault();
-        setActiveKey(gallery.images[activeIndex + 1]._key);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeKey, activeIndex, gallery.images, closePhoto]);
-
-  function imageCaption(caption: GalleryImageItem["caption"]): string {
-    return resolveSanityString(caption, lng);
-  }
+  const imageCaption = useCallback(
+    (caption: GalleryImageItem["caption"]) => resolveSanityString(caption, lng),
+    [lng],
+  );
 
   const metaParts = [dateLabel, gallery.location, t("photography.photoCount", { count: gallery.imageCount })].filter(
     Boolean,
@@ -139,12 +111,14 @@ export function GalleryView({ gallery }: GalleryViewProps) {
             onClick={() => openPhoto(coverImage._key)}
             aria-label={title}
           >
-            <img
+            <GalleryImage
               src={coverImage.imageUrl}
               srcSet={coverImage.imageSrcSet}
               sizes="100vw"
               alt={coverImage.alt || title}
+              blurSrc={coverImage.imageBlurUrl ?? gallery.coverBlurUrl}
               className="gallery-album__hero-img"
+              loading="eager"
               fetchPriority="high"
             />
             <div className="gallery-album__hero-shade" aria-hidden />
@@ -208,61 +182,9 @@ export function GalleryView({ gallery }: GalleryViewProps) {
         </div>
       ) : null}
 
-      {activeImage ? (
-        <Modal
-          open
-          onClose={closePhoto}
-          ariaLabel={title}
-          positionClassName="modal-overlay--fullscreen"
-          panelClassName="modal-panel--fullscreen relative w-full"
-        >
-          <p className="absolute left-2 top-2 z-20 font-mono text-[11px] uppercase tracking-[0.2em] text-white/70 sm:left-4 sm:top-4">
-            {String(activeIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
-          </p>
-          <button
-            type="button"
-            onClick={closePhoto}
-            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-lg text-white backdrop-blur-sm transition hover:bg-white/20 sm:right-4 sm:top-4"
-            aria-label={t("photography.close")}
-          >
-            ✕
-          </button>
-          {activeIndex > 0 ? (
-            <button
-              type="button"
-              className="absolute left-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur-sm transition hover:bg-white/20 sm:left-4"
-              onClick={() => setActiveKey(gallery.images[activeIndex - 1]._key)}
-              aria-label={t("photography.previous")}
-            >
-              ‹
-            </button>
-          ) : null}
-          {activeIndex < gallery.images.length - 1 ? (
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur-sm transition hover:bg-white/20 sm:right-4"
-              onClick={() => setActiveKey(gallery.images[activeIndex + 1]._key)}
-              aria-label={t("photography.next")}
-            >
-              ›
-            </button>
-          ) : null}
-          <figure className="flex h-full w-full flex-col items-center justify-center px-12 py-14 sm:px-16">
-            <img
-              src={activeImage.imageUrl}
-              srcSet={activeImage.imageSrcSet}
-              sizes="100vw"
-              alt={activeImage.alt || title}
-              className="max-h-[calc(100dvh-6rem)] max-w-[100vw] object-contain"
-            />
-            {imageCaption(activeImage.caption) ? (
-              <figcaption className="gallery-album__caption--lightbox">
-                {imageCaption(activeImage.caption)}
-              </figcaption>
-            ) : null}
-          </figure>
-        </Modal>
-      ) : null}
+      <GalleryAlbumNav nextGallery={nextGallery} prevGallery={prevGallery} />
+
+      <GalleryLightbox images={gallery.images} albumTitle={title} captionFor={(img) => imageCaption(img.caption)} />
     </article>
   );
 }

@@ -60,7 +60,10 @@
     "lightboxCounter": "{{current}} / {{total}}",
     "previous": "Forrige billede",
     "next": "Næste billede",
-    "allPhotos": "Alle billeder"
+    "allPhotos": "Alle billeder",
+    "nextAlbum": "Næste galleri",
+    "prevAlbum": "Forrige galleri",
+    "albumNavLabel": "Flere gallerier"
   },
   "recommendations": {
     "title": "Anbefalinger"

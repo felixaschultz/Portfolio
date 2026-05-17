@@ -60,7 +60,7 @@ export function GalleryGrid({ galleries }: GalleryGridProps) {
       ) : null}
 
       {filtered.length > 0 ? (
-        <div className="gallery-overview__list" key={activeTag ?? "all"}>
+        <div className="gallery-overview__list gallery-overview__list--enter" key={activeTag ?? "all"}>
           {filtered.map((gallery, index) => (
             <GalleryCard key={gallery._id} gallery={gallery} index={index} total={filtered.length} />
           ))}

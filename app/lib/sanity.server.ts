@@ -121,17 +121,11 @@ const galleryProjection = `{
   description,
   takenAt,
   location,
-  "tags": array::unique(array::compact(tags[]{
-    select(
-      _type == "reference" => @->name,
-      type(@) == "string" => @,
-      null
-    )
-  })),
-  "categories": array::compact(categories[]->{
+  "tags": array::unique(array::compact(tags[]->name)),
+  "categories": categories[]->{
     "slug": slug.current,
     title
-  }[defined(slug.current)]),
+  },
   featured,
   sortOrder,
   coverImageKey,
@@ -239,7 +233,8 @@ export async function fetchGalleries(): Promise<GalleryDocument[]> {
   try {
     const galleries: GalleryDocument[] = await client.fetch(GALLERIES_QUERY);
     return dedupeGalleriesBySlug(galleries);
-  } catch {
+  } catch (err) {
+    console.error("[sanity] fetchGalleries failed:", err);
     return [];
   }
 }

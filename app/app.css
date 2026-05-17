@@ -164,12 +164,13 @@ body {
 }
 
 :root {
-  --site-header-height: 3.625rem;
+  /* Match .site-header__inner (logo min-h-11 + vertical padding) */
+  --site-header-height: 4.5rem;
 }
 
 @media (min-width: 640px) {
   :root {
-    --site-header-height: 4.25rem;
+    --site-header-height: 4.75rem;
   }
 }
 
@@ -192,6 +193,8 @@ body {
   right: 0;
   z-index: 50;
   width: 100%;
+  min-height: var(--site-header-height);
+  box-sizing: border-box;
   border-bottom: 1px solid var(--color-border);
   background: color-mix(in srgb, var(--color-surface) 88%, transparent);
   -webkit-backdrop-filter: blur(12px);
@@ -350,10 +353,12 @@ body {
 }
 
 .gallery-album__hero-toolbar {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 30;
-  padding: 1.25rem 1.5rem;
+  position: fixed;
+  top: var(--site-header-height);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 1rem 1.5rem;
   pointer-events: none;
 }
 
@@ -363,7 +368,7 @@ body {
 
 @media (min-width: 640px) {
   .gallery-album__hero-toolbar {
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 2rem;
   }
 }
 

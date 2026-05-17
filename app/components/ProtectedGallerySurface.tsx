@@ -1,4 +1,4 @@
-import type { ElementType, HTMLAttributes, ReactNode } from "react";
+import type { DragEvent, ElementType, HTMLAttributes, MouseEvent, ReactNode } from "react";
 
 type ProtectedGallerySurfaceProps = HTMLAttributes<HTMLElement> & {
   children: ReactNode;
@@ -15,8 +15,8 @@ export function ProtectedGallerySurface({
   return (
     <Tag
       className={`gallery-protected ${className}`.trim()}
-      onContextMenu={(e) => e.preventDefault()}
-      onDragStart={(e) => e.preventDefault()}
+      onContextMenu={(e: MouseEvent) => e.preventDefault()}
+      onDragStart={(e: DragEvent) => e.preventDefault()}
       {...rest}
     >
       {children}

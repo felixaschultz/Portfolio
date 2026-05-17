@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useBodyScrollLock } from "../lib/useBodyScrollLock";
+import { useScrolled } from "../lib/use-scrolled";
 import { type Locale } from "../lib/i18n";
 import { Logo } from "./Logo";
 
@@ -23,6 +24,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const scrolled = useScrolled();
   const base = `/${locale}`;
   const currentLocale = (locale ?? "da") as Locale;
 
@@ -52,8 +54,10 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+    <header
+      className={`site-header ${scrolled ? "site-header--scrolled" : ""}`.trim()}
+    >
+      <div className="site-header__inner">
         <Logo className="min-h-11 shrink-0" />
 
         <nav className="header-nav-desktop" aria-label="Main">
@@ -164,7 +168,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 onClick={() => setMenuOpen(false)}
               />
               <nav
-                className="absolute inset-x-0 top-14 z-10 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+                className="absolute inset-x-0 top-[var(--site-header-height)] z-10 max-h-[calc(100dvh-var(--site-header-height))] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
                 aria-label="Main"
               >
             <div className="flex flex-col gap-1">

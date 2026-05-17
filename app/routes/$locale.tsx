@@ -47,12 +47,14 @@ export default function LocaleLayout() {
 
   return (
     <LocaleProvider locale={locale}>
-      <div className="flex min-h-screen flex-col">
+      <div className="site-layout">
         <SiteHeader onContactClick={openContact} onSearchClick={openSearch} />
-        <main className="flex-1">
-          <Outlet context={{ openContact }} />
-        </main>
-        <SiteFooter />
+        <div className="site-layout__body">
+          <main className="site-layout__main">
+            <Outlet context={{ openContact }} />
+          </main>
+          <SiteFooter />
+        </div>
         <ContactModal open={contactOpen} onClose={closeContact} />
         <SearchDialog open={searchOpen} onClose={closeSearch} items={searchIndex ?? []} />
       </div>

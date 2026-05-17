@@ -163,6 +163,80 @@ body {
   border-radius: 2px;
 }
 
+:root {
+  --site-header-height: 3.625rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --site-header-height: 4.25rem;
+  }
+}
+
+.site-layout__body {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  padding-top: var(--site-header-height);
+}
+
+.site-layout__main {
+  flex: 1 1 auto;
+}
+
+/* Site header — fixed to viewport (sticky breaks inside flex column) */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.site-header--scrolled {
+  border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.35);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.875rem 1rem;
+  transition: padding 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .site-header__inner {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.site-header--scrolled .site-header__inner {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .site-header--scrolled .site-header__inner {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
 /* Header: desktop nav hidden below lg; hamburger hidden at lg+ */
 .header-nav-desktop {
   display: none;

@@ -6,10 +6,9 @@ import {
   type ArrayOfObjectsInputProps,
   PatchEvent,
   set,
-  unset,
   useClient,
   useCurrentUser,
-  useFormCallbacks,
+  useFormValue,
 } from "sanity";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
@@ -66,7 +65,7 @@ function formatUploadError(err: unknown): string {
 }
 
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
-  const { onPatch } = useFormCallbacks();
+  const documentId = useFormValue(["_id"]) as string | undefined;
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
 
@@ -90,7 +89,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
 
   const photoCount = value.length;
 
-  const clearAllImages = useCallback(() => {
+  const clearAllImages = useCallback(async () => {
     if (photoCount === 0 || props.readOnly) return;
 
     const confirmed = window.confirm(
@@ -99,10 +98,17 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     if (!confirmed) return;
 
     props.onChange(PatchEvent.from(set([])));
-    onPatch(PatchEvent.from(unset(["coverImageKey"])));
+    if (documentId) {
+      try {
+        await client.patch(documentId).unset(["coverImageKey"]).commit();
+      } catch (err) {
+        setError(formatUploadError(err));
+        return;
+      }
+    }
     setError(null);
     setProgress("");
-  }, [onPatch, photoCount, props]);
+  }, [client, documentId, photoCount, props]);
 
   const uploadFiles = useCallback(
     async (files: File[]) => {

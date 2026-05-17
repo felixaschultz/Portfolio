@@ -14,6 +14,9 @@ export function isSanityConfigured(): boolean {
   return Boolean(projectId && projectId !== "placeholder");
 }
 
+/** Public site reads — never include draft or version-only documents. */
+const PUBLIC_PERSPECTIVE = "published" as const;
+
 export function getSanityClient(): SanityClient | null {
   if (!isSanityConfigured()) return null;
   return createClient({
@@ -22,7 +25,25 @@ export function getSanityClient(): SanityClient | null {
     apiVersion,
     token,
     useCdn: !token,
+    perspective: PUBLIC_PERSPECTIVE,
   });
+}
+
+function isPublishedDocumentId(id: string): boolean {
+  return !id.startsWith("drafts.") && !id.startsWith("versions.");
+}
+
+/** When multiple docs share a slug, keep the published canonical id (not drafts.*). */
+function dedupeGalleriesBySlug(galleries: GalleryDocument[]): GalleryDocument[] {
+  const bySlug = new Map<string, GalleryDocument>();
+  for (const gallery of galleries) {
+    if (!gallery.slug || !isPublishedDocumentId(gallery._id)) continue;
+    const existing = bySlug.get(gallery.slug);
+    if (!existing || !isPublishedDocumentId(existing._id)) {
+      bySlug.set(gallery.slug, gallery);
+    }
+  }
+  return [...bySlug.values()];
 }
 
 export type LocalizedString = { da?: string; de?: string; en?: string };
@@ -85,11 +106,13 @@ const galleryProjection = `{
   }
 }`;
 
-export const GALLERIES_QUERY = `*[_type == "gallery"] | order(coalesce(sortOrder, 999) asc, takenAt desc) ${galleryProjection}`;
+const publishedGalleryFilter = `_type == "gallery" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
-export const FEATURED_GALLERIES_QUERY = `*[_type == "gallery" && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
+export const GALLERIES_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(sortOrder, 999) asc, takenAt desc) ${galleryProjection}`;
 
-export const GALLERY_BY_SLUG_QUERY = `*[_type == "gallery" && slug.current == $slug][0] ${galleryProjection}`;
+export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
+
+export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryProjection}`;
 
 async function mapGalleryToListItem(
   gallery: GalleryDocument,
@@ -143,7 +166,8 @@ export async function fetchGalleries(): Promise<GalleryDocument[]> {
   const client = getSanityClient();
   if (!client) return [];
   try {
-    return await client.fetch(GALLERIES_QUERY);
+    const galleries: GalleryDocument[] = await client.fetch(GALLERIES_QUERY);
+    return dedupeGalleriesBySlug(galleries);
   } catch {
     return [];
   }
@@ -172,8 +196,9 @@ export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]
   if (!client) return [];
   try {
     const galleries: GalleryDocument[] = await client.fetch(FEATURED_GALLERIES_QUERY);
+    const published = dedupeGalleriesBySlug(galleries);
     const items = await Promise.all(
-      galleries.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
+      published.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
     );
     return items.filter((g): g is GalleryListItem => g !== null);
   } catch {

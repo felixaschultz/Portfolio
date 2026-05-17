@@ -1,4 +1,4 @@
-import { UploadIcon } from "@sanity/icons";
+import { TrashIcon, UploadIcon } from "@sanity/icons";
 import { Button, Flex, Stack, Text } from "@sanity/ui";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -6,8 +6,10 @@ import {
   type ArrayOfObjectsInputProps,
   PatchEvent,
   set,
+  unset,
   useClient,
   useCurrentUser,
+  useFormCallbacks,
 } from "sanity";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
@@ -64,6 +66,7 @@ function formatUploadError(err: unknown): string {
 }
 
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
+  const { onPatch } = useFormCallbacks();
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
 
@@ -84,6 +87,22 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     () => (Array.isArray(props.value) ? props.value : []),
     [props.value],
   );
+
+  const photoCount = value.length;
+
+  const clearAllImages = useCallback(() => {
+    if (photoCount === 0 || props.readOnly) return;
+
+    const confirmed = window.confirm(
+      `Remove all ${photoCount} photo${photoCount === 1 ? "" : "s"} from this gallery?\n\nThe cover selection will be reset. You can then use “Upload folder” to add a new set of images.`,
+    );
+    if (!confirmed) return;
+
+    props.onChange(PatchEvent.from(set([])));
+    onPatch(PatchEvent.from(unset(["coverImageKey"])));
+    setError(null);
+    setProgress("");
+  }, [onPatch, photoCount, props]);
 
   const uploadFiles = useCallback(
     async (files: File[]) => {
@@ -162,9 +181,17 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
           disabled={uploading || Boolean(props.readOnly) || !canUpload}
           onClick={() => inputRef.current?.click()}
         />
+        <Button
+          icon={TrashIcon}
+          text="Clear all photos"
+          tone="critical"
+          mode="ghost"
+          disabled={uploading || Boolean(props.readOnly) || photoCount === 0}
+          onClick={clearAllImages}
+        />
         <Text size={1} muted>
           {canUpload
-            ? "Pick a folder (Chrome/Safari/Edge) or drag files onto the grid below."
+            ? "Pick a folder to add images, or clear all photos first when replacing a cloned gallery."
             : "Sign in to Sanity (top right) to enable folder upload."}
         </Text>
       </Flex>

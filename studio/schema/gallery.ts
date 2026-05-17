@@ -44,7 +44,7 @@ export const gallery = defineType({
       name: "images",
       title: "Photos",
       description:
-        "Use “Upload folder” to add every image from a folder, drag multiple files onto the grid, or multi-select in Upload (Cmd/Ctrl+A).",
+        "Use “Upload folder” to add images. After cloning a gallery, use “Clear all photos” first, then upload a new folder to replace them.",
       type: "array",
       of: [defineArrayMember({ type: "galleryImage" })],
       components: {

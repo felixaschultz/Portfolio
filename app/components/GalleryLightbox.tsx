@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { GalleryImageItem } from "../lib/galleries";
 import { preloadImage } from "../lib/preload-image";
 import { Modal } from "./Modal";
+import { ProtectedGallerySurface } from "./ProtectedGallerySurface";
 
 const SWIPE_THRESHOLD_PX = 56;
 const FADE_MS = 320;
@@ -91,7 +92,7 @@ export function GalleryLightbox({ images, albumTitle, captionFor }: GalleryLight
     if (activeIndex < 0) return;
     for (const offset of [-1, 1]) {
       const neighbor = images[activeIndex + offset];
-      if (neighbor) preloadImage(neighbor.imageUrl);
+      if (neighbor) preloadImage(neighbor.imageFullUrl ?? neighbor.imageUrl);
     }
   }, [activeIndex, images]);
 
@@ -158,7 +159,8 @@ export function GalleryLightbox({ images, albumTitle, captionFor }: GalleryLight
         </button>
       ) : null}
 
-      <figure
+      <ProtectedGallerySurface
+        as="figure"
         className="gallery-lightbox__stage"
         onTouchStart={(e) => {
           touchStartX.current = e.changedTouches[0]?.clientX ?? null;
@@ -176,14 +178,18 @@ export function GalleryLightbox({ images, albumTitle, captionFor }: GalleryLight
       >
         <img
           key={effectiveKey}
-          src={displayImage.imageUrl}
-          srcSet={displayImage.imageSrcSet}
+          src={displayImage.imageFullUrl ?? displayImage.imageUrl}
+          srcSet={displayImage.imageFullSrcSet ?? displayImage.imageSrcSet}
           sizes="100vw"
           alt={displayImage.alt || albumTitle}
+          draggable={false}
           className={`gallery-lightbox__img ${visible ? "gallery-lightbox__img--visible" : ""}`}
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
         />
+        <span className="gallery-protected__shield gallery-protected__shield--lightbox" aria-hidden />
         {caption ? <figcaption className="gallery-lightbox__caption">{caption}</figcaption> : null}
-      </figure>
+      </ProtectedGallerySurface>
     </Modal>
   );
 }

@@ -8,10 +8,13 @@ import {
   photographyPhotosPath,
   photographyTagPath,
 } from "../lib/gallery-tags";
+import { shouldDisableReveal } from "../lib/gallery-performance";
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { GalleryImage } from "./GalleryImage";
 import { GalleryMasonry } from "./GalleryMasonry";
+import { LazyGalleryTile } from "./LazyGalleryTile";
+import { ProtectedGallerySurface } from "./ProtectedGallerySurface";
 import { GalleryTagFilter } from "./GalleryTagFilter";
 import { Reveal } from "./Reveal";
 
@@ -33,6 +36,8 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
     if (!activeTag) return photos;
     return photos.filter((photo) => photoHasTag(photo, activeTag));
   }, [photos, activeTag]);
+
+  const streamAnimates = !shouldDisableReveal(filtered.length);
 
   return (
     <div className="gallery-overview all-photos">
@@ -67,45 +72,59 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
       ) : null}
 
       {filtered.length > 0 ? (
-        <GalleryMasonry
-          images={filtered}
-          seed={`all-photos-${activeTag ?? "all"}`}
-          className="all-photos__stream"
-          renderItem={(photo, index) => {
-            const galleryTitle = localizedField(photo.galleryTitle, lng) || "Gallery";
-            const label = photo.alt || photo.caption || galleryTitle;
-            return (
-              <Reveal
-                key={`${photo.gallerySlug}-${photo._key}`}
-                as="figure"
-                className="gallery-mosaic__item all-photos__figure"
-                variant="scale"
-                delay={revealStagger(index, 40, 280)}
-              >
-                <Link
-                  to={`${base}/photography/${photo.gallerySlug}?photo=${photo._key}`}
-                  className="all-photos__link"
+        <ProtectedGallerySurface>
+          <GalleryMasonry
+            images={filtered}
+            seed={`all-photos-${activeTag ?? "all"}`}
+            className="all-photos__stream"
+            renderItem={(photo, index) => {
+              const galleryTitle = localizedField(photo.galleryTitle, lng) || "Gallery";
+              const label = photo.alt || photo.caption || galleryTitle;
+              const tile = (
+                <figure className="gallery-mosaic__item all-photos__figure">
+                  <Link
+                    to={`${base}/photography/${photo.gallerySlug}?photo=${photo._key}`}
+                    className="all-photos__link"
+                  >
+                    <GalleryImage
+                      src={photo.imageUrl}
+                      srcSet={photo.imageSrcSet}
+                      sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                      alt={label}
+                      blurSrc={photo.imageBlurUrl}
+                      className="all-photos__img"
+                      loading="lazy"
+                      protectedImage
+                    />
+                    <span className="gallery-protected__shield" aria-hidden />
+                    <span className="all-photos__overlay">
+                      <span className="all-photos__gallery-name">{galleryTitle}</span>
+                      {photo.caption ? (
+                        <span className="all-photos__caption">{photo.caption}</span>
+                      ) : null}
+                    </span>
+                  </Link>
+                </figure>
+              );
+
+              return (
+                <LazyGalleryTile
+                  key={`${photo.gallerySlug}-${photo._key}`}
+                  width={photo.width}
+                  height={photo.height}
                 >
-                  <GalleryImage
-                    src={photo.imageUrl}
-                    srcSet={photo.imageSrcSet}
-                    sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                    alt={label}
-                    blurSrc={photo.imageBlurUrl}
-                    className="all-photos__img"
-                    loading="lazy"
-                  />
-                  <span className="all-photos__overlay">
-                    <span className="all-photos__gallery-name">{galleryTitle}</span>
-                    {photo.caption ? (
-                      <span className="all-photos__caption">{photo.caption}</span>
-                    ) : null}
-                  </span>
-                </Link>
-              </Reveal>
-            );
-          }}
-        />
+                  {streamAnimates ? (
+                    <Reveal as="div" variant="scale" delay={revealStagger(index, 40, 280)}>
+                      {tile}
+                    </Reveal>
+                  ) : (
+                    tile
+                  )}
+                </LazyGalleryTile>
+              );
+            }}
+          />
+        </ProtectedGallerySurface>
       ) : (
         <div className="gallery-overview__empty">
           <p className="text-[var(--color-muted)]">{t("photography.filterPhotosEmpty")}</p>

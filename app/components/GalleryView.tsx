@@ -11,8 +11,11 @@ import { GalleryLightbox, useGalleryLightbox } from "./GalleryLightbox";
 import { Reveal } from "./Reveal";
 import { GalleryShare } from "./GalleryShare";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
+import { shouldDisableReveal } from "../lib/gallery-performance";
 import { pageUrl } from "../lib/seo";
 import { GalleryMasonry } from "./GalleryMasonry";
+import { LazyGalleryTile } from "./LazyGalleryTile";
+import { ProtectedGallerySurface } from "./ProtectedGallerySurface";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
@@ -35,6 +38,7 @@ type AlbumPhotoProps = {
   title: string;
   caption: string;
   onOpen: (key: string) => void;
+  animate: boolean;
 };
 
 type GalleryDetailsProps = {
@@ -65,16 +69,11 @@ function GalleryDetails({ description, tags, lng }: GalleryDetailsProps) {
   );
 }
 
-function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
+function AlbumPhoto({ image, index, title, caption, onOpen, animate }: AlbumPhotoProps) {
   const indexLabel = String(index + 1).padStart(2, "0");
 
-  return (
-    <Reveal
-      as="figure"
-      className="gallery-mosaic__item gallery-album__figure"
-      variant="scale"
-      delay={revealStagger(index, 60, 360)}
-    >
+  const tile = (
+    <figure className="gallery-mosaic__item gallery-album__figure">
       <button
         type="button"
         className="gallery-album__shot"
@@ -85,12 +84,14 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
           <GalleryImage
             src={image.imageUrl}
             srcSet={image.imageSrcSet}
-            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 28vw"
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
             alt={image.alt || title}
             blurSrc={image.imageBlurUrl}
             className="gallery-album__img"
             loading="lazy"
+            protectedImage
           />
+          <span className="gallery-protected__shield" aria-hidden />
           {caption ? (
             <span className="gallery-mosaic__caption" aria-hidden>
               {caption}
@@ -98,7 +99,23 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
           ) : null}
         </span>
       </button>
-    </Reveal>
+    </figure>
+  );
+
+  if (!animate) {
+    return (
+      <LazyGalleryTile width={image.width} height={image.height}>
+        {tile}
+      </LazyGalleryTile>
+    );
+  }
+
+  return (
+    <LazyGalleryTile width={image.width} height={image.height}>
+      <Reveal as="div" className="gallery-album__reveal" variant="scale" delay={revealStagger(index, 60, 360)}>
+        {tile}
+      </Reveal>
+    </LazyGalleryTile>
   );
 }
 
@@ -132,6 +149,8 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     ? gallery.images.findIndex((img) => img._key === coverImage._key)
     : 0;
 
+  const streamAnimates = !shouldDisableReveal(moreImages.length);
+
   const sharePayload = useMemo(
     () => ({
       url: pageUrl(lng, `/photography/${gallery.slug}`),
@@ -160,7 +179,9 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
               className="gallery-album__hero-img"
               loading="eager"
               fetchPriority="high"
+              protectedImage
             />
+            <span className="gallery-protected__shield" aria-hidden />
             <div className="gallery-album__hero-shade" aria-hidden />
           </button>
 
@@ -195,21 +216,24 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
       )}
 
       {moreImages.length > 0 ? (
-        <GalleryMasonry
-          images={moreImages}
-          seed={gallery.slug}
-          className="gallery-album__stream"
-          renderItem={(image, index) => (
-            <AlbumPhoto
-              key={image._key}
-              image={image}
-              index={coverImage ? index + 1 : index}
-              title={title}
-              caption={imageCaption(image.caption)}
-              onOpen={openPhoto}
-            />
-          )}
-        />
+        <ProtectedGallerySurface className="gallery-album__stream-wrap">
+          <GalleryMasonry
+            images={moreImages}
+            seed={gallery.slug}
+            className="gallery-album__stream"
+            renderItem={(image, index) => (
+              <AlbumPhoto
+                key={image._key}
+                image={image}
+                index={coverImage ? index + 1 : index}
+                title={title}
+                caption={imageCaption(image.caption)}
+                onOpen={openPhoto}
+                animate={streamAnimates}
+              />
+            )}
+          />
+        </ProtectedGallerySurface>
       ) : null}
 
       <GalleryAlbumNav nextGallery={nextGallery} prevGallery={prevGallery} />

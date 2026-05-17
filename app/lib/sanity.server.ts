@@ -158,23 +158,32 @@ async function mapGalleryToDetail(
   const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400]);
   if (!list) return null;
   const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
+  const { gridSrcWidths, isLargeGallery, LIGHTBOX_SRC_WIDTHS } = await import("./gallery-performance");
+  const imageCount = gallery.images?.length ?? 0;
+  const large = isLargeGallery(imageCount);
+  const gridWidths = gridSrcWidths(imageCount);
   const images: GalleryImageItem[] = (gallery.images ?? [])
     .filter((item) => item.image?.asset?._ref)
     .map((item) => {
-    const { src, srcSet } = photoSrcSet(item.image, [1200, 1800, 2400, 3200]);
-    const caption = resolveSanityString(item.caption, locale);
-    const { width, height } = imageDimensionsFromAsset(item.image);
-    return {
-      _key: item._key,
-      imageUrl: src,
-      imageSrcSet: srcSet,
-      imageBlurUrl: photoBlurPlaceholder(item.image),
-      alt: item.alt,
-      caption: caption || undefined,
-      width,
-      height,
-    };
-  });
+      const { src, srcSet } = photoSrcSet(item.image, gridWidths);
+      const caption = resolveSanityString(item.caption, locale);
+      const { width, height } = imageDimensionsFromAsset(item.image);
+      const full = large
+        ? photoSrcSet(item.image, LIGHTBOX_SRC_WIDTHS)
+        : { src, srcSet };
+      return {
+        _key: item._key,
+        imageUrl: src,
+        imageSrcSet: srcSet,
+        imageFullUrl: full.src,
+        imageFullSrcSet: full.srcSet,
+        imageBlurUrl: photoBlurPlaceholder(item.image),
+        alt: item.alt,
+        caption: caption || undefined,
+        width,
+        height,
+      };
+    });
   return { ...list, images };
 }
 
@@ -234,13 +243,14 @@ export async function fetchGalleryDetailBySlug(
 export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioPhotoItem[]> {
   const galleries = await fetchGalleries();
   const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
+  const { GRID_SRC_WIDTHS_LARGE } = await import("./gallery-performance");
   const photos: PortfolioPhotoItem[] = [];
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
-      for (const item of gallery.images ?? []) {
+    for (const item of gallery.images ?? []) {
       if (!item?.image?.asset?._ref || !item._key) continue;
-      const { src, srcSet } = photoSrcSet(item.image, [480, 800, 1200, 1600]);
+      const { src, srcSet } = photoSrcSet(item.image, GRID_SRC_WIDTHS_LARGE);
       const caption = resolveSanityString(item.caption, locale);
       const { width, height } = imageDimensionsFromAsset(item.image);
       photos.push({

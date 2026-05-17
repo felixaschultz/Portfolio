@@ -9,6 +9,8 @@ type GalleryImageProps = {
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
+  /** Deters drag / context menu on the image node. */
+  protectedImage?: boolean;
 };
 
 export function GalleryImage({
@@ -20,6 +22,7 @@ export function GalleryImage({
   className = "",
   loading = "lazy",
   fetchPriority,
+  protectedImage = false,
 }: GalleryImageProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
@@ -31,10 +34,22 @@ export function GalleryImage({
     }
   }, [src]);
 
+  const protectClass = protectedImage ? " gallery-image--protected" : "";
+
   return (
-    <span className={`gallery-image ${loaded ? "gallery-image--loaded" : ""}`}>
+    <span
+      className={`gallery-image ${loaded ? "gallery-image--loaded" : ""}${protectClass}`}
+      onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
+    >
       {blurSrc ? (
-        <img src={blurSrc} alt="" className="gallery-image__blur" aria-hidden decoding="async" />
+        <img
+          src={blurSrc}
+          alt=""
+          className="gallery-image__blur"
+          aria-hidden
+          decoding="async"
+          draggable={false}
+        />
       ) : null}
       <img
         ref={imgRef}
@@ -45,8 +60,11 @@ export function GalleryImage({
         loading={loading}
         fetchPriority={fetchPriority}
         decoding="async"
+        draggable={false}
         className={`gallery-image__main ${className}`.trim()}
         onLoad={() => setLoaded(true)}
+        onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
+        onDragStart={protectedImage ? (e) => e.preventDefault() : undefined}
       />
     </span>
   );

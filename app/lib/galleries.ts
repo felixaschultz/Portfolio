@@ -4,6 +4,9 @@ export type GalleryImageItem = {
   _key: string;
   imageUrl: string;
   imageSrcSet: string;
+  /** Full-resolution URLs for lightbox (used when grid uses smaller variants). */
+  imageFullUrl?: string;
+  imageFullSrcSet?: string;
   imageBlurUrl?: string;
   alt?: string;
   caption?: string;

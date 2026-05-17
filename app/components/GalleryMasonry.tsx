@@ -1,5 +1,7 @@
 import { useMemo, type ReactNode } from "react";
 import { buildMasonryColumns, type MosaicImage } from "../lib/gallery-mosaic";
+import { useMasonryColumnCount } from "../lib/use-masonry-column-count";
+import { useProgressiveImageCount } from "../lib/use-progressive-gallery";
 
 type GalleryMasonryProps<T extends MosaicImage> = {
   images: T[];
@@ -8,60 +10,35 @@ type GalleryMasonryProps<T extends MosaicImage> = {
   renderItem: (image: T, index: number) => ReactNode;
 };
 
-function MasonryColumns<T extends MosaicImage>({
-  columnBuckets,
-  images,
-  renderItem,
-  className,
-}: {
-  columnBuckets: number[][];
-  images: T[];
-  renderItem: (image: T, index: number) => ReactNode;
-  className: string;
-}) {
-  return (
-    <div className={className}>
-      {columnBuckets.map((indices, colIdx) => (
-        <div key={colIdx} className="gallery-mosaic__col">
-          {indices.map((imageIndex) => renderItem(images[imageIndex], imageIndex))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function GalleryMasonry<T extends MosaicImage>({
   images,
   seed,
   className = "",
   renderItem,
 }: GalleryMasonryProps<T>) {
-  const desktopCols = useMemo(() => buildMasonryColumns(images, 3, seed), [images, seed]);
-  const tabletCols = useMemo(() => buildMasonryColumns(images, 2, `${seed}-tablet`), [images, seed]);
-  const mobileCols = useMemo(() => buildMasonryColumns(images, 1, `${seed}-mobile`), [images, seed]);
+  const columnCount = useMasonryColumnCount();
+  const { visibleCount, sentinelRef } = useProgressiveImageCount(images.length);
+  const visibleImages = useMemo(() => images.slice(0, visibleCount), [images, visibleCount]);
+
+  const columnBuckets = useMemo(
+    () => buildMasonryColumns(visibleImages, columnCount, `${seed}:${columnCount}`),
+    [visibleImages, columnCount, seed],
+  );
 
   const base = `gallery-mosaic ${className}`.trim();
 
   return (
     <>
-      <MasonryColumns
-        columnBuckets={desktopCols}
-        images={images}
-        renderItem={renderItem}
-        className={`${base} gallery-mosaic--desktop`}
-      />
-      <MasonryColumns
-        columnBuckets={tabletCols}
-        images={images}
-        renderItem={renderItem}
-        className={`${base} gallery-mosaic--tablet`}
-      />
-      <MasonryColumns
-        columnBuckets={mobileCols}
-        images={images}
-        renderItem={renderItem}
-        className={`${base} gallery-mosaic--mobile`}
-      />
+      <div className={base}>
+        {columnBuckets.map((indices, colIdx) => (
+          <div key={colIdx} className="gallery-mosaic__col">
+            {indices.map((imageIndex) => renderItem(visibleImages[imageIndex], imageIndex))}
+          </div>
+        ))}
+      </div>
+      {visibleCount < images.length ? (
+        <div ref={sentinelRef} className="gallery-mosaic__sentinel" aria-hidden />
+      ) : null}
     </>
   );
 }

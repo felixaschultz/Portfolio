@@ -57,6 +57,7 @@ export function GalleryTaxonomyFilters({
       {categoryOptions.length > 0 ? (
         <Reveal variant="fade" delay={80} immediate>
           <GalleryFilterNav
+            variant="chips"
             label={t("photography.filterCategoryLabel")}
             ariaLabel={t("photography.filterCategoryAria")}
             options={categoryOptions.map((c) => ({ key: c.slug, label: c.label }))}

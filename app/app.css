@@ -959,12 +959,59 @@ body {
   @apply border-y border-[var(--color-border)] px-6 py-5 sm:px-10 lg:px-14;
 }
 
+.gallery-overview__filter--categories {
+  @apply border-y-0 border-b border-[var(--color-border)] px-6 py-6 sm:px-10 sm:py-7 lg:px-14;
+  background: color-mix(in srgb, var(--color-surface-elevated) 55%, transparent);
+}
+
 .gallery-overview__filter-inner {
   @apply mx-auto flex max-w-6xl flex-wrap items-center gap-x-1 gap-y-2;
 }
 
+.gallery-overview__filter-inner--categories {
+  @apply flex-col items-start gap-4 sm:gap-5;
+}
+
 .gallery-overview__filter-label {
   @apply mr-3 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)];
+}
+
+.gallery-overview__filter-label--categories {
+  @apply mr-0 font-display text-xs font-normal tracking-[0.32em] text-[var(--color-text)] sm:text-[13px];
+}
+
+.gallery-overview__filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.625rem;
+}
+
+.gallery-overview__filter-chip {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-muted);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.gallery-overview__filter-chip:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  color: var(--color-accent);
+}
+
+.gallery-overview__filter-chip--active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
 .gallery-overview__filter-btn {

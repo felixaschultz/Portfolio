@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 import { type Locale } from "../lib/i18n";
+import { Logo } from "./Logo";
 
 const websiteLinks = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
@@ -53,12 +54,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
-        <Link to={base} className="flex min-h-11 min-w-11 shrink-0 items-center gap-3">
-          <img src="/assets/felix-schultz-logo-icon.svg" alt="Felix Schultz" className="h-9 w-9" />
-          <span className="hidden font-display text-sm font-semibold tracking-tight sm:inline">
-            Felix A. Schultz
-          </span>
-        </Link>
+        <Logo className="min-h-11 shrink-0" />
 
         <nav className="header-nav-desktop" aria-label="Main">
           <NavLink

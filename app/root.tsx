@@ -20,7 +20,7 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap",
   },
-  { rel: "icon", href: "/assets/felix-schultz-logo-icon.svg", type: "image/svg+xml" },
+  { rel: "icon", href: "/assets/logo-mark.svg", type: "image/svg+xml" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

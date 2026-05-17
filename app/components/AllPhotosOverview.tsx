@@ -11,6 +11,7 @@ import {
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { GalleryImage } from "./GalleryImage";
+import { GalleryMasonry } from "./GalleryMasonry";
 import { GalleryTagFilter } from "./GalleryTagFilter";
 import { Reveal } from "./Reveal";
 
@@ -66,15 +67,18 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
       ) : null}
 
       {filtered.length > 0 ? (
-        <div className="all-photos__stream">
-          {filtered.map((photo, index) => {
+        <GalleryMasonry
+          images={filtered}
+          seed={`all-photos-${activeTag ?? "all"}`}
+          className="all-photos__stream"
+          renderItem={(photo, index) => {
             const galleryTitle = localizedField(photo.galleryTitle, lng) || "Gallery";
             const label = photo.alt || photo.caption || galleryTitle;
             return (
               <Reveal
                 key={`${photo.gallerySlug}-${photo._key}`}
                 as="figure"
-                className="all-photos__figure"
+                className="gallery-mosaic__item all-photos__figure"
                 variant="scale"
                 delay={revealStagger(index, 40, 280)}
               >
@@ -100,8 +104,8 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
                 </Link>
               </Reveal>
             );
-          })}
-        </div>
+          }}
+        />
       ) : (
         <div className="gallery-overview__empty">
           <p className="text-[var(--color-muted)]">{t("photography.filterPhotosEmpty")}</p>

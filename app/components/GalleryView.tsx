@@ -12,6 +12,7 @@ import { Reveal } from "./Reveal";
 import { GalleryShare } from "./GalleryShare";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { pageUrl } from "../lib/seo";
+import { GalleryMasonry } from "./GalleryMasonry";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
@@ -70,7 +71,7 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
   return (
     <Reveal
       as="figure"
-      className="gallery-album__figure"
+      className="gallery-mosaic__item gallery-album__figure"
       variant="scale"
       delay={revealStagger(index, 60, 360)}
     >
@@ -84,15 +85,19 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
           <GalleryImage
             src={image.imageUrl}
             srcSet={image.imageSrcSet}
-            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 28vw"
             alt={image.alt || title}
             blurSrc={image.imageBlurUrl}
             className="gallery-album__img"
             loading="lazy"
           />
+          {caption ? (
+            <span className="gallery-mosaic__caption" aria-hidden>
+              {caption}
+            </span>
+          ) : null}
         </span>
       </button>
-      {caption ? <figcaption className="gallery-album__caption">{caption}</figcaption> : null}
     </Reveal>
   );
 }
@@ -190,8 +195,11 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
       )}
 
       {moreImages.length > 0 ? (
-        <div className="gallery-album__stream">
-          {moreImages.map((image, index) => (
+        <GalleryMasonry
+          images={moreImages}
+          seed={gallery.slug}
+          className="gallery-album__stream"
+          renderItem={(image, index) => (
             <AlbumPhoto
               key={image._key}
               image={image}
@@ -200,8 +208,8 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
               caption={imageCaption(image.caption)}
               onOpen={openPhoto}
             />
-          ))}
-        </div>
+          )}
+        />
       ) : null}
 
       <GalleryAlbumNav nextGallery={nextGallery} prevGallery={prevGallery} />

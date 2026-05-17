@@ -7,6 +7,9 @@ export type GalleryImageItem = {
   imageBlurUrl?: string;
   alt?: string;
   caption?: string;
+  /** Original asset dimensions for mosaic layout. */
+  width?: number;
+  height?: number;
 };
 
 export type GalleryNavItem = {

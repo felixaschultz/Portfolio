@@ -6,6 +6,7 @@ export type RevealVariant = "rise" | "fade" | "scale";
 type RevealProps = {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   variant?: RevealVariant;
   /** Transition delay in ms (use for staggered lists). */
   delay?: number;
@@ -17,6 +18,7 @@ type RevealProps = {
 export function Reveal({
   children,
   className = "",
+  style: styleProp,
   variant = "rise",
   delay = 0,
   immediate = false,
@@ -32,7 +34,7 @@ export function Reveal({
     .filter(Boolean)
     .join(" ");
 
-  const style = { "--reveal-delay": `${delay}ms` } as CSSProperties;
+  const style = { "--reveal-delay": `${delay}ms`, ...styleProp } as CSSProperties;
 
   return (
     <Tag ref={ref} className={classes} style={style}>

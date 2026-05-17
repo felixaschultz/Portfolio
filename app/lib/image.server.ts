@@ -1,7 +1,14 @@
 import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url";
 import { getSanityClient } from "./sanity.server";
 
+export function hasValidImageAsset(source: SanityImageSource | null | undefined): boolean {
+  if (!source || typeof source !== "object") return false;
+  const ref = (source as { asset?: { _ref?: string } }).asset?._ref;
+  return typeof ref === "string" && ref.length > 0;
+}
+
 export function urlFor(source: SanityImageSource) {
+  if (!hasValidImageAsset(source)) return null;
   const client = getSanityClient();
   if (!client) return null;
   return createImageUrlBuilder(client).image(source);

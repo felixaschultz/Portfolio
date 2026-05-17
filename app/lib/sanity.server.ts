@@ -49,7 +49,9 @@ function dedupeGalleriesBySlug(galleries: GalleryDocument[]): GalleryDocument[] 
 export type LocalizedString = { da?: string; de?: string; en?: string };
 
 type SanityImageRef = {
-  asset: { _ref: string };
+  asset?: { _ref?: string };
+  /** From GROQ: asset->metadata.dimensions — kept separate so asset._ref stays intact for image URLs. */
+  dimensions?: { width?: number; height?: number };
 };
 
 export type GalleryImageDocument = {
@@ -58,6 +60,12 @@ export type GalleryImageDocument = {
   alt?: string;
   caption?: string | LocalizedString;
 };
+
+function imageDimensionsFromAsset(image: SanityImageRef): { width?: number; height?: number } {
+  const dims = image.dimensions;
+  if (!dims?.width || !dims?.height) return {};
+  return { width: dims.width, height: dims.height };
+}
 
 export type GalleryDocument = {
   _id: string;
@@ -102,7 +110,10 @@ const galleryProjection = `{
     _key,
     alt,
     caption,
-    image
+    image {
+      ...,
+      "dimensions": asset->metadata.dimensions
+    }
   }
 }`;
 
@@ -147,9 +158,12 @@ async function mapGalleryToDetail(
   const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400]);
   if (!list) return null;
   const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
-  const images: GalleryImageItem[] = (gallery.images ?? []).map((item) => {
+  const images: GalleryImageItem[] = (gallery.images ?? [])
+    .filter((item) => item.image?.asset?._ref)
+    .map((item) => {
     const { src, srcSet } = photoSrcSet(item.image, [1200, 1800, 2400, 3200]);
     const caption = resolveSanityString(item.caption, locale);
+    const { width, height } = imageDimensionsFromAsset(item.image);
     return {
       _key: item._key,
       imageUrl: src,
@@ -157,6 +171,8 @@ async function mapGalleryToDetail(
       imageBlurUrl: photoBlurPlaceholder(item.image),
       alt: item.alt,
       caption: caption || undefined,
+      width,
+      height,
     };
   });
   return { ...list, images };
@@ -222,10 +238,11 @@ export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioP
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
-    for (const item of gallery.images ?? []) {
-      if (!item?.image || !item._key) continue;
+      for (const item of gallery.images ?? []) {
+      if (!item?.image?.asset?._ref || !item._key) continue;
       const { src, srcSet } = photoSrcSet(item.image, [480, 800, 1200, 1600]);
       const caption = resolveSanityString(item.caption, locale);
+      const { width, height } = imageDimensionsFromAsset(item.image);
       photos.push({
         _key: item._key,
         imageUrl: src,
@@ -233,6 +250,8 @@ export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioP
         imageBlurUrl: photoBlurPlaceholder(item.image),
         alt: item.alt,
         caption: caption || undefined,
+        width,
+        height,
         gallerySlug: gallery.slug,
         galleryTitle: gallery.title,
         galleryTags: gallery.tags,

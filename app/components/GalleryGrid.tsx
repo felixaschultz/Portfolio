@@ -67,6 +67,26 @@ export function GalleryGrid({
 
   const filterKey = [activeCategorySlug ?? "all", activeTag ?? "all"].join(":");
 
+  const filterSummary = useMemo(() => {
+    if (filtered.length === 0 || (!activeTag && !activeCategorySlug)) return null;
+    if (activeCategorySlug) {
+      return t("photography.filterCategoryCount", {
+        count: filtered.length,
+        category: activeCategoryLabel ?? activeCategorySlug,
+      });
+    }
+    if (activeTag) {
+      return t("photography.filterCount", { count: filtered.length, tag: activeTag });
+    }
+    return null;
+  }, [
+    activeCategorySlug,
+    activeCategoryLabel,
+    activeTag,
+    filtered.length,
+    t,
+  ]);
+
   if (galleries.length === 0) {
     return (
       <p className="gallery-overview__empty text-[var(--color-muted)]">{t("photography.empty")}</p>
@@ -84,23 +104,18 @@ export function GalleryGrid({
         activeCategorySlug={activeCategorySlug}
       />
 
-      {activeCategorySlug && filtered.length > 0 ? (
-        <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
-          {t("photography.filterCategoryCount", {
-            count: filtered.length,
-            category: activeCategoryLabel ?? activeCategorySlug,
-          })}
-        </Reveal>
-      ) : null}
-
-      {activeTag && filtered.length > 0 && !activeCategorySlug ? (
-        <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
-          {t("photography.filterCount", { count: filtered.length, tag: activeTag })}
-        </Reveal>
+      {filterSummary ? (
+        <div className="gallery-overview__results-intro" aria-live="polite">
+          <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
+            {filterSummary}
+          </Reveal>
+        </div>
       ) : null}
 
       {filtered.length > 0 ? (
-        <div className="gallery-overview__stage">
+        <div
+          className={`gallery-overview__stage${filterSummary ? " gallery-overview__stage--filtered" : ""}`}
+        >
           <div className="gallery-overview__list gallery-overview__list--enter" key={filterKey}>
             {listEntries.map((entry) =>
               entry.kind === "year" ? (

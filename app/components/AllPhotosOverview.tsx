@@ -66,9 +66,11 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
       ) : null}
 
       {activeTag && filtered.length > 0 ? (
-        <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
-          {t("photography.filterPhotosCount", { count: filtered.length, tag: activeTag })}
-        </Reveal>
+        <div className="gallery-overview__results-intro" aria-live="polite">
+          <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
+            {t("photography.filterPhotosCount", { count: filtered.length, tag: activeTag })}
+          </Reveal>
+        </div>
       ) : null}
 
       {filtered.length > 0 ? (

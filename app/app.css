@@ -352,6 +352,76 @@ body {
   @apply relative left-0 top-0 z-auto text-[var(--color-muted)] hover:text-[var(--color-accent)];
 }
 
+.gallery-album__hero-toolbar,
+.gallery-album__intro-toolbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.gallery-album__hero-toolbar {
+  position: absolute;
+  inset: 0 0 auto;
+  padding: 1.25rem 1.5rem;
+  pointer-events: none;
+}
+
+.gallery-album__hero-toolbar > * {
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .gallery-album__hero-toolbar {
+    padding: 1.5rem 2rem;
+  }
+}
+
+.gallery-album__hero .gallery-album__back--on-cover {
+  position: static;
+  padding: 0;
+}
+
+.gallery-album__intro-toolbar {
+  @apply mb-2;
+}
+
+/* Album share — native + SoMe */
+.gallery-share {
+  position: relative;
+}
+
+.gallery-share__trigger {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition hover:border-white/50 hover:bg-black/50;
+}
+
+.gallery-album__intro-toolbar .gallery-share__trigger {
+  @apply border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
+}
+
+.gallery-share__menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 50;
+  min-width: 11.5rem;
+  padding: 0.35rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
+}
+
+.gallery-share__item {
+  @apply flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-[var(--color-text)] transition hover:bg-white/5;
+}
+
+.gallery-share__item--copied {
+  @apply text-[var(--color-accent)];
+}
+
 /* Frosted scrims for readable text on cover images */
 .gallery-cover__scrim--top {
   pointer-events: none;

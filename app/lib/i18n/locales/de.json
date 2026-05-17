@@ -63,7 +63,16 @@
     "allPhotos": "Alle Fotos",
     "nextAlbum": "Nächste Galerie",
     "prevAlbum": "Vorherige Galerie",
-    "albumNavLabel": "Weitere Galerien"
+    "albumNavLabel": "Weitere Galerien",
+    "share": "Teilen",
+    "shareNative": "Teilen…",
+    "shareCopy": "Link kopieren",
+    "shareCopied": "Link kopiert",
+    "shareFacebook": "Facebook",
+    "shareX": "X",
+    "shareLinkedIn": "LinkedIn",
+    "shareWhatsApp": "WhatsApp",
+    "shareEmail": "E-Mail"
   },
   "recommendations": {
     "title": "Empfehlungen"

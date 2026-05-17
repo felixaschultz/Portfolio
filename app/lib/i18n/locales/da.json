@@ -63,7 +63,16 @@
     "allPhotos": "Alle billeder",
     "nextAlbum": "Næste galleri",
     "prevAlbum": "Forrige galleri",
-    "albumNavLabel": "Flere gallerier"
+    "albumNavLabel": "Flere gallerier",
+    "share": "Del",
+    "shareNative": "Del…",
+    "shareCopy": "Kopiér link",
+    "shareCopied": "Link kopieret",
+    "shareFacebook": "Facebook",
+    "shareX": "X",
+    "shareLinkedIn": "LinkedIn",
+    "shareWhatsApp": "WhatsApp",
+    "shareEmail": "E-mail"
   },
   "recommendations": {
     "title": "Anbefalinger"

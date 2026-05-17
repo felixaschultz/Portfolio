@@ -9,7 +9,9 @@ import { GalleryAlbumNav } from "./GalleryAlbumNav";
 import { GalleryImage } from "./GalleryImage";
 import { GalleryLightbox, useGalleryLightbox } from "./GalleryLightbox";
 import { Reveal } from "./Reveal";
+import { GalleryShare } from "./GalleryShare";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
+import { pageUrl } from "../lib/seo";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
@@ -97,14 +99,26 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     ? gallery.images.findIndex((img) => img._key === coverImage._key)
     : 0;
 
+  const sharePayload = useMemo(
+    () => ({
+      url: pageUrl(lng, `/photography/${gallery.slug}`),
+      title,
+      text: description || metaParts.join(" · "),
+    }),
+    [lng, gallery.slug, title, description, metaParts],
+  );
+
   return (
     <article className="gallery-album">
       {coverImage ? (
         <section className="gallery-album__hero">
           <div className="gallery-cover__scrim gallery-cover__scrim--top" aria-hidden />
-          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
-            ← {t("photography.back")}
-          </Link>
+          <div className="gallery-album__hero-toolbar">
+            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
+              ← {t("photography.back")}
+            </Link>
+            <GalleryShare payload={sharePayload} className="gallery-album__share--on-cover" />
+          </div>
 
           <button
             type="button"
@@ -135,9 +149,12 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
         </section>
       ) : (
         <header className="gallery-album__intro">
-          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
-            ← {t("photography.back")}
-          </Link>
+          <div className="gallery-album__intro-toolbar">
+            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
+              ← {t("photography.back")}
+            </Link>
+            <GalleryShare payload={sharePayload} />
+          </div>
           <h1 className="gallery-album__title mt-10">{title}</h1>
           {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
         </header>

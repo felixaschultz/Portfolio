@@ -10,9 +10,10 @@ import {
   useCurrentUser,
   useFormValue,
 } from "sanity";
+import { formatUploadError, uploadImagesInBulk } from "../lib/bulk-upload";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
-const UPLOAD_CONCURRENCY = 3;
+const FLUSH_EVERY = 8;
 
 function isImageFile(file: File): boolean {
   return file.type.startsWith("image/") || IMAGE_EXT.test(file.name);
@@ -26,42 +27,18 @@ function safeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
-async function mapPool<T, R>(
-  items: T[],
-  concurrency: number,
-  fn: (item: T) => Promise<R>,
-): Promise<R[]> {
-  const results: R[] = [];
-  let index = 0;
-
-  async function worker() {
-    while (index < items.length) {
-      const i = index++;
-      results[i] = await fn(items[i]);
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
-  );
-  return results;
-}
-
-function formatUploadError(err: unknown): string {
-  if (err && typeof err === "object") {
-    const e = err as {
-      message?: string;
-      statusCode?: number;
-      details?: { type?: string; description?: string };
-    };
-    const parts = [
-      e.message,
-      e.statusCode ? `HTTP ${e.statusCode}` : null,
-      e.details?.description,
-    ].filter(Boolean);
-    if (parts.length) return parts.join(" — ");
-  }
-  return err instanceof Error ? err.message : "Upload failed";
+function assetToGalleryItem(asset: { _id: string }) {
+  return {
+    _type: "galleryImage" as const,
+    _key: newKey(),
+    image: {
+      _type: "image" as const,
+      asset: {
+        _type: "reference" as const,
+        _ref: asset._id,
+      },
+    },
+  };
 }
 
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
@@ -69,9 +46,9 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
 
-  // Signed-in Studio users already have upload rights — only attach a token when not logged in.
   const client = useClient({ apiVersion: "2024-05-16" }).withConfig({
     useCdn: false,
+    timeout: 180_000,
     ...(!user && writeToken ? { token: writeToken } : {}),
   });
 
@@ -81,6 +58,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const value = useMemo(
     () => (Array.isArray(props.value) ? props.value : []),
@@ -88,6 +66,13 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
   );
 
   const photoCount = value.length;
+
+  const flushItems = useCallback(
+    (items: typeof value) => {
+      props.onChange(PatchEvent.from(set(items)));
+    },
+    [props],
+  );
 
   const clearAllImages = useCallback(async () => {
     if (photoCount === 0 || props.readOnly) return;
@@ -97,7 +82,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     );
     if (!confirmed) return;
 
-    props.onChange(PatchEvent.from(set([])));
+    flushItems([]);
     if (documentId) {
       try {
         await client.patch(documentId).unset(["coverImageKey"]).commit();
@@ -107,14 +92,15 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
       }
     }
     setError(null);
+    setNotice(null);
     setProgress("");
-  }, [client, documentId, photoCount, props]);
+  }, [client, documentId, flushItems, photoCount, props.readOnly]);
 
   const uploadFiles = useCallback(
     async (files: File[]) => {
       if (!canUpload) {
         setError(
-          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env (Editor or Administrator — not Viewer or Access Manager).",
+          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env (Editor or Administrator — not Viewer).",
         );
         return;
       }
@@ -127,43 +113,73 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
 
       setUploading(true);
       setError(null);
+      setNotice(null);
       setProgress(`0 / ${images.length}`);
 
+      const accumulated = [...value];
+      let lastFlushAt = 0;
+
       try {
-        let done = 0;
-        const assets = await mapPool(images, UPLOAD_CONCURRENCY, async (file) => {
-          const asset = await client.assets.upload("image", file, {
-            filename: safeFilename(file.name),
-            contentType: file.type || "image/jpeg",
-          });
-          done += 1;
-          setProgress(`${done} / ${images.length}`);
-          return asset;
+        const { assets, failures, skipped } = await uploadImagesInBulk({
+          client,
+          files: images,
+          safeFilename,
+          onProgress: (completed, total, filename) => {
+            setProgress(`${completed} / ${total} — ${filename}`);
+          },
         });
 
-        const newItems = assets.map((asset) => ({
-          _type: "galleryImage" as const,
-          _key: newKey(),
-          image: {
-            _type: "image" as const,
-            asset: {
-              _type: "reference" as const,
-              _ref: asset._id,
-            },
-          },
-        }));
+        for (const asset of assets) {
+          accumulated.push(assetToGalleryItem(asset));
+          if (accumulated.length - lastFlushAt >= FLUSH_EVERY) {
+            flushItems([...accumulated]);
+            lastFlushAt = accumulated.length;
+          }
+        }
 
-        props.onChange(PatchEvent.from(set([...value, ...newItems])));
+        flushItems([...accumulated]);
+
+        const parts: string[] = [];
+        if (assets.length > 0) {
+          parts.push(`Added ${assets.length} photo${assets.length === 1 ? "" : "s"}.`);
+        }
+        if (failures.length > 0) {
+          const sample = failures
+            .slice(0, 3)
+            .map((f) => `${f.filename} (${f.message})`)
+            .join("; ");
+          const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : "";
+          parts.push(`${failures.length} failed: ${sample}${more}`);
+        }
+        if (skipped.length > 0) {
+          parts.push(`${skipped.length} skipped (file too large).`);
+        }
+
+        if (failures.length > 0 && assets.length === 0) {
+          setError(
+            `All uploads failed. This is usually rate limits or network timeouts when sending many large files — try again, upload in smaller folders, or export smaller JPEGs. First error: ${failures[0].message}`,
+          );
+          setNotice(null);
+        } else if (failures.length > 0 || skipped.length > 0) {
+          setNotice(parts.join(" "));
+          setError(null);
+        } else {
+          setNotice(parts[0] ?? null);
+          setError(null);
+        }
+
         setProgress("");
       } catch (err) {
-        setError(
-          `${formatUploadError(err)}. If uploads keep failing: sign in to Studio (top right), use an Editor/Administrator API token as SANITY_STUDIO_API_TOKEN (not Access Manager), restart npm run studio, and add both http://localhost:3333 and http://127.0.0.1:3333 to CORS at sanity.io/manage → API.`,
-        );
+        if (accumulated.length > value.length) {
+          flushItems([...accumulated]);
+          setNotice(`Saved ${accumulated.length - value.length} photos before the batch stopped.`);
+        }
+        setError(formatUploadError(err));
       } finally {
         setUploading(false);
       }
     },
-    [canUpload, client, props, value],
+    [canUpload, client, flushItems, value],
   );
 
   const onFolderChange = useCallback(
@@ -197,7 +213,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         />
         <Text size={1} muted>
           {canUpload
-            ? "Pick a folder to add images, or clear all photos first when replacing a cloned gallery."
+            ? "Large folders upload one file at a time (slower, more reliable). Progress is saved every few photos."
             : "Sign in to Sanity (top right) to enable folder upload."}
         </Text>
       </Flex>
@@ -214,7 +230,13 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
 
       {progress ? (
         <Text size={1} muted>
-          Uploaded {progress}
+          {uploading ? "Uploading" : "Done"}: {progress}
+        </Text>
+      ) : null}
+
+      {notice ? (
+        <Text size={1} style={{ color: "var(--card-badge-positive-fg-color, #0d9488)" }}>
+          {notice}
         </Text>
       ) : null}
 

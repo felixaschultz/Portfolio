@@ -112,7 +112,6 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     <article className="gallery-album">
       {coverImage ? (
         <section className="gallery-album__hero">
-          <div className="gallery-cover__scrim gallery-cover__scrim--top" aria-hidden />
           <button
             type="button"
             className="gallery-album__hero-media"
@@ -139,7 +138,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             <GalleryShare payload={sharePayload} />
           </div>
 
-          <div className="gallery-album__hero-copy gallery-cover__copy">
+          <div className="gallery-album__hero-copy">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-muted)]">
               {String(coverIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
             </p>

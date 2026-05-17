@@ -473,8 +473,11 @@ body {
   text-shadow: 0 1px 10px rgb(0 0 0 / 0.55);
 }
 
+/* Album hero — cover image fully visible; title sits below (no frosted overlay) */
 .gallery-album__hero {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -483,10 +486,47 @@ body {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 5;
+  min-height: min(52dvh, 28rem);
   overflow: hidden;
   cursor: pointer;
   background: #000;
+}
+
+@media (min-width: 640px) {
+  .gallery-album__hero-media {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+}
+
+.gallery-album__hero-copy {
+  position: static;
+  z-index: auto;
+  padding: 1.25rem 1.5rem 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-album__hero-copy {
+    padding: 1.5rem 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery-album__hero-copy {
+    padding: 1.75rem 3.5rem 2.25rem;
+  }
+}
+
+.gallery-album__hero .gallery-album__title {
+  text-shadow: none;
+  @apply text-[clamp(2rem,8vw,5.5rem)];
+}
+
+.gallery-album__hero .gallery-album__meta,
+.gallery-album__hero .gallery-album__hero-copy .font-mono {
+  color: var(--color-muted);
+  text-shadow: none;
 }
 
 .gallery-album__hero-media .gallery-image {
@@ -503,8 +543,13 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 1;
   pointer-events: none;
   transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-album__hero-media .gallery-image__blur {
+  display: none;
 }
 
 .gallery-album__hero-media:hover .gallery-image__main {
@@ -514,17 +559,12 @@ body {
 .gallery-album__hero-shade {
   pointer-events: none;
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgb(6 10 9 / 0.35) 0%,
-    transparent 24%,
-    transparent 100%
-  );
-}
-
-.gallery-album__hero-copy {
-  @apply absolute inset-x-0 bottom-0 z-10 px-6 pb-10 pt-20 sm:px-10 sm:pb-14 sm:pt-24 lg:px-14 lg:pb-16;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 32%;
+  max-height: 9rem;
+  background: linear-gradient(180deg, rgb(6 10 9 / 0.5) 0%, transparent 100%);
 }
 
 .gallery-album__title {

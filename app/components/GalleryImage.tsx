@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type GalleryImageProps = {
   src: string;
@@ -21,7 +21,15 @@ export function GalleryImage({
   loading = "lazy",
   fetchPriority,
 }: GalleryImageProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, [src]);
 
   return (
     <span className={`gallery-image ${loaded ? "gallery-image--loaded" : ""}`}>
@@ -29,6 +37,7 @@ export function GalleryImage({
         <img src={blurSrc} alt="" className="gallery-image__blur" aria-hidden decoding="async" />
       ) : null}
       <img
+        ref={imgRef}
         src={src}
         srcSet={srcSet}
         sizes={sizes}

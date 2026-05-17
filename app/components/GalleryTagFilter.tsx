@@ -4,16 +4,19 @@ import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 
 type GalleryTagFilterProps = {
   tags: string[];
+  /** Defaults to gallery index tag URLs */
+  resolveTagPath?: (locale: string, tag: string | null) => string;
 };
 
 function filterLinkClass({ isActive }: { isActive: boolean }): string {
   return `gallery-overview__filter-btn ${isActive ? "gallery-overview__filter-btn--active" : ""}`;
 }
 
-export function GalleryTagFilter({ tags }: GalleryTagFilterProps) {
+export function GalleryTagFilter({ tags, resolveTagPath = photographyTagPath }: GalleryTagFilterProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = locale ?? "da";
+  const tagPath = (tag: string | null) => resolveTagPath(lng, tag);
 
   if (tags.length === 0) return null;
 
@@ -25,7 +28,7 @@ export function GalleryTagFilter({ tags }: GalleryTagFilterProps) {
     >
       <div className="gallery-overview__filter-inner">
         <span className="gallery-overview__filter-label">{t("photography.filterLabel")}</span>
-        <NavLink to={photographyTagPath(lng, null)} end className={filterLinkClass}>
+        <NavLink to={tagPath(null)} end className={filterLinkClass}>
           {t("photography.filterAll")}
         </NavLink>
         {tags.map((tag) => (
@@ -33,7 +36,7 @@ export function GalleryTagFilter({ tags }: GalleryTagFilterProps) {
             <span className="gallery-overview__filter-sep" aria-hidden>
               /
             </span>
-            <NavLink to={photographyTagPath(lng, tag)} className={filterLinkClass}>
+            <NavLink to={tagPath(tag)} className={filterLinkClass}>
               {tag}
             </NavLink>
           </span>

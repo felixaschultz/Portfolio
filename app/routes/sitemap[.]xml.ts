@@ -19,6 +19,7 @@ function entriesForLocale(
     { loc: pageUrl(locale, ""), changefreq: "weekly", priority: "1.0" },
     { loc: pageUrl(locale, "/projects"), changefreq: "weekly", priority: "0.9" },
     { loc: pageUrl(locale, "/photography"), changefreq: "weekly", priority: "0.9" },
+    { loc: pageUrl(locale, "/photography/photos"), changefreq: "weekly", priority: "0.85" },
   ];
   for (const project of projects) {
     list.push({

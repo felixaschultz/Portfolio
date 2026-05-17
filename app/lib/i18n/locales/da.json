@@ -18,7 +18,9 @@
     "projectsTitle": "Projekter",
     "projectsDescription": "Webudviklings- og designprojekter af Felix A. Schultz.",
     "photographyTitle": "Fotografi",
-    "photographyDescription": "Fotogallerier af Felix A. Schultz."
+    "photographyDescription": "Fotogallerier af Felix A. Schultz.",
+    "allPhotosTitle": "Alle billeder",
+    "allPhotosDescription": "Gennemse alle udgivne fotos fra Felix A. Schultz' fotogallerier."
   },
   "nav": {
     "projects": "Projekter",
@@ -61,6 +63,13 @@
     "previous": "Forrige billede",
     "next": "Næste billede",
     "allPhotos": "Alle billeder",
+    "allPhotosPageTitle": "Alle billeder",
+    "allPhotosPageDescription": "Alle billeder fra mine udgivne gallerier — filtrér efter tag eller åbn et billede i dets album.",
+    "allPhotosCount": "{{count}} billeder på tværs af alle gallerier",
+    "browseAllPhotos": "Se alle billeder",
+    "browseGalleries": "Se gallerier",
+    "filterPhotosCount": "{{count}} billeder med tagget «{{tag}}»",
+    "filterPhotosEmpty": "Ingen billeder med dette tag.",
     "nextAlbum": "Næste galleri",
     "prevAlbum": "Forrige galleri",
     "albumNavLabel": "Flere gallerier",

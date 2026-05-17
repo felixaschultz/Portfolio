@@ -18,7 +18,9 @@
     "projectsTitle": "Projects",
     "projectsDescription": "Web development and design projects by Felix A. Schultz.",
     "photographyTitle": "Photography",
-    "photographyDescription": "Photo galleries from Felix A. Schultz."
+    "photographyDescription": "Photo galleries from Felix A. Schultz.",
+    "allPhotosTitle": "All photos",
+    "allPhotosDescription": "Browse every published photo across all photography galleries by Felix A. Schultz."
   },
   "nav": {
     "projects": "Projects",
@@ -61,6 +63,13 @@
     "previous": "Previous photo",
     "next": "Next photo",
     "allPhotos": "All photos",
+    "allPhotosPageTitle": "All photos",
+    "allPhotosPageDescription": "Every image from my published galleries — browse by tag or open a photo in its album.",
+    "allPhotosCount": "{{count}} photos across all galleries",
+    "browseAllPhotos": "Browse all photos",
+    "browseGalleries": "Browse galleries",
+    "filterPhotosCount": "{{count}} photos tagged «{{tag}}»",
+    "filterPhotosEmpty": "No photos with this tag.",
     "nextAlbum": "Next gallery",
     "prevAlbum": "Previous gallery",
     "albumNavLabel": "More galleries",

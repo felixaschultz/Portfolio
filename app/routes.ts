@@ -15,6 +15,8 @@ export default [
     route("projects", "routes/$locale.projects._index.tsx"),
     route("projects/:slug", "routes/$locale.projects.$slug.tsx"),
     route("photography", "routes/$locale.photography._index.tsx"),
+    route("photography/photos", "routes/$locale.photography.photos._index.tsx"),
+    route("photography/photos/tag/:tag", "routes/$locale.photography.photos.tag.$tag.tsx"),
     route("photography/tag/:tag", "routes/$locale.photography.tag.$tag.tsx"),
     route("photography/:slug", "routes/$locale.photography.$slug.tsx"),
   ]),

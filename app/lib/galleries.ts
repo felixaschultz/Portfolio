@@ -37,3 +37,10 @@ export type GalleryListItem = {
 export type GalleryDetail = GalleryListItem & {
   images: GalleryImageItem[];
 };
+
+/** Single image in the cross-gallery “all photos” index. */
+export type PortfolioPhotoItem = GalleryImageItem & {
+  gallerySlug: string;
+  galleryTitle: LocalizedString;
+  galleryTags?: string[];
+};

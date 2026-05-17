@@ -1,5 +1,5 @@
 import { createClient, type SanityClient } from "@sanity/client";
-import type { GalleryDetail, GalleryImageItem, GalleryListItem } from "./galleries";
+import type { GalleryDetail, GalleryImageItem, GalleryListItem, PortfolioPhotoItem } from "./galleries";
 import { resolveGalleryCoverImage } from "./gallery-cover";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
@@ -213,6 +213,34 @@ export async function fetchGalleryDetailBySlug(
   const gallery = await fetchGalleryBySlug(slug);
   if (!gallery) return null;
   return mapGalleryToDetail(gallery, locale);
+}
+
+export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioPhotoItem[]> {
+  const galleries = await fetchGalleries();
+  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
+  const photos: PortfolioPhotoItem[] = [];
+
+  for (const gallery of galleries) {
+    if (!gallery.slug) continue;
+    for (const item of gallery.images ?? []) {
+      if (!item?.image || !item._key) continue;
+      const { src, srcSet } = photoSrcSet(item.image, [480, 800, 1200, 1600]);
+      const caption = resolveSanityString(item.caption, locale);
+      photos.push({
+        _key: item._key,
+        imageUrl: src,
+        imageSrcSet: srcSet,
+        imageBlurUrl: photoBlurPlaceholder(item.image),
+        alt: item.alt,
+        caption: caption || undefined,
+        gallerySlug: gallery.slug,
+        galleryTitle: gallery.title,
+        galleryTags: gallery.tags,
+      });
+    }
+  }
+
+  return photos;
 }
 
 export type SanityProjectDocument = {

@@ -1,4 +1,4 @@
-import type { GalleryListItem } from "./galleries";
+import type { GalleryListItem, PortfolioPhotoItem } from "./galleries";
 
 /** URL-safe tag slug (lowercase, spaces → hyphens). */
 export function tagToParam(tag: string): string {
@@ -8,6 +8,12 @@ export function tagToParam(tag: string): string {
 /** Photography index or tag filter path (no query strings). */
 export function photographyTagPath(locale: string, tag: string | null): string {
   const base = `/${locale}/photography`;
+  if (!tag) return base;
+  return `${base}/tag/${tagToParam(tag)}`;
+}
+
+export function photographyPhotosPath(locale: string, tag: string | null): string {
+  const base = `/${locale}/photography/photos`;
   if (!tag) return base;
   return `${base}/tag/${tagToParam(tag)}`;
 }
@@ -35,4 +41,9 @@ export function tagFromParam(param: string, tags: string[]): string | null {
 export function galleryHasTag(gallery: GalleryListItem, tag: string): boolean {
   const param = tagToParam(tag);
   return (gallery.tags ?? []).some((t) => tagToParam(t) === param);
+}
+
+export function photoHasTag(photo: PortfolioPhotoItem, tag: string): boolean {
+  const param = tagToParam(tag);
+  return (photo.galleryTags ?? []).some((t) => tagToParam(t) === param);
 }

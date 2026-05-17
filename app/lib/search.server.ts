@@ -4,6 +4,7 @@ import { getProjects } from "./projects.server";
 import { getLocalizedText } from "./projects";
 import type { SearchIndexItem } from "./search";
 import { fetchGalleries } from "./sanity.server";
+import { seoCopy } from "./seo-copy";
 import { stripHtml } from "./seo";
 
 export type { SearchIndexItem, SearchResultType } from "./search";
@@ -48,6 +49,14 @@ export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[
       "Photo galleries",
       "/photography",
       "photography photos galleries",
+    ),
+    pageItem(
+      locale,
+      "photography-photos",
+      seoCopy(locale, "allPhotosTitle"),
+      seoCopy(locale, "allPhotosDescription"),
+      "/photography/photos",
+      "photography all photos pictures images browse",
     ),
   );
 

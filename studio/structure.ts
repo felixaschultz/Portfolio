@@ -12,6 +12,14 @@ export const structure: StructureResolver = (S) =>
         .title("Galleries")
         .schemaType("gallery")
         .child(S.documentTypeList("gallery").title("Galleries")),
+      S.listItem()
+        .title("Gallery categories")
+        .schemaType("galleryCategory")
+        .child(S.documentTypeList("galleryCategory").title("Gallery categories")),
+      S.listItem()
+        .title("Gallery tags")
+        .schemaType("galleryTag")
+        .child(S.documentTypeList("galleryTag").title("Gallery tags")),
       S.divider(),
       S.listItem()
         .title("Photos (legacy, one per document)")

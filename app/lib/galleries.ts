@@ -1,4 +1,6 @@
-import type { LocalizedString } from "./sanity.server";
+import type { GalleryCategoryRef, LocalizedString } from "./sanity.server";
+
+export type { GalleryCategoryRef };
 
 export type GalleryImageItem = {
   _key: string;
@@ -30,6 +32,7 @@ export type GalleryListItem = {
   takenAt?: string;
   location?: string;
   tags?: string[];
+  categories?: GalleryCategoryRef[];
   featured?: boolean;
   imageCount: number;
   coverUrl: string;

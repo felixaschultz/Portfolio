@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
+import type { GalleryCategoryRef, GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
+import { categoryLabel, photographyCategoryPath } from "../lib/gallery-categories";
 import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
 import { GalleryAlbumNav } from "./GalleryAlbumNav";
@@ -43,16 +44,29 @@ type AlbumPhotoProps = {
 
 type GalleryDetailsProps = {
   description: string;
+  categories: GalleryCategoryRef[];
   tags: string[];
   lng: Locale;
 };
 
-function GalleryDetails({ description, tags, lng }: GalleryDetailsProps) {
-  if (!description && tags.length === 0) return null;
+function GalleryDetails({ description, categories, tags, lng }: GalleryDetailsProps) {
+  if (!description && tags.length === 0 && categories.length === 0) return null;
 
   return (
     <div className="gallery-album__details">
       {description ? <p className="gallery-album__description">{description}</p> : null}
+      {categories.length > 0 ? (
+        <p className="gallery-album__categories">
+          {categories.map((category, i) => (
+            <span key={category.slug}>
+              {i > 0 ? <span className="gallery-album__tag-sep" aria-hidden> / </span> : null}
+              <Link to={photographyCategoryPath(lng, category.slug)} className="gallery-album__tag">
+                {categoryLabel(category, lng)}
+              </Link>
+            </span>
+          ))}
+        </p>
+      ) : null}
       {tags.length > 0 ? (
         <p className="gallery-album__tags">
           {tags.map((tag, i) => (
@@ -129,6 +143,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
   const description = localizedField(gallery.description, lng);
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
   const tags = gallery.tags?.filter((tag) => tag.trim()) ?? [];
+  const categories = gallery.categories ?? [];
 
   const coverImage = useMemo(() => resolveCoverImage(gallery), [gallery]);
   const moreImages = useMemo(() => {
@@ -198,7 +213,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             </p>
             <h1 className="gallery-album__title">{title}</h1>
             {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
-            <GalleryDetails description={description} tags={tags} lng={lng} />
+            <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
           </div>
         </section>
       ) : (
@@ -211,7 +226,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
           </div>
           <h1 className="gallery-album__title mt-10">{title}</h1>
           {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
-          <GalleryDetails description={description} tags={tags} lng={lng} />
+          <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
         </header>
       )}
 

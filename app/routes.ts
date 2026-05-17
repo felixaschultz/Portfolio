@@ -18,6 +18,7 @@ export default [
     route("photography/photos", "routes/$locale.photography.photos._index.tsx"),
     route("photography/photos/tag/:tag", "routes/$locale.photography.photos.tag.$tag.tsx"),
     route("photography/tag/:tag", "routes/$locale.photography.tag.$tag.tsx"),
+    route("photography/category/:category", "routes/$locale.photography.category.$category.tsx"),
     route("photography/:slug", "routes/$locale.photography.$slug.tsx"),
   ]),
 ] satisfies RouteConfig;

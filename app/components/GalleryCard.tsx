@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
+import { categoryLabel, photographyCategoryPath } from "../lib/gallery-categories";
 import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
@@ -21,6 +22,7 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
   const base = `/${locale}`;
   const title = localizedField(gallery.title, lng) || "Gallery";
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
+  const categories = gallery.categories ?? [];
   const tags = gallery.tags?.filter((tag) => tag.trim()).slice(0, 4) ?? [];
   const indexLabel = String(index + 1).padStart(2, "0");
   const totalLabel = String(total).padStart(2, "0");
@@ -69,15 +71,25 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
             <p className="gallery-overview__item-meta">{metaParts.join(" · ")}</p>
           ) : null}
         </Link>
-        {tags.length > 0 ? (
+        {categories.length > 0 || tags.length > 0 ? (
           <p className="gallery-overview__item-tags">
-            {tags.map((tag, i) => (
-              <span key={tagToParam(tag)}>
+            {categories.map((category, i) => (
+              <span key={category.slug}>
                 {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
                 <Link
-                  to={photographyTagPath(lng, tag)}
-                  className="gallery-overview__item-tag"
+                  to={photographyCategoryPath(lng, category.slug)}
+                  className="gallery-overview__item-tag gallery-overview__item-tag--category"
                 >
+                  {categoryLabel(category, lng)}
+                </Link>
+              </span>
+            ))}
+            {tags.map((tag, i) => (
+              <span key={tagToParam(tag)}>
+                {(categories.length > 0 || i > 0) ? (
+                  <span className="text-[var(--color-border)]"> / </span>
+                ) : null}
+                <Link to={photographyTagPath(lng, tag)} className="gallery-overview__item-tag">
                   {tag}
                 </Link>
               </span>

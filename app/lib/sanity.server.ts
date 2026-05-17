@@ -48,6 +48,11 @@ function dedupeGalleriesBySlug(galleries: GalleryDocument[]): GalleryDocument[] 
 
 export type LocalizedString = { da?: string; de?: string; en?: string };
 
+export type GalleryCategoryRef = {
+  slug: string;
+  title: LocalizedString;
+};
+
 type SanityImageRef = {
   asset?: { _ref?: string };
   /** From GROQ: asset->metadata.dimensions — kept separate so asset._ref stays intact for image URLs. */
@@ -88,6 +93,7 @@ export type GalleryDocument = {
   takenAt?: string;
   location?: string;
   tags?: string[];
+  categories?: GalleryCategoryRef[];
   featured?: boolean;
   sortOrder?: number;
   coverImageKey?: string;
@@ -115,7 +121,17 @@ const galleryProjection = `{
   description,
   takenAt,
   location,
-  tags,
+  "tags": array::unique(array::compact(tags[]{
+    select(
+      _type == "reference" => @->name,
+      type(@) == "string" => @,
+      null
+    )
+  })),
+  "categories": categories[]->{
+    "slug": slug.current,
+    title
+  },
   featured,
   sortOrder,
   coverImageKey,
@@ -156,6 +172,7 @@ async function mapGalleryToListItem(
     takenAt: gallery.takenAt,
     location: gallery.location,
     tags: gallery.tags,
+    categories: gallery.categories?.filter((c) => c?.slug) ?? [],
     featured: gallery.featured,
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,

@@ -7,9 +7,14 @@ import { Reveal } from "./Reveal";
 type PhotographyOverviewProps = {
   galleries: GalleryListItem[];
   activeTag?: string | null;
+  activeCategorySlug?: string | null;
 };
 
-export function PhotographyOverview({ galleries, activeTag = null }: PhotographyOverviewProps) {
+export function PhotographyOverview({
+  galleries,
+  activeTag = null,
+  activeCategorySlug = null,
+}: PhotographyOverviewProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
   const base = `/${locale}`;
@@ -25,7 +30,11 @@ export function PhotographyOverview({ galleries, activeTag = null }: Photography
           </Link>
         </p>
       </Reveal>
-      <GalleryGrid galleries={galleries} activeTag={activeTag} />
+      <GalleryGrid
+        galleries={galleries}
+        activeTag={activeTag}
+        activeCategorySlug={activeCategorySlug}
+      />
     </div>
   );
 }

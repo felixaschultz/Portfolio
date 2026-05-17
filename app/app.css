@@ -617,8 +617,12 @@ body {
   }
 }
 
+.gallery-album__categories {
+  margin-top: 0.75rem;
+}
+
+.gallery-album__categories,
 .gallery-album__tags {
-  margin-top: 1rem;
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
@@ -937,6 +941,18 @@ body {
 
 .gallery-overview__lede {
   @apply mt-5 font-display text-xl leading-snug text-[var(--color-muted)] sm:text-2xl;
+}
+
+.gallery-overview__filters {
+  @apply border-y border-[var(--color-border)];
+}
+
+.gallery-overview__filters .gallery-overview__filter {
+  border: none;
+}
+
+.gallery-overview__filter--secondary {
+  @apply border-t border-[var(--color-border)];
 }
 
 .gallery-overview__filter {

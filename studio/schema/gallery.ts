@@ -67,10 +67,18 @@ export const gallery = defineType({
     defineField({ name: "takenAt", title: "Date", type: "date" }),
     defineField({ name: "location", title: "Location", type: "string" }),
     defineField({
+      name: "categories",
+      title: "Categories",
+      description: "Broad groupings (e.g. Travel, Nature). Create categories under “Gallery categories” in the desk.",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "galleryCategory" }] }],
+    }),
+    defineField({
       name: "tags",
       title: "Tags",
+      description: "Topics or themes. Pick existing tags or create new ones under “Gallery tags”.",
       type: "array",
-      of: [{ type: "string" }],
+      of: [{ type: "reference", to: [{ type: "galleryTag" }] }],
     }),
     defineField({
       name: "featured",

@@ -6,7 +6,7 @@ export const DEFAULT_OG_IMAGE = "/assets/me.jpg";
 export function getSiteUrl(): string {
   const url =
     (typeof process !== "undefined" && process.env.SITE_URL) ||
-    "https://www.felix-schultz.dk";
+    "https://www.felix-schultz.net";
   return url.replace(/\/$/, "");
 }
 

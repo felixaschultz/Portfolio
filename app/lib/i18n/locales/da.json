@@ -55,6 +55,7 @@
     "back": "Tilbage til gallerier",
     "photoCount": "{{count}} billeder",
     "close": "Luk",
+    "yearSection": "Gallerier fra {{year}}",
     "filterLabel": "Filtrer efter tag",
     "filterAll": "Alle",
     "filterEmpty": "Ingen gallerier med dette tag.",

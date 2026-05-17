@@ -55,6 +55,7 @@
     "back": "Zurück zu den Galerien",
     "photoCount": "{{count}} Fotos",
     "close": "Schließen",
+    "yearSection": "Galerien aus {{year}}",
     "filterLabel": "Nach Tag filtern",
     "filterAll": "Alle",
     "filterEmpty": "Keine Galerien mit diesem Tag.",

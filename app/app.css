@@ -986,6 +986,26 @@ body {
   gap: clamp(2.5rem, 5vw, 3.5rem);
 }
 
+.gallery-overview__year-break {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 1.75rem);
+  width: 100%;
+  margin-block: clamp(0.5rem, 2vw, 1.25rem);
+  padding-block: clamp(0.25rem, 1vw, 0.75rem);
+}
+
+.gallery-overview__year-break-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.gallery-overview__year-label {
+  @apply shrink-0 font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--color-muted)];
+}
+
 .gallery-overview__list--enter {
   animation: gallery-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }

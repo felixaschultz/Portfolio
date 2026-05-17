@@ -55,6 +55,7 @@
     "back": "Back to galleries",
     "photoCount": "{{count}} photos",
     "close": "Close",
+    "yearSection": "Galleries from {{year}}",
     "filterLabel": "Filter by tag",
     "filterAll": "All",
     "filterEmpty": "No galleries with this tag.",

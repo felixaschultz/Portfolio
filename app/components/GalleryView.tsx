@@ -6,6 +6,8 @@ import { formatGalleryDate } from "../lib/format-gallery-date";
 import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
 import { Modal } from "./Modal";
+import { Reveal } from "./Reveal";
+import { revealStagger } from "../lib/use-reveal-on-scroll";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
@@ -32,7 +34,12 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
   const indexLabel = String(index + 1).padStart(2, "0");
 
   return (
-    <figure className="gallery-album__figure">
+    <Reveal
+      as="figure"
+      className="gallery-album__figure"
+      variant="scale"
+      delay={revealStagger(index, 60, 360)}
+    >
       <button
         type="button"
         className="gallery-album__shot"
@@ -51,7 +58,7 @@ function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
         </span>
       </button>
       {caption ? <figcaption className="gallery-album__caption">{caption}</figcaption> : null}
-    </figure>
+    </Reveal>
   );
 }
 
@@ -162,7 +169,11 @@ export function GalleryView({ gallery }: GalleryViewProps) {
       )}
 
       {(description || tags.length > 0) && (
-        <div className={`gallery-album__intro ${coverImage ? "border-t border-[var(--color-border)]" : ""}`}>
+        <Reveal
+          className={`gallery-album__intro ${coverImage ? "border-t border-[var(--color-border)]" : ""}`}
+          variant="fade"
+          immediate
+        >
           {description ? <p className="gallery-album__description">{description}</p> : null}
           {tags.length > 0 ? (
             <p className="gallery-album__tags">
@@ -179,7 +190,7 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               ))}
             </p>
           ) : null}
-        </div>
+        </Reveal>
       )}
 
       {moreImages.length > 0 ? (

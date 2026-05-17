@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale.photography._index";
 import { GalleryGrid } from "../components/GalleryGrid";
+import { Reveal } from "../components/Reveal";
 import { fetchGalleriesForList } from "../lib/sanity.server";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
@@ -33,10 +34,10 @@ export default function PhotographyIndex() {
 
   return (
     <div className="gallery-overview">
-      <header className="gallery-overview__header">
+      <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
         <h1 className="gallery-overview__title">{t("photography.title")}</h1>
         <p className="gallery-overview__lede">{t("photography.description")}</p>
-      </header>
+      </Reveal>
       <GalleryGrid galleries={galleries} />
     </div>
   );

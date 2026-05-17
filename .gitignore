@@ -8,3 +8,4 @@
 /build
 .react-router
 node_modules
+.env*.local

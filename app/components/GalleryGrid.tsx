@@ -10,6 +10,7 @@ import {
 } from "../lib/gallery-tags";
 import { GalleryCard } from "./GalleryCard";
 import { GalleryTagFilter } from "./GalleryTagFilter";
+import { Reveal } from "./Reveal";
 
 type GalleryGridProps = {
   galleries: GalleryListItem[];
@@ -47,13 +48,15 @@ export function GalleryGrid({ galleries }: GalleryGridProps) {
   return (
     <>
       {allTags.length > 0 ? (
-        <GalleryTagFilter tags={allTags} activeTag={activeTag} onSelect={selectTag} />
+        <Reveal variant="fade" delay={120} immediate>
+          <GalleryTagFilter tags={allTags} activeTag={activeTag} onSelect={selectTag} />
+        </Reveal>
       ) : null}
 
       {activeTag && filtered.length > 0 ? (
-        <p className="gallery-overview__count">
+        <Reveal as="p" className="gallery-overview__count" variant="fade" immediate>
           {t("photography.filterCount", { count: filtered.length, tag: activeTag })}
-        </p>
+        </Reveal>
       ) : null}
 
       {filtered.length > 0 ? (

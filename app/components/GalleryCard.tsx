@@ -4,6 +4,8 @@ import type { GalleryListItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
 import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
+import { revealStagger } from "../lib/use-reveal-on-scroll";
+import { Reveal } from "./Reveal";
 
 type GalleryCardProps = {
   gallery: GalleryListItem;
@@ -28,7 +30,13 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
   ].filter(Boolean);
 
   return (
-    <article className="gallery-overview__item group">
+    <Reveal
+      as="article"
+      className="gallery-overview__item group"
+      variant="rise"
+      delay={revealStagger(index)}
+      immediate={index === 0}
+    >
       <span className="gallery-overview__item-index" aria-hidden>
         {indexLabel} / {totalLabel}
       </span>
@@ -70,6 +78,6 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
           ))}
         </p>
       ) : null}
-    </article>
+    </Reveal>
   );
 }

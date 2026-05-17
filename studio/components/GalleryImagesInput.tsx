@@ -1,6 +1,6 @@
 import { TrashIcon, UploadIcon } from "@sanity/icons";
 import { Button, Flex, Stack, Text } from "@sanity/ui";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrayOfObjectsInput,
   type ArrayOfObjectsInputProps,
@@ -10,7 +10,14 @@ import {
   useCurrentUser,
   useFormValue,
 } from "sanity";
-import { formatUploadError, uploadImagesInBulk } from "../lib/bulk-upload";
+import {
+  formatUploadError,
+  isFileTooLarge,
+  processUploadQueue,
+  skipMessageForFile,
+  uploadSingleImage,
+} from "../lib/bulk-upload";
+import { UploadQueuePanel, type UploadQueueItem } from "./UploadQueuePanel";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
 const FLUSH_EVERY = 8;
@@ -27,6 +34,10 @@ function safeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function queueId(): string {
+  return crypto.randomUUID();
+}
+
 function assetToGalleryItem(asset: { _id: string }) {
   return {
     _type: "galleryImage" as const,
@@ -39,6 +50,21 @@ function assetToGalleryItem(asset: { _id: string }) {
       },
     },
   };
+}
+
+function filesToQueueItems(files: File[]): UploadQueueItem[] {
+  return files.map((file) => ({
+    id: queueId(),
+    file,
+    previewUrl: URL.createObjectURL(file),
+    status: "pending" as const,
+  }));
+}
+
+function revokeQueuePreviews(items: UploadQueueItem[]) {
+  for (const item of items) {
+    URL.revokeObjectURL(item.previewUrl);
+  }
 }
 
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
@@ -59,6 +85,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
   const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [queue, setQueue] = useState<UploadQueueItem[]>([]);
 
   const value = useMemo(
     () => (Array.isArray(props.value) ? props.value : []),
@@ -73,6 +100,223 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     },
     [props],
   );
+
+  const updateQueueItem = useCallback((id: string, patch: Partial<UploadQueueItem>) => {
+    setQueue((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  }, []);
+
+  const dismissQueue = useCallback(() => {
+    setQueue((prev) => {
+      revokeQueuePreviews(prev);
+      return [];
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      setQueue((prev) => {
+        revokeQueuePreviews(prev);
+        return prev;
+      });
+    };
+  }, []);
+
+  const applyUploadSummary = useCallback(
+    (successCount: number, failCount: number, skipCount: number) => {
+      const parts: string[] = [];
+      if (successCount > 0) {
+        parts.push(`Added ${successCount} photo${successCount === 1 ? "" : "s"}.`);
+      }
+      if (failCount > 0) {
+        parts.push(`${failCount} failed — see full errors below and use Retry.`);
+      }
+      if (skipCount > 0) {
+        parts.push(`${skipCount} skipped (file too large).`);
+      }
+
+      if (failCount > 0 && successCount === 0 && skipCount === 0) {
+        setError(
+          "Every file failed. Common causes: rate limits, network timeouts, or missing API permissions. Retry individual files or upload a smaller batch with smaller JPEGs.",
+        );
+        setNotice(null);
+      } else if (parts.length > 0) {
+        setNotice(parts.join(" "));
+        setError(null);
+      }
+    },
+    [],
+  );
+
+  const processItems = useCallback(
+    async (items: UploadQueueItem[], startValue: typeof value) => {
+      const accumulated = [...startValue];
+      let lastFlushAt = accumulated.length;
+      let completed = 0;
+      const total = items.length;
+      const batchById = new Map(items.map((item) => [item.id, { ...item }]));
+
+      const syncQueueFromBatch = () => {
+        setQueue((current) =>
+          current.map((entry) => {
+            const updated = batchById.get(entry.id);
+            return updated ? { ...entry, ...updated } : entry;
+          }),
+        );
+      };
+
+      const flushIfNeeded = () => {
+        if (accumulated.length - lastFlushAt >= FLUSH_EVERY) {
+          flushItems([...accumulated]);
+          lastFlushAt = accumulated.length;
+        }
+      };
+
+      await processUploadQueue({
+        client,
+        files: items.map((item) => item.file),
+        safeFilename,
+        onFileStart: (filename) => {
+          const item = items.find((i) => i.file.name === filename);
+          if (item) {
+            batchById.set(item.id, { ...item, status: "uploading", message: undefined });
+            syncQueueFromBatch();
+          }
+          setProgress(`${completed} / ${total} — ${filename}`);
+        },
+        onFileComplete: (result) => {
+          const item = items.find((i) => i.file.name === result.filename);
+          completed += 1;
+          setProgress(`${completed} / ${total} — ${result.filename}`);
+
+          if (!item) return;
+
+          if (result.status === "success" && result.asset) {
+            accumulated.push(assetToGalleryItem(result.asset));
+            flushIfNeeded();
+            batchById.set(item.id, { ...item, status: "success", message: undefined });
+          } else if (result.status === "failed") {
+            batchById.set(item.id, {
+              ...item,
+              status: "failed",
+              message: result.message ?? "Upload failed",
+            });
+          } else if (result.status === "skipped") {
+            batchById.set(item.id, {
+              ...item,
+              status: "skipped",
+              message: result.message ?? skipMessageForFile(item.file),
+            });
+          }
+
+          syncQueueFromBatch();
+        },
+      });
+
+      flushItems([...accumulated]);
+
+      setQueue((current) => {
+        const merged = current.map((entry) => {
+          const updated = batchById.get(entry.id);
+          return updated ? { ...entry, ...updated } : entry;
+        });
+        const successCount = merged.filter((i) => i.status === "success").length;
+        const failCount = merged.filter((i) => i.status === "failed").length;
+        const skipCount = merged.filter((i) => i.status === "skipped").length;
+        applyUploadSummary(successCount, failCount, skipCount);
+        return merged;
+      });
+    },
+    [applyUploadSummary, client, flushItems],
+  );
+
+  const uploadFiles = useCallback(
+    async (files: File[]) => {
+      if (!canUpload) {
+        setError(
+          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env (Editor or Administrator — not Viewer).",
+        );
+        return;
+      }
+
+      const images = files.filter(isImageFile);
+      if (!images.length) {
+        setError("No image files found in that selection.");
+        return;
+      }
+
+      dismissQueue();
+      const items = filesToQueueItems(images);
+      setQueue(items);
+      setUploading(true);
+      setError(null);
+      setNotice(null);
+      setProgress(`0 / ${images.length}`);
+
+      try {
+        await processItems(items, value);
+      } catch (err) {
+        setError(formatUploadError(err));
+      } finally {
+        setUploading(false);
+        setProgress("");
+      }
+    },
+    [canUpload, dismissQueue, processItems, value],
+  );
+
+  const retryItem = useCallback(
+    async (id: string) => {
+      const item = queue.find((i) => i.id === id);
+      if (!item || uploading) return;
+
+      if (isFileTooLarge(item.file)) {
+        updateQueueItem(id, {
+          status: "skipped",
+          message: skipMessageForFile(item.file),
+        });
+        return;
+      }
+
+      setUploading(true);
+      setError(null);
+      updateQueueItem(id, { status: "uploading", message: undefined });
+
+      try {
+        const asset = await uploadSingleImage(client, item.file, safeFilename);
+        const accumulated = [...value];
+        accumulated.push(assetToGalleryItem(asset));
+        flushItems([...accumulated]);
+        updateQueueItem(id, { status: "success", message: undefined });
+        setNotice(`Added ${item.file.name}.`);
+        setError(null);
+      } catch (err) {
+        updateQueueItem(id, {
+          status: "failed",
+          message: formatUploadError(err),
+        });
+      } finally {
+        setUploading(false);
+      }
+    },
+    [client, flushItems, queue, updateQueueItem, uploading, value],
+  );
+
+  const retryAllFailed = useCallback(async () => {
+    const failed = queue.filter((i) => i.status === "failed");
+    if (!failed.length || uploading) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      await processItems(failed, value);
+    } catch (err) {
+      setError(formatUploadError(err));
+    } finally {
+      setUploading(false);
+      setProgress("");
+    }
+  }, [processItems, queue, uploading, value]);
 
   const clearAllImages = useCallback(async () => {
     if (photoCount === 0 || props.readOnly) return;
@@ -94,93 +338,8 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     setError(null);
     setNotice(null);
     setProgress("");
-  }, [client, documentId, flushItems, photoCount, props.readOnly]);
-
-  const uploadFiles = useCallback(
-    async (files: File[]) => {
-      if (!canUpload) {
-        setError(
-          "Not signed in. Log in to Sanity Studio (top right), or add SANITY_STUDIO_API_TOKEN to .env (Editor or Administrator — not Viewer).",
-        );
-        return;
-      }
-
-      const images = files.filter(isImageFile);
-      if (!images.length) {
-        setError("No image files found in that selection.");
-        return;
-      }
-
-      setUploading(true);
-      setError(null);
-      setNotice(null);
-      setProgress(`0 / ${images.length}`);
-
-      const accumulated = [...value];
-      let lastFlushAt = 0;
-
-      try {
-        const { assets, failures, skipped } = await uploadImagesInBulk({
-          client,
-          files: images,
-          safeFilename,
-          onProgress: (completed, total, filename) => {
-            setProgress(`${completed} / ${total} — ${filename}`);
-          },
-        });
-
-        for (const asset of assets) {
-          accumulated.push(assetToGalleryItem(asset));
-          if (accumulated.length - lastFlushAt >= FLUSH_EVERY) {
-            flushItems([...accumulated]);
-            lastFlushAt = accumulated.length;
-          }
-        }
-
-        flushItems([...accumulated]);
-
-        const parts: string[] = [];
-        if (assets.length > 0) {
-          parts.push(`Added ${assets.length} photo${assets.length === 1 ? "" : "s"}.`);
-        }
-        if (failures.length > 0) {
-          const sample = failures
-            .slice(0, 3)
-            .map((f) => `${f.filename} (${f.message})`)
-            .join("; ");
-          const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : "";
-          parts.push(`${failures.length} failed: ${sample}${more}`);
-        }
-        if (skipped.length > 0) {
-          parts.push(`${skipped.length} skipped (file too large).`);
-        }
-
-        if (failures.length > 0 && assets.length === 0) {
-          setError(
-            `All uploads failed. This is usually rate limits or network timeouts when sending many large files — try again, upload in smaller folders, or export smaller JPEGs. First error: ${failures[0].message}`,
-          );
-          setNotice(null);
-        } else if (failures.length > 0 || skipped.length > 0) {
-          setNotice(parts.join(" "));
-          setError(null);
-        } else {
-          setNotice(parts[0] ?? null);
-          setError(null);
-        }
-
-        setProgress("");
-      } catch (err) {
-        if (accumulated.length > value.length) {
-          flushItems([...accumulated]);
-          setNotice(`Saved ${accumulated.length - value.length} photos before the batch stopped.`);
-        }
-        setError(formatUploadError(err));
-      } finally {
-        setUploading(false);
-      }
-    },
-    [canUpload, client, flushItems, value],
-  );
+    dismissQueue();
+  }, [client, dismissQueue, documentId, flushItems, photoCount, props.readOnly]);
 
   const onFolderChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,6 +391,16 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         <Text size={1} muted>
           {uploading ? "Uploading" : "Done"}: {progress}
         </Text>
+      ) : null}
+
+      {queue.length > 0 ? (
+        <UploadQueuePanel
+          items={queue}
+          uploading={uploading}
+          onRetry={retryItem}
+          onRetryAllFailed={retryAllFailed}
+          onDismiss={dismissQueue}
+        />
       ) : null}
 
       {notice ? (

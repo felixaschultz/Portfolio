@@ -27,6 +27,8 @@ export type GalleryListItem = {
   featured?: boolean;
   imageCount: number;
   coverUrl: string;
+  /** 1200×630 crop for Open Graph / Twitter cards */
+  coverOgUrl: string;
   coverSrcSet: string;
   coverBlurUrl?: string;
   coverImageKey?: string;

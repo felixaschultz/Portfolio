@@ -22,9 +22,17 @@ export type PageMetaInput = {
   /** Path after locale, e.g. `/projects/foo` or `` for home */
   path?: string;
   image?: string;
+  /** og:title / twitter:title; defaults to document title with site name */
+  ogTitle?: string;
+  imageAlt?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   /** Set false on error pages */
   indexable?: boolean;
 };
+
+export const OG_IMAGE_WIDTH = 1200;
+export const OG_IMAGE_HEIGHT = 630;
 
 function absoluteImage(image: string): string {
   if (image.startsWith("http")) return image;
@@ -73,12 +81,17 @@ export function buildPageMeta({
   locale,
   path = "",
   image = DEFAULT_OG_IMAGE,
+  ogTitle,
+  imageAlt,
+  ogImageWidth = OG_IMAGE_WIDTH,
+  ogImageHeight = OG_IMAGE_HEIGHT,
   indexable = true,
 }: PageMetaInput) {
   const normalized = path.startsWith("/") ? path : path ? `/${path}` : "";
   const url = pageUrl(locale, normalized);
   const ogImage = absoluteImage(image);
   const pageTitle = fullTitle(title);
+  const socialTitle = ogTitle ?? pageTitle;
 
   return [
     { title: pageTitle },
@@ -86,19 +99,30 @@ export function buildPageMeta({
     { name: "robots", content: indexable ? "index, follow" : "noindex, nofollow" },
     { property: "og:type", content: "website" },
     { property: "og:site_name", content: SITE_NAME },
-    { property: "og:title", content: pageTitle },
+    { property: "og:title", content: socialTitle },
     { property: "og:description", content: description },
     { property: "og:url", content: url },
     { property: "og:image", content: ogImage },
+    { property: "og:image:width", content: String(ogImageWidth) },
+    { property: "og:image:height", content: String(ogImageHeight) },
+    ...(imageAlt ? [{ property: "og:image:alt", content: imageAlt }] : []),
     { property: "og:locale", content: ogLocale(locale) },
+    ...ogLocaleAlternates(locale),
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: pageTitle },
+    { name: "twitter:title", content: socialTitle },
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: ogImage },
+    ...(imageAlt ? [{ name: "twitter:image:alt", content: imageAlt }] : []),
     { tagName: "link", rel: "canonical", href: url },
     ...hreflangLinks(normalized),
     xDefaultHref(normalized),
   ];
+}
+
+function ogLocaleAlternates(current: Locale): Array<{ property: string; content: string }> {
+  return supportedLocales
+    .filter((locale) => locale !== current)
+    .map((locale) => ({ property: "og:locale:alternate", content: ogLocale(locale) }));
 }
 
 function ogLocale(locale: Locale): string {

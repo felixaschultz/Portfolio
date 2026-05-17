@@ -95,7 +95,7 @@ async function mapGalleryToListItem(
   gallery: GalleryDocument,
   widths: number[],
 ): Promise<GalleryListItem | null> {
-  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
+  const { photoSrcSet, photoBlurPlaceholder, photoOgImage } = await import("./image.server");
   const cover = resolveGalleryCoverImage(gallery);
   if (!cover) return null;
   const { src, srcSet } = photoSrcSet(cover, widths, { crop16x9: true });
@@ -110,6 +110,7 @@ async function mapGalleryToListItem(
     featured: gallery.featured,
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,
+    coverOgUrl: photoOgImage(cover),
     coverSrcSet: srcSet,
     coverBlurUrl: photoBlurPlaceholder(cover),
     coverImageKey: gallery.coverImageKey,

@@ -39,6 +39,13 @@ export function photoSrcSet(
   return { src, srcSet };
 }
 
+/** Open Graph / social preview (1.91:1). */
+export function photoOgImage(source: SanityImageSource, width = 1200, height = 630): string {
+  const builder = urlFor(source);
+  if (!builder) return "";
+  return builder.width(width).height(height).fit("crop").auto("format").url();
+}
+
 /** Tiny blurred placeholder for progressive loading. */
 export function photoBlurPlaceholder(source: SanityImageSource, width = 48): string {
   const builder = urlFor(source);

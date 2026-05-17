@@ -23,21 +23,16 @@ function resolveCoverImage(gallery: GalleryDetail): GalleryImageItem | null {
 type AlbumPhotoProps = {
   image: GalleryImageItem;
   index: number;
-  total: number;
   title: string;
   caption: string;
   onOpen: (key: string) => void;
 };
 
-function AlbumPhoto({ image, index, total, title, caption, onOpen }: AlbumPhotoProps) {
+function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
   const indexLabel = String(index + 1).padStart(2, "0");
-  const totalLabel = String(total).padStart(2, "0");
 
   return (
     <figure className="gallery-album__figure">
-      <span className="gallery-album__index" aria-hidden>
-        {indexLabel} / {totalLabel}
-      </span>
       <button
         type="button"
         className="gallery-album__shot"
@@ -48,7 +43,7 @@ function AlbumPhoto({ image, index, total, title, caption, onOpen }: AlbumPhotoP
           <img
             src={image.imageUrl}
             srcSet={image.imageSrcSet}
-            sizes="100vw"
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
             alt={image.alt || title}
             className="gallery-album__img"
             loading="lazy"
@@ -194,7 +189,6 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               key={image._key}
               image={image}
               index={coverImage ? index + 1 : index}
-              total={gallery.imageCount}
               title={title}
               caption={imageCaption(image.caption)}
               onOpen={openPhoto}
@@ -208,8 +202,8 @@ export function GalleryView({ gallery }: GalleryViewProps) {
           open
           onClose={closePhoto}
           ariaLabel={title}
-          positionClassName="modal-overlay--center"
-          panelClassName="relative max-w-[min(96vw,1800px)] px-0"
+          positionClassName="modal-overlay--fullscreen"
+          panelClassName="modal-panel--fullscreen relative w-full"
         >
           <p className="absolute left-2 top-2 z-20 font-mono text-[11px] uppercase tracking-[0.2em] text-white/70 sm:left-4 sm:top-4">
             {String(activeIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
@@ -242,16 +236,16 @@ export function GalleryView({ gallery }: GalleryViewProps) {
               ›
             </button>
           ) : null}
-          <figure className="flex flex-col items-center px-2 py-8 sm:px-4">
+          <figure className="flex h-full w-full flex-col items-center justify-center px-12 py-14 sm:px-16">
             <img
               src={activeImage.imageUrl}
               srcSet={activeImage.imageSrcSet}
               sizes="100vw"
               alt={activeImage.alt || title}
-              className="max-h-[88vh] w-full object-contain"
+              className="max-h-[calc(100dvh-6rem)] max-w-[100vw] object-contain"
             />
             {imageCaption(activeImage.caption) ? (
-              <figcaption className="gallery-album__caption mt-8 text-center text-white/85">
+              <figcaption className="gallery-album__caption--lightbox">
                 {imageCaption(activeImage.caption)}
               </figcaption>
             ) : null}

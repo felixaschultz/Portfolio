@@ -58,6 +58,12 @@ body {
   padding: 0.5rem;
 }
 
+.modal-overlay--fullscreen {
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
 @media (min-width: 640px) {
   .modal-overlay--center {
     padding: 1rem;
@@ -92,6 +98,18 @@ body {
   overflow-y: auto;
   overscroll-behavior: contain;
   outline: none;
+}
+
+.modal-panel--fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  max-width: 100vw;
+  max-height: 100dvh;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
 }
 
 .font-display {
@@ -268,19 +286,38 @@ body {
 }
 
 .gallery-album__stream {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(4rem, 10vw, 7rem);
-  padding-bottom: clamp(5rem, 12vw, 8rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+@media (min-width: 640px) {
+  .gallery-album__stream {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery-album__stream {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .gallery-album__figure {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .gallery-album__shot {
   display: block;
   width: 100%;
+  flex: 1;
   padding: 0;
   border: none;
   background: transparent;
@@ -289,34 +326,35 @@ body {
 }
 
 .gallery-album__frame {
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  width: 100%;
+  min-height: min(42svh, 520px);
+  height: min(42svh, 520px);
+  overflow: hidden;
   background: #000;
 }
 
 .gallery-album__img {
   display: block;
   width: 100%;
-  max-height: min(92svh, 1800px);
-  height: auto;
-  object-fit: contain;
-  transition: opacity 0.5s ease;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    opacity 0.4s ease,
+    transform 0.6s ease;
 }
 
 .gallery-album__shot:hover .gallery-album__img {
-  opacity: 0.92;
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
 .gallery-album__caption {
-  @apply mx-auto mt-5 max-w-3xl px-6 font-display text-lg leading-relaxed text-[var(--color-muted)] sm:px-10 sm:text-xl;
+  @apply px-3 py-2 font-display text-sm leading-snug text-[var(--color-muted)];
 }
 
-.gallery-album__index {
-  @apply mb-3 block px-6 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)] sm:px-10;
+.gallery-album__caption--lightbox {
+  @apply mx-auto mt-6 max-w-3xl px-6 text-center text-lg text-white/85 sm:px-10 sm:text-xl;
 }
 
 /* Photography overview — editorial album index */

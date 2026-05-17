@@ -1,10 +1,10 @@
 import { Link, useParams } from "react-router";
+import { LogoMark } from "./LogoMark";
 
 type LogoProps = {
   className?: string;
 };
 
-/** Typography-only logotype — pairs with Instrument Serif across the site. */
 export function Logo({ className = "" }: LogoProps) {
   const { locale } = useParams();
   const base = `/${locale ?? "da"}`;
@@ -15,6 +15,7 @@ export function Logo({ className = "" }: LogoProps) {
       className={`site-logo ${className}`.trim()}
       aria-label="Felix A. Schultz — home"
     >
+      <LogoMark className="site-logo__mark" />
       <span className="site-logo__name">Felix A. Schultz</span>
     </Link>
   );

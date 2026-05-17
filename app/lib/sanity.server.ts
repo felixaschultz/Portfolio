@@ -1,5 +1,6 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { GalleryDetail, GalleryImageItem, GalleryListItem, PortfolioPhotoItem } from "./galleries";
+import { gridSrcWidths, isLargeGallery } from "./gallery-performance";
 import { resolveGalleryCoverImage } from "./gallery-cover";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
@@ -132,7 +133,9 @@ async function mapGalleryToListItem(
   const { photoSrcSet, photoBlurPlaceholder, photoOgImage } = await import("./image.server");
   const cover = resolveGalleryCoverImage(gallery);
   if (!cover) return null;
-  const { src, srcSet } = photoSrcSet(cover, widths, { crop16x9: true });
+  const { toSanityImageSource } = await import("./image.server");
+  const coverSource = toSanityImageSource(cover);
+  const { src, srcSet } = photoSrcSet(coverSource, widths, { crop16x9: true });
   return {
     _id: gallery._id,
     slug: gallery.slug,
@@ -144,9 +147,9 @@ async function mapGalleryToListItem(
     featured: gallery.featured,
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,
-    coverOgUrl: photoOgImage(cover),
+    coverOgUrl: photoOgImage(coverSource),
     coverSrcSet: srcSet,
-    coverBlurUrl: photoBlurPlaceholder(cover),
+    coverBlurUrl: photoBlurPlaceholder(coverSource),
     coverImageKey: gallery.coverImageKey,
   };
 }
@@ -157,33 +160,40 @@ async function mapGalleryToDetail(
 ): Promise<GalleryDetail | null> {
   const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400]);
   if (!list) return null;
-  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
-  const { gridSrcWidths, isLargeGallery, LIGHTBOX_SRC_WIDTHS } = await import("./gallery-performance");
+  const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const imageCount = gallery.images?.length ?? 0;
   const large = isLargeGallery(imageCount);
   const gridWidths = gridSrcWidths(imageCount);
-  const images: GalleryImageItem[] = (gallery.images ?? [])
-    .filter((item) => item.image?.asset?._ref)
-    .map((item) => {
-      const { src, srcSet } = photoSrcSet(item.image, gridWidths);
+  const images: GalleryImageItem[] = [];
+
+  for (const item of gallery.images ?? []) {
+    if (!item.image?.asset?._ref) continue;
+
+    try {
+      const source = toSanityImageSource(item.image);
+      const { src, srcSet } = photoSrcSet(source, gridWidths);
+      if (!src) continue;
+
       const caption = resolveSanityString(item.caption, locale);
       const { width, height } = imageDimensionsFromAsset(item.image);
-      const full = large
-        ? photoSrcSet(item.image, LIGHTBOX_SRC_WIDTHS)
-        : { src, srcSet };
-      return {
+
+      images.push({
         _key: item._key,
         imageUrl: src,
         imageSrcSet: srcSet,
-        imageFullUrl: full.src,
-        imageFullSrcSet: full.srcSet,
-        imageBlurUrl: photoBlurPlaceholder(item.image),
+        imageFullUrl: large ? undefined : src,
+        imageFullSrcSet: large ? undefined : srcSet,
+        imageBlurUrl: photoBlurPlaceholder(source),
         alt: item.alt,
         caption: caption || undefined,
         width,
         height,
-      };
-    });
+      });
+    } catch {
+      continue;
+    }
+  }
+
   return { ...list, images };
 }
 
@@ -244,20 +254,21 @@ export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioP
   const galleries = await fetchGalleries();
   const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
   const { GRID_SRC_WIDTHS_LARGE } = await import("./gallery-performance");
+  const { toSanityImageSource } = await import("./image.server");
   const photos: PortfolioPhotoItem[] = [];
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
     for (const item of gallery.images ?? []) {
       if (!item?.image?.asset?._ref || !item._key) continue;
-      const { src, srcSet } = photoSrcSet(item.image, GRID_SRC_WIDTHS_LARGE);
+      const { src, srcSet } = photoSrcSet(toSanityImageSource(item.image), GRID_SRC_WIDTHS_LARGE);
       const caption = resolveSanityString(item.caption, locale);
       const { width, height } = imageDimensionsFromAsset(item.image);
       photos.push({
         _key: item._key,
         imageUrl: src,
         imageSrcSet: srcSet,
-        imageBlurUrl: photoBlurPlaceholder(item.image),
+        imageBlurUrl: photoBlurPlaceholder(toSanityImageSource(item.image)),
         alt: item.alt,
         caption: caption || undefined,
         width,

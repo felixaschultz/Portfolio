@@ -7,6 +7,14 @@ export function hasValidImageAsset(source: SanityImageSource | null | undefined)
   return typeof ref === "string" && ref.length > 0;
 }
 
+/** Strip GROQ metadata (e.g. dimensions) before passing to @sanity/image-url. */
+export function toSanityImageSource(image: SanityImageSource): SanityImageSource {
+  if (!image || typeof image !== "object" || Array.isArray(image)) return image;
+  const record = image as Record<string, unknown>;
+  const { dimensions: _dimensions, ...source } = record;
+  return source as SanityImageSource;
+}
+
 export function urlFor(source: SanityImageSource) {
   if (!hasValidImageAsset(source)) return null;
   const client = getSanityClient();

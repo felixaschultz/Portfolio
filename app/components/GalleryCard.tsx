@@ -57,7 +57,7 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
           fetchPriority={index === 0 ? "high" : undefined}
         />
         <div className="gallery-overview__item-shade" aria-hidden />
-        <div className="gallery-overview__item-copy">
+        <div className="gallery-overview__item-copy gallery-cover__copy">
           <h2 className="gallery-overview__item-title">{title}</h2>
           {metaParts.length > 0 ? (
             <p className="gallery-overview__item-meta">{metaParts.join(" · ")}</p>

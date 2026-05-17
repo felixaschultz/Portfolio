@@ -101,7 +101,8 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     <article className="gallery-album">
       {coverImage ? (
         <section className="gallery-album__hero">
-          <Link to={`${base}/photography`} className="gallery-album__back">
+          <div className="gallery-cover__scrim gallery-cover__scrim--top" aria-hidden />
+          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
             ← {t("photography.back")}
           </Link>
 
@@ -124,7 +125,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             <div className="gallery-album__hero-shade" aria-hidden />
           </button>
 
-          <div className="gallery-album__hero-copy">
+          <div className="gallery-album__hero-copy gallery-cover__copy">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-muted)]">
               {String(coverIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
             </p>

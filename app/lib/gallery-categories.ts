@@ -17,7 +17,18 @@ export function categoryLabel(category: GalleryCategoryRef, locale: Locale): str
   return localizedField(category.title, locale) || category.slug;
 }
 
-/** Unique categories across galleries for the current locale, sorted A–Z. */
+/** Build filter options from published category documents (preferred). */
+export function categoryOptionsFromRefs(
+  categories: GalleryCategoryRef[],
+  locale: Locale,
+): GalleryCategoryOption[] {
+  return categories
+    .filter((c) => c.slug)
+    .map((c) => ({ slug: c.slug, label: categoryLabel(c, locale) }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+}
+
+/** Fallback: unique categories inferred from gallery list only. */
 export function collectGalleryCategories(
   galleries: GalleryListItem[],
   locale: Locale,
@@ -51,8 +62,7 @@ export function galleryHasCategory(gallery: GalleryListItem, categorySlug: strin
 
 export function resolveActiveCategorySlug(
   param: string,
-  galleries: GalleryListItem[],
-  locale: Locale,
+  categoryOptions: GalleryCategoryOption[],
 ): string | null {
-  return categoryFromParam(param, collectGalleryCategories(galleries, locale))?.slug ?? null;
+  return categoryFromParam(param, categoryOptions)?.slug ?? null;
 }

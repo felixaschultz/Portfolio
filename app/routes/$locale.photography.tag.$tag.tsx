@@ -2,14 +2,17 @@ import { redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography.tag.$tag";
 import { PhotographyOverview } from "../components/PhotographyOverview";
 import { collectGalleryTags, tagFromParam } from "../lib/gallery-tags";
-import { fetchGalleriesForList } from "../lib/sanity.server";
+import { fetchGalleriesForList, fetchPublishedGalleryCategories } from "../lib/sanity.server";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
-  const galleries = await fetchGalleriesForList();
+  const [galleries, publishedCategories] = await Promise.all([
+    fetchGalleriesForList(),
+    fetchPublishedGalleryCategories(),
+  ]);
   const allTags = collectGalleryTags(galleries);
   const activeTag = tagFromParam(params.tag ?? "", allTags);
 
@@ -17,7 +20,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw redirect(`/${locale}/photography`);
   }
 
-  return { galleries, activeTag, locale };
+  return { galleries, publishedCategories, activeTag, locale };
 }
 
 export function meta({ data, params }: Route.MetaArgs) {
@@ -35,6 +38,12 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyTagPage() {
-  const { galleries, activeTag } = useLoaderData<typeof loader>();
-  return <PhotographyOverview galleries={galleries} activeTag={activeTag} />;
+  const { galleries, publishedCategories, activeTag } = useLoaderData<typeof loader>();
+  return (
+    <PhotographyOverview
+      galleries={galleries}
+      publishedCategories={publishedCategories}
+      activeTag={activeTag}
+    />
+  );
 }

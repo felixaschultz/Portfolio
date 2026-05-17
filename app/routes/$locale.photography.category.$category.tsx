@@ -1,25 +1,31 @@
 import { redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography.category.$category";
 import { PhotographyOverview } from "../components/PhotographyOverview";
-import { collectGalleryCategories, resolveActiveCategorySlug } from "../lib/gallery-categories";
-import { fetchGalleriesForList } from "../lib/sanity.server";
+import {
+  categoryOptionsFromRefs,
+  resolveActiveCategorySlug,
+} from "../lib/gallery-categories";
+import { fetchGalleriesForList, fetchPublishedGalleryCategories } from "../lib/sanity.server";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 export async function loader({ params }: Route.LoaderArgs) {
   const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
-  const galleries = await fetchGalleriesForList();
-  const activeCategorySlug = resolveActiveCategorySlug(params.category ?? "", galleries, locale);
+  const [galleries, publishedCategories] = await Promise.all([
+    fetchGalleriesForList(),
+    fetchPublishedGalleryCategories(),
+  ]);
+  const categoryOptions = categoryOptionsFromRefs(publishedCategories, locale);
+  const activeCategorySlug = resolveActiveCategorySlug(params.category ?? "", categoryOptions);
 
   if (!activeCategorySlug) {
     throw redirect(`/${locale}/photography`);
   }
 
   const categoryLabel =
-    collectGalleryCategories(galleries, locale).find((c) => c.slug === activeCategorySlug)?.label ??
-    activeCategorySlug;
+    categoryOptions.find((c) => c.slug === activeCategorySlug)?.label ?? activeCategorySlug;
 
-  return { galleries, activeCategorySlug, categoryLabel, locale };
+  return { galleries, publishedCategories, activeCategorySlug, categoryLabel, locale };
 }
 
 export function meta({ data, params }: Route.MetaArgs) {
@@ -37,6 +43,12 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyCategoryPage() {
-  const { galleries, activeCategorySlug } = useLoaderData<typeof loader>();
-  return <PhotographyOverview galleries={galleries} activeCategorySlug={activeCategorySlug} />;
+  const { galleries, publishedCategories, activeCategorySlug } = useLoaderData<typeof loader>();
+  return (
+    <PhotographyOverview
+      galleries={galleries}
+      publishedCategories={publishedCategories}
+      activeCategorySlug={activeCategorySlug}
+    />
+  );
 }

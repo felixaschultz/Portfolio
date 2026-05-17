@@ -2,7 +2,13 @@ import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
-import { categoryLabel, galleryHasCategory } from "../lib/gallery-categories";
+import {
+  categoryLabel,
+  categoryOptionsFromRefs,
+  galleryHasCategory,
+  type GalleryCategoryOption,
+} from "../lib/gallery-categories";
+import type { GalleryCategoryRef } from "../lib/sanity.server";
 import { buildGalleryListEntries } from "../lib/gallery-year";
 import { galleryHasTag, photographyTagPath } from "../lib/gallery-tags";
 import type { Locale } from "../lib/i18n";
@@ -13,12 +19,14 @@ import { Reveal } from "./Reveal";
 
 type GalleryGridProps = {
   galleries: GalleryListItem[];
+  publishedCategories?: GalleryCategoryRef[];
   activeTag?: string | null;
   activeCategorySlug?: string | null;
 };
 
 export function GalleryGrid({
   galleries,
+  publishedCategories = [],
   activeTag = null,
   activeCategorySlug = null,
 }: GalleryGridProps) {
@@ -39,14 +47,23 @@ export function GalleryGrid({
 
   const listEntries = useMemo(() => buildGalleryListEntries(filtered), [filtered]);
 
+  const categoryOptions: GalleryCategoryOption[] = useMemo(() => {
+    if (publishedCategories.length > 0) {
+      return categoryOptionsFromRefs(publishedCategories, lng);
+    }
+    return [];
+  }, [lng, publishedCategories]);
+
   const activeCategoryLabel = useMemo(() => {
     if (!activeCategorySlug) return null;
+    const fromTaxonomy = categoryOptions.find((c) => c.slug === activeCategorySlug);
+    if (fromTaxonomy) return fromTaxonomy.label;
     for (const gallery of galleries) {
       const match = gallery.categories?.find((c) => c.slug === activeCategorySlug);
       if (match) return categoryLabel(match, lng);
     }
     return activeCategorySlug;
-  }, [activeCategorySlug, galleries, lng]);
+  }, [activeCategorySlug, categoryOptions, galleries, lng]);
 
   const filterKey = [activeCategorySlug ?? "all", activeTag ?? "all"].join(":");
 
@@ -62,6 +79,7 @@ export function GalleryGrid({
     <>
       <GalleryTaxonomyFilters
         galleries={galleries}
+        publishedCategories={publishedCategories}
         activeTag={activeTag}
         activeCategorySlug={activeCategorySlug}
       />

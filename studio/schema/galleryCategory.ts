@@ -22,7 +22,13 @@ export const galleryCategory = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: { source: "title.en", maxLength: 64 },
+      options: {
+        source: (doc) => {
+          const title = doc.title as { en?: string; da?: string; de?: string } | undefined;
+          return title?.en || title?.da || title?.de || "category";
+        },
+        maxLength: 64,
+      },
       validation: (rule) => rule.required(),
     }),
   ],

@@ -69,7 +69,8 @@ export const gallery = defineType({
     defineField({
       name: "categories",
       title: "Categories",
-      description: "Broad groupings (e.g. Travel, Nature). Create categories under “Gallery categories” in the desk.",
+      description:
+        "Broad groupings (e.g. Travel, Nature). Create and publish categories under “Gallery categories”, then publish this gallery after assigning them — otherwise the site keeps the previous published version.",
       type: "array",
       of: [{ type: "reference", to: [{ type: "galleryCategory" }] }],
     }),

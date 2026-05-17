@@ -1,17 +1,20 @@
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
+import type { GalleryCategoryRef } from "../lib/sanity.server";
 import { GalleryGrid } from "./GalleryGrid";
 import { Reveal } from "./Reveal";
 
 type PhotographyOverviewProps = {
   galleries: GalleryListItem[];
+  publishedCategories?: GalleryCategoryRef[];
   activeTag?: string | null;
   activeCategorySlug?: string | null;
 };
 
 export function PhotographyOverview({
   galleries,
+  publishedCategories = [],
   activeTag = null,
   activeCategorySlug = null,
 }: PhotographyOverviewProps) {
@@ -32,6 +35,7 @@ export function PhotographyOverview({
       </Reveal>
       <GalleryGrid
         galleries={galleries}
+        publishedCategories={publishedCategories}
         activeTag={activeTag}
         activeCategorySlug={activeCategorySlug}
       />

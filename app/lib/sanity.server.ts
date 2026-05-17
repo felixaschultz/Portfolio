@@ -128,10 +128,10 @@ const galleryProjection = `{
       null
     )
   })),
-  "categories": categories[]->{
+  "categories": array::compact(categories[]->{
     "slug": slug.current,
     title
-  },
+  }[defined(slug.current)]),
   featured,
   sortOrder,
   coverImageKey,
@@ -153,6 +153,13 @@ export const GALLERIES_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(so
 export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
 
 export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryProjection}`;
+
+const publishedCategoryFilter = `_type == "galleryCategory" && defined(slug.current) && !(_id in path("drafts.**"))`;
+
+export const GALLERY_CATEGORIES_QUERY = `*[${publishedCategoryFilter}] | order(coalesce(title.en, title.da, title.de) asc) {
+  "slug": slug.current,
+  title
+}`;
 
 async function mapGalleryToListItem(
   gallery: GalleryDocument,
@@ -244,6 +251,16 @@ export async function fetchGalleryBySlug(slug: string): Promise<GalleryDocument 
     return await client.fetch(GALLERY_BY_SLUG_QUERY, { slug });
   } catch {
     return null;
+  }
+}
+
+export async function fetchPublishedGalleryCategories(): Promise<GalleryCategoryRef[]> {
+  const client = getSanityClient();
+  if (!client) return [];
+  try {
+    return await client.fetch(GALLERY_CATEGORIES_QUERY);
+  } catch {
+    return [];
   }
 }
 

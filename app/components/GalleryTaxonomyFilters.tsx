@@ -2,20 +2,29 @@ import { useMemo } from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
-import { collectGalleryCategories, photographyCategoryPath } from "../lib/gallery-categories";
+import {
+  categoryOptionsFromRefs,
+  collectGalleryCategories,
+  type GalleryCategoryOption,
+  photographyCategoryPath,
+} from "../lib/gallery-categories";
 import { collectGalleryTags, photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import type { Locale } from "../lib/i18n";
+import type { GalleryCategoryRef } from "../lib/sanity.server";
 import { GalleryFilterNav, type GalleryFilterOption } from "./GalleryFilterNav";
 import { Reveal } from "./Reveal";
 
 type GalleryTaxonomyFiltersProps = {
   galleries: GalleryListItem[];
+  /** Published galleryCategory documents (shows all categories in the filter). */
+  publishedCategories?: GalleryCategoryRef[];
   activeTag?: string | null;
   activeCategorySlug?: string | null;
 };
 
 export function GalleryTaxonomyFilters({
   galleries,
+  publishedCategories = [],
   activeTag = null,
   activeCategorySlug = null,
 }: GalleryTaxonomyFiltersProps) {
@@ -30,14 +39,12 @@ export function GalleryTaxonomyFilters({
     }));
   }, [galleries]);
 
-  const categoryOptions = useMemo(
-    () =>
-      collectGalleryCategories(galleries, lng).map((c) => ({
-        key: c.slug,
-        label: c.label,
-      })),
-    [galleries, lng],
-  );
+  const categoryOptions: GalleryCategoryOption[] = useMemo(() => {
+    if (publishedCategories.length > 0) {
+      return categoryOptionsFromRefs(publishedCategories, lng);
+    }
+    return collectGalleryCategories(galleries, lng);
+  }, [galleries, lng, publishedCategories]);
 
   const allHref = photographyTagPath(lng, null);
 
@@ -52,7 +59,7 @@ export function GalleryTaxonomyFilters({
           <GalleryFilterNav
             label={t("photography.filterCategoryLabel")}
             ariaLabel={t("photography.filterCategoryAria")}
-            options={categoryOptions}
+            options={categoryOptions.map((c) => ({ key: c.slug, label: c.label }))}
             allHref={photographyCategoryPath(lng, null)}
             optionHref={(slug) => photographyCategoryPath(lng, slug)}
             activeKey={activeCategorySlug}

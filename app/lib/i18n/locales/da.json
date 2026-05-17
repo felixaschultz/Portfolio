@@ -60,7 +60,7 @@
     "filterCategoryAria": "Filtrer gallerier efter kategori",
     "filterTagAria": "Filtrer gallerier efter tag",
     "filterCategoryCount": "{{count}} gallerier i «{{category}}»",
-    "filterCategoryEmpty": "Ingen gallerier i denne kategori.",
+    "filterCategoryEmpty": "Ingen publicerede gallerier i denne kategori endnu. Publicér galleriet efter du har tilføjet kategorier i Studio.",
     "filterLabel": "Tags",
     "filterAll": "Alle",
     "filterEmpty": "Ingen gallerier med dette tag.",

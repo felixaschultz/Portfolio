@@ -60,7 +60,7 @@
     "filterCategoryAria": "Filter galleries by category",
     "filterTagAria": "Filter galleries by tag",
     "filterCategoryCount": "{{count}} galleries in «{{category}}»",
-    "filterCategoryEmpty": "No galleries in this category.",
+    "filterCategoryEmpty": "No published galleries in this category yet. Publish the gallery after assigning categories in Studio.",
     "filterLabel": "Tags",
     "filterAll": "All",
     "filterEmpty": "No galleries with this tag.",

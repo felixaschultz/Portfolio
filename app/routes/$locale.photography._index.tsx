@@ -1,14 +1,19 @@
-import { useLoaderData } from "react-router";
-import { useTranslation } from "react-i18next";
+import { redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography._index";
-import { GalleryGrid } from "../components/GalleryGrid";
-import { Reveal } from "../components/Reveal";
+import { PhotographyOverview } from "../components/PhotographyOverview";
 import { fetchGalleriesForList } from "../lib/sanity.server";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
-export async function loader() {
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
+  const url = new URL(request.url);
+  const legacyTag = url.searchParams.get("tag");
+  if (legacyTag?.trim()) {
+    throw redirect(`/${locale}/photography/tag/${legacyTag.trim().toLowerCase().replace(/\s+/g, "-")}`);
+  }
+
   const galleries = await fetchGalleriesForList();
   return {
     galleries,
@@ -30,15 +35,5 @@ export function meta({ params }: Route.MetaArgs) {
 export default function PhotographyIndex() {
   const data = useLoaderData<typeof loader>();
   const galleries = data.galleries ?? data.photos ?? [];
-  const { t } = useTranslation();
-
-  return (
-    <div className="gallery-overview">
-      <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
-        <h1 className="gallery-overview__title">{t("photography.title")}</h1>
-        <p className="gallery-overview__lede">{t("photography.description")}</p>
-      </Reveal>
-      <GalleryGrid galleries={galleries} />
-    </div>
-  );
+  return <PhotographyOverview galleries={galleries} />;
 }

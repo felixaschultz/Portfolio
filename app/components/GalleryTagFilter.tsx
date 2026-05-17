@@ -1,14 +1,19 @@
+import { NavLink, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { tagToParam } from "../lib/gallery-tags";
+import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 
 type GalleryTagFilterProps = {
   tags: string[];
-  activeTag: string | null;
-  onSelect: (tag: string | null) => void;
 };
 
-export function GalleryTagFilter({ tags, activeTag, onSelect }: GalleryTagFilterProps) {
+function filterLinkClass({ isActive }: { isActive: boolean }): string {
+  return `gallery-overview__filter-btn ${isActive ? "gallery-overview__filter-btn--active" : ""}`;
+}
+
+export function GalleryTagFilter({ tags }: GalleryTagFilterProps) {
+  const { locale } = useParams();
   const { t } = useTranslation();
+  const lng = locale ?? "da";
 
   if (tags.length === 0) return null;
 
@@ -20,32 +25,19 @@ export function GalleryTagFilter({ tags, activeTag, onSelect }: GalleryTagFilter
     >
       <div className="gallery-overview__filter-inner">
         <span className="gallery-overview__filter-label">{t("photography.filterLabel")}</span>
-        <button
-          type="button"
-          onClick={() => onSelect(null)}
-          className={`gallery-overview__filter-btn ${activeTag === null ? "gallery-overview__filter-btn--active" : ""}`}
-          aria-pressed={activeTag === null}
-        >
+        <NavLink to={photographyTagPath(lng, null)} end className={filterLinkClass}>
           {t("photography.filterAll")}
-        </button>
-        {tags.map((tag) => {
-          const selected = activeTag !== null && tagToParam(activeTag) === tagToParam(tag);
-          return (
-            <span key={tagToParam(tag)} className="contents">
-              <span className="gallery-overview__filter-sep" aria-hidden>
-                /
-              </span>
-              <button
-                type="button"
-                onClick={() => onSelect(tag)}
-                className={`gallery-overview__filter-btn ${selected ? "gallery-overview__filter-btn--active" : ""}`}
-                aria-pressed={selected}
-              >
-                {tag}
-              </button>
+        </NavLink>
+        {tags.map((tag) => (
+          <span key={tagToParam(tag)} className="contents">
+            <span className="gallery-overview__filter-sep" aria-hidden>
+              /
             </span>
-          );
-        })}
+            <NavLink to={photographyTagPath(lng, tag)} className={filterLinkClass}>
+              {tag}
+            </NavLink>
+          </span>
+        ))}
       </div>
     </nav>
   );

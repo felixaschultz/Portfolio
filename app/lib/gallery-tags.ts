@@ -5,6 +5,13 @@ export function tagToParam(tag: string): string {
   return tag.trim().toLowerCase().replace(/\s+/g, "-");
 }
 
+/** Photography index or tag filter path (no query strings). */
+export function photographyTagPath(locale: string, tag: string | null): string {
+  const base = `/${locale}/photography`;
+  if (!tag) return base;
+  return `${base}/tag/${tagToParam(tag)}`;
+}
+
 /** Unique tags across galleries, sorted A–Z (display casing from first occurrence). */
 export function collectGalleryTags(galleries: GalleryListItem[]): string[] {
   const byParam = new Map<string, string>();

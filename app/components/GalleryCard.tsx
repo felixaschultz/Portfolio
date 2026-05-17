@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
-import { tagToParam } from "../lib/gallery-tags";
+import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { GalleryImage } from "./GalleryImage";
@@ -75,7 +75,7 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
               <span key={tagToParam(tag)}>
                 {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
                 <Link
-                  to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
+                  to={photographyTagPath(lng, tag)}
                   className="gallery-overview__item-tag"
                 >
                   {tag}

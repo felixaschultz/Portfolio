@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
-import { tagToParam } from "../lib/gallery-tags";
+import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
 import { GalleryAlbumNav } from "./GalleryAlbumNav";
 import { GalleryImage } from "./GalleryImage";
@@ -156,7 +156,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
                 <span key={tagToParam(tag)}>
                   {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
                   <Link
-                    to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
+                    to={photographyTagPath(lng, tag)}
                     className="gallery-album__tag"
                   >
                     {tag}

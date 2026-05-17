@@ -596,7 +596,7 @@ body {
 }
 
 .gallery-overview__filter-btn {
-  @apply font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)] transition hover:text-[var(--color-accent)];
+  @apply font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)] no-underline transition hover:text-[var(--color-accent)];
 }
 
 .gallery-overview__filter-btn--active {

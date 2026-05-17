@@ -1,43 +1,28 @@
 import { useMemo } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryListItem } from "../lib/galleries";
-import {
-  collectGalleryTags,
-  galleryHasTag,
-  tagFromParam,
-  tagToParam,
-} from "../lib/gallery-tags";
+import { collectGalleryTags, galleryHasTag, photographyTagPath } from "../lib/gallery-tags";
 import { GalleryCard } from "./GalleryCard";
 import { GalleryTagFilter } from "./GalleryTagFilter";
 import { Reveal } from "./Reveal";
 
 type GalleryGridProps = {
   galleries: GalleryListItem[];
+  activeTag?: string | null;
 };
 
-export function GalleryGrid({ galleries }: GalleryGridProps) {
+export function GalleryGrid({ galleries, activeTag = null }: GalleryGridProps) {
+  const { locale } = useParams();
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const lng = locale ?? "da";
 
   const allTags = useMemo(() => collectGalleryTags(galleries), [galleries]);
-  const tagParam = searchParams.get("tag");
-  const activeTag = useMemo(
-    () => (tagParam ? tagFromParam(tagParam, allTags) : null),
-    [tagParam, allTags],
-  );
 
   const filtered = useMemo(() => {
     if (!activeTag) return galleries;
     return galleries.filter((g) => galleryHasTag(g, activeTag));
   }, [galleries, activeTag]);
-
-  function selectTag(tag: string | null) {
-    const next = new URLSearchParams(searchParams);
-    if (tag) next.set("tag", tagToParam(tag));
-    else next.delete("tag");
-    setSearchParams(next, { replace: true, preventScrollReset: true });
-  }
 
   if (galleries.length === 0) {
     return (
@@ -49,7 +34,7 @@ export function GalleryGrid({ galleries }: GalleryGridProps) {
     <>
       {allTags.length > 0 ? (
         <Reveal variant="fade" delay={120} immediate>
-          <GalleryTagFilter tags={allTags} activeTag={activeTag} onSelect={selectTag} />
+          <GalleryTagFilter tags={allTags} />
         </Reveal>
       ) : null}
 
@@ -70,9 +55,9 @@ export function GalleryGrid({ galleries }: GalleryGridProps) {
       ) : (
         <div className="gallery-overview__empty">
           <p className="text-[var(--color-muted)]">{t("photography.filterEmpty")}</p>
-          <button type="button" onClick={() => selectTag(null)} className="btn-ghost mt-6">
+          <Link to={photographyTagPath(lng, null)} className="btn-ghost mt-6">
             {t("photography.filterAll")}
-          </button>
+          </Link>
         </div>
       )}
     </>

@@ -29,11 +29,12 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
     gallery.location,
     t("photography.photoCount", { count: gallery.imageCount }),
   ].filter(Boolean);
+  const isFeatured = index === 0;
 
   return (
     <Reveal
       as="article"
-      className="gallery-overview__item group"
+      className={`gallery-overview__item group ${isFeatured ? "gallery-overview__item--featured" : ""}`}
       variant="rise"
       delay={revealStagger(index)}
       immediate={index === 0}
@@ -49,37 +50,41 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
         <GalleryImage
           src={gallery.coverUrl}
           srcSet={gallery.coverSrcSet}
-          sizes="100vw"
-          alt={title}
+          sizes={
+            isFeatured
+              ? "(max-width: 1023px) 100vw, min(72rem, 100vw)"
+              : "(max-width: 1023px) 100vw, (max-width: 1279px) 50vw, 36rem"
+          }
+          alt=""
           blurSrc={gallery.coverBlurUrl}
           className="gallery-overview__item-img"
           loading={index < 2 ? "eager" : "lazy"}
           fetchPriority={index === 0 ? "high" : undefined}
         />
-        <div className="gallery-overview__item-shade" aria-hidden />
-        <div className="gallery-overview__item-copy gallery-cover__copy">
+      </Link>
+      <div className="gallery-overview__item-body">
+        <Link to={`${base}/photography/${gallery.slug}`} className="gallery-overview__item-body-link">
           <h2 className="gallery-overview__item-title">{title}</h2>
           {metaParts.length > 0 ? (
             <p className="gallery-overview__item-meta">{metaParts.join(" · ")}</p>
           ) : null}
-        </div>
-      </Link>
-      {tags.length > 0 ? (
-        <p className="gallery-overview__item-tags px-6 sm:px-10 lg:px-14">
-          {tags.map((tag, i) => (
-            <span key={tagToParam(tag)}>
-              {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
-              <Link
-                to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
-                className="gallery-overview__item-tag"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {tag}
-              </Link>
-            </span>
-          ))}
-        </p>
-      ) : null}
+        </Link>
+        {tags.length > 0 ? (
+          <p className="gallery-overview__item-tags">
+            {tags.map((tag, i) => (
+              <span key={tagToParam(tag)}>
+                {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
+                <Link
+                  to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
+                  className="gallery-overview__item-tag"
+                >
+                  {tag}
+                </Link>
+              </span>
+            ))}
+          </p>
+        ) : null}
+      </div>
     </Reveal>
   );
 }

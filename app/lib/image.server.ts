@@ -13,7 +13,8 @@ export function photoSrcSet(
 ): { src: string; srcSet: string } {
   const builder = urlFor(source);
   if (!builder) return { src: "", srcSet: "" };
-  const src = builder.width(1200).auto("format").url();
+  const maxWidth = widths[widths.length - 1] ?? 1200;
+  const src = builder.width(maxWidth).auto("format").url();
   const srcSet = widths
     .map((w) => `${builder.width(w).auto("format").url()} ${w}w`)
     .join(", ");

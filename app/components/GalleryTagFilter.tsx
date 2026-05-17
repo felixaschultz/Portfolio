@@ -7,12 +7,6 @@ type GalleryTagFilterProps = {
   onSelect: (tag: string | null) => void;
 };
 
-function filterButtonClass(selected: boolean): string {
-  return selected
-    ? "bg-[var(--color-accent)] text-[#0a0f0e]"
-    : "border border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-text)]";
-}
-
 export function GalleryTagFilter({ tags, activeTag, onSelect }: GalleryTagFilterProps) {
   const { t } = useTranslation();
 
@@ -20,40 +14,39 @@ export function GalleryTagFilter({ tags, activeTag, onSelect }: GalleryTagFilter
 
   return (
     <nav
-      className="lg:sticky lg:top-24"
+      className="gallery-overview__filter"
       role="group"
       aria-label={t("photography.filterLabel")}
     >
-      <p className="mb-3 text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
-        {t("photography.filterLabel")}
-      </p>
-      <ul className="flex flex-col gap-1.5">
-        <li>
-          <button
-            type="button"
-            onClick={() => onSelect(null)}
-            className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${filterButtonClass(activeTag === null)}`}
-            aria-pressed={activeTag === null}
-          >
-            {t("photography.filterAll")}
-          </button>
-        </li>
+      <div className="gallery-overview__filter-inner">
+        <span className="gallery-overview__filter-label">{t("photography.filterLabel")}</span>
+        <button
+          type="button"
+          onClick={() => onSelect(null)}
+          className={`gallery-overview__filter-btn ${activeTag === null ? "gallery-overview__filter-btn--active" : ""}`}
+          aria-pressed={activeTag === null}
+        >
+          {t("photography.filterAll")}
+        </button>
         {tags.map((tag) => {
           const selected = activeTag !== null && tagToParam(activeTag) === tagToParam(tag);
           return (
-            <li key={tagToParam(tag)}>
+            <span key={tagToParam(tag)} className="contents">
+              <span className="gallery-overview__filter-sep" aria-hidden>
+                /
+              </span>
               <button
                 type="button"
                 onClick={() => onSelect(tag)}
-                className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${filterButtonClass(selected)}`}
+                className={`gallery-overview__filter-btn ${selected ? "gallery-overview__filter-btn--active" : ""}`}
                 aria-pressed={selected}
               >
                 {tag}
               </button>
-            </li>
+            </span>
           );
         })}
-      </ul>
+      </div>
     </nav>
   );
 }

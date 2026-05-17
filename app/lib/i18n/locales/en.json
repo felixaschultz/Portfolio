@@ -59,7 +59,8 @@
     "filterCount": "{{count}} galleries tagged «{{tag}}»",
     "lightboxCounter": "{{current}} / {{total}}",
     "previous": "Previous photo",
-    "next": "Next photo"
+    "next": "Next photo",
+    "allPhotos": "All photos"
   },
   "recommendations": {
     "title": "Recommendations"

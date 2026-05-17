@@ -59,7 +59,8 @@
     "filterCount": "{{count}} gallerier med tagget «{{tag}}»",
     "lightboxCounter": "{{current}} / {{total}}",
     "previous": "Forrige billede",
-    "next": "Næste billede"
+    "next": "Næste billede",
+    "allPhotos": "Alle billeder"
   },
   "recommendations": {
     "title": "Anbefalinger"

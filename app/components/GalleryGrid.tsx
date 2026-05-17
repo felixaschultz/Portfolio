@@ -39,43 +39,37 @@ export function GalleryGrid({ galleries }: GalleryGridProps) {
   }
 
   if (galleries.length === 0) {
-    return <p className="mt-12 text-center text-[var(--color-muted)]">{t("photography.empty")}</p>;
+    return (
+      <p className="gallery-overview__empty text-[var(--color-muted)]">{t("photography.empty")}</p>
+    );
   }
 
-  const hasTags = allTags.length > 0;
-
   return (
-    <div
-      className={`mt-12 ${hasTags ? "flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10" : ""}`}
-    >
-      {hasTags ? (
-        <aside className="w-full shrink-0 border-b border-[var(--color-border)] pb-8 lg:w-52 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <GalleryTagFilter tags={allTags} activeTag={activeTag} onSelect={selectTag} />
-        </aside>
+    <>
+      {allTags.length > 0 ? (
+        <GalleryTagFilter tags={allTags} activeTag={activeTag} onSelect={selectTag} />
       ) : null}
 
-      <div className="min-w-0 flex-1">
-        {activeTag && filtered.length > 0 ? (
-          <p className="mb-6 text-sm text-[var(--color-muted)]">
-            {t("photography.filterCount", { count: filtered.length, tag: activeTag })}
-          </p>
-        ) : null}
+      {activeTag && filtered.length > 0 ? (
+        <p className="gallery-overview__count">
+          {t("photography.filterCount", { count: filtered.length, tag: activeTag })}
+        </p>
+      ) : null}
 
-        {filtered.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3" key={activeTag ?? "all"}>
-            {filtered.map((gallery) => (
-              <GalleryCard key={gallery._id} gallery={gallery} />
-            ))}
-          </div>
-        ) : (
-          <div className="py-12 text-center">
-            <p className="text-[var(--color-muted)]">{t("photography.filterEmpty")}</p>
-            <button type="button" onClick={() => selectTag(null)} className="btn-ghost mt-4">
-              {t("photography.filterAll")}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+      {filtered.length > 0 ? (
+        <div className="gallery-overview__list" key={activeTag ?? "all"}>
+          {filtered.map((gallery, index) => (
+            <GalleryCard key={gallery._id} gallery={gallery} index={index} total={filtered.length} />
+          ))}
+        </div>
+      ) : (
+        <div className="gallery-overview__empty">
+          <p className="text-[var(--color-muted)]">{t("photography.filterEmpty")}</p>
+          <button type="button" onClick={() => selectTag(null)} className="btn-ghost mt-6">
+            {t("photography.filterAll")}
+          </button>
+        </div>
+      )}
+    </>
   );
 }

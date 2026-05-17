@@ -7,9 +7,11 @@ import { localizedField, type Locale } from "../lib/i18n";
 
 type GalleryCardProps = {
   gallery: GalleryListItem;
+  index: number;
+  total: number;
 };
 
-export function GalleryCard({ gallery }: GalleryCardProps) {
+export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
@@ -17,50 +19,57 @@ export function GalleryCard({ gallery }: GalleryCardProps) {
   const title = localizedField(gallery.title, lng) || "Gallery";
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
   const tags = gallery.tags?.filter((tag) => tag.trim()).slice(0, 4) ?? [];
+  const indexLabel = String(index + 1).padStart(2, "0");
+  const totalLabel = String(total).padStart(2, "0");
+  const metaParts = [
+    dateLabel,
+    gallery.location,
+    t("photography.photoCount", { count: gallery.imageCount }),
+  ].filter(Boolean);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] transition hover:border-[var(--color-accent)] hover:shadow-lg hover:shadow-[var(--color-accent)]/10">
+    <article className="gallery-overview__item group">
+      <span className="gallery-overview__item-index" aria-hidden>
+        {indexLabel} / {totalLabel}
+      </span>
       <Link
         to={`${base}/photography/${gallery.slug}`}
-        className="relative block aspect-[4/3] overflow-hidden bg-[var(--color-bg)]"
+        className="gallery-overview__item-visual"
+        aria-label={title}
       >
         <img
           src={gallery.coverUrl}
           srcSet={gallery.coverSrcSet}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="100vw"
           alt={title}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-          loading="lazy"
+          className="gallery-overview__item-img"
+          loading={index < 2 ? "eager" : "lazy"}
+          fetchPriority={index === 0 ? "high" : undefined}
         />
-        <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-          {t("photography.photoCount", { count: gallery.imageCount })}
-        </span>
+        <div className="gallery-overview__item-shade" aria-hidden />
+        <div className="gallery-overview__item-copy">
+          <h2 className="gallery-overview__item-title">{title}</h2>
+          {metaParts.length > 0 ? (
+            <p className="gallery-overview__item-meta">{metaParts.join(" · ")}</p>
+          ) : null}
+        </div>
       </Link>
-      <div className="flex flex-1 flex-col p-5">
-        <Link to={`${base}/photography/${gallery.slug}`} className="block">
-          <h3 className="font-display text-lg font-semibold transition group-hover:text-[var(--color-accent)]">
-            {title}
-          </h3>
-        </Link>
-        {(dateLabel || gallery.location) && (
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
-            {[dateLabel, gallery.location].filter(Boolean).join(" · ")}
-          </p>
-        )}
-        {tags.length > 0 ? (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {tags.map((tag) => (
+      {tags.length > 0 ? (
+        <p className="gallery-overview__item-tags px-6 sm:px-10 lg:px-14">
+          {tags.map((tag, i) => (
+            <span key={tagToParam(tag)}>
+              {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
               <Link
-                key={tagToParam(tag)}
                 to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
-                className="rounded-full border border-[var(--color-border)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-muted)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+                className="gallery-overview__item-tag"
+                onClick={(e) => e.stopPropagation()}
               >
                 {tag}
               </Link>
-            ))}
-          </div>
-        ) : null}
-      </div>
+            </span>
+          ))}
+        </p>
+      ) : null}
     </article>
   );
 }

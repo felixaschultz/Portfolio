@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { GalleryDetail } from "../lib/galleries";
+import type { GalleryDetail, GalleryImageItem } from "../lib/galleries";
 import { formatGalleryDate } from "../lib/format-gallery-date";
 import { tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
@@ -11,8 +11,53 @@ type GalleryViewProps = {
   gallery: GalleryDetail;
 };
 
-function photoParam(image: { _key?: string }, index: number): string {
-  return image._key || String(index);
+function resolveCoverImage(gallery: GalleryDetail): GalleryImageItem | null {
+  if (gallery.images.length === 0) return null;
+  if (gallery.coverImageKey) {
+    const picked = gallery.images.find((img) => img._key === gallery.coverImageKey);
+    if (picked) return picked;
+  }
+  return gallery.images[0];
+}
+
+type AlbumPhotoProps = {
+  image: GalleryImageItem;
+  index: number;
+  total: number;
+  title: string;
+  caption: string;
+  onOpen: (key: string) => void;
+};
+
+function AlbumPhoto({ image, index, total, title, caption, onOpen }: AlbumPhotoProps) {
+  const indexLabel = String(index + 1).padStart(2, "0");
+  const totalLabel = String(total).padStart(2, "0");
+
+  return (
+    <figure className="gallery-album__figure">
+      <span className="gallery-album__index" aria-hidden>
+        {indexLabel} / {totalLabel}
+      </span>
+      <button
+        type="button"
+        className="gallery-album__shot"
+        onClick={() => onOpen(image._key)}
+        aria-label={caption || `${title} — ${indexLabel}`}
+      >
+        <span className="gallery-album__frame">
+          <img
+            src={image.imageUrl}
+            srcSet={image.imageSrcSet}
+            sizes="100vw"
+            alt={image.alt || title}
+            className="gallery-album__img"
+            loading="lazy"
+          />
+        </span>
+      </button>
+      {caption ? <figcaption className="gallery-album__caption">{caption}</figcaption> : null}
+    </figure>
+  );
 }
 
 export function GalleryView({ gallery }: GalleryViewProps) {
@@ -25,10 +70,16 @@ export function GalleryView({ gallery }: GalleryViewProps) {
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
   const tags = gallery.tags?.filter((tag) => tag.trim()) ?? [];
 
+  const coverImage = useMemo(() => resolveCoverImage(gallery), [gallery]);
+  const moreImages = useMemo(() => {
+    if (!coverImage) return gallery.images;
+    return gallery.images.filter((img) => img._key !== coverImage._key);
+  }, [gallery.images, coverImage]);
+
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const activeIndex = activeKey
-    ? gallery.images.findIndex((img, index) => photoParam(img, index) === activeKey)
+    ? gallery.images.findIndex((img) => img._key === activeKey)
     : -1;
   const activeImage = activeIndex >= 0 ? gallery.images[activeIndex] : null;
 
@@ -49,80 +100,108 @@ export function GalleryView({ gallery }: GalleryViewProps) {
       }
       if (e.key === "ArrowLeft" && activeIndex > 0) {
         e.preventDefault();
-        const prev = gallery.images[activeIndex - 1];
-        setActiveKey(photoParam(prev, activeIndex - 1));
+        setActiveKey(gallery.images[activeIndex - 1]._key);
       }
       if (e.key === "ArrowRight" && activeIndex < gallery.images.length - 1) {
         e.preventDefault();
-        const next = gallery.images[activeIndex + 1];
-        setActiveKey(photoParam(next, activeIndex + 1));
+        setActiveKey(gallery.images[activeIndex + 1]._key);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeKey, activeIndex, gallery.images, closePhoto]);
 
-  function imageCaption(caption: GalleryDetail["images"][number]["caption"]): string {
+  function imageCaption(caption: GalleryImageItem["caption"]): string {
     return resolveSanityString(caption, lng);
   }
 
+  const metaParts = [dateLabel, gallery.location, t("photography.photoCount", { count: gallery.imageCount })].filter(
+    Boolean,
+  );
+
+  const coverIndex = coverImage
+    ? gallery.images.findIndex((img) => img._key === coverImage._key)
+    : 0;
+
   return (
-    <article className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <Link
-        to={`${base}/photography`}
-        className="inline-flex text-sm text-[var(--color-accent)] hover:underline"
-      >
-        ← {t("photography.back")}
-      </Link>
+    <article className="gallery-album">
+      {coverImage ? (
+        <section className="gallery-album__hero">
+          <Link to={`${base}/photography`} className="gallery-album__back">
+            ← {t("photography.back")}
+          </Link>
 
-      <header className="mt-8 max-w-2xl">
-        <h1 className="font-display text-4xl font-bold">{title}</h1>
-        {description ? <p className="mt-4 text-lg leading-relaxed text-[var(--color-muted)]">{description}</p> : null}
-        <p className="mt-3 text-sm text-[var(--color-muted)]">
-          {t("photography.photoCount", { count: gallery.imageCount })}
-          {dateLabel ? ` · ${dateLabel}` : ""}
-          {gallery.location ? ` · ${gallery.location}` : ""}
-        </p>
-        {tags.length > 0 ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <Link
-                key={tagToParam(tag)}
-                to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
-                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs font-medium text-[var(--color-muted)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
-              >
-                {tag}
-              </Link>
-            ))}
+          <button
+            type="button"
+            className="gallery-album__hero-media"
+            onClick={() => openPhoto(coverImage._key)}
+            aria-label={title}
+          >
+            <img
+              src={coverImage.imageUrl}
+              srcSet={coverImage.imageSrcSet}
+              sizes="100vw"
+              alt={coverImage.alt || title}
+              className="gallery-album__hero-img"
+              fetchPriority="high"
+            />
+            <div className="gallery-album__hero-shade" aria-hidden />
+          </button>
+
+          <div className="gallery-album__hero-copy">
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-muted)]">
+              {String(coverIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
+            </p>
+            <h1 className="gallery-album__title">{title}</h1>
+            {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
           </div>
-        ) : null}
-      </header>
+        </section>
+      ) : (
+        <header className="gallery-album__intro">
+          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
+            ← {t("photography.back")}
+          </Link>
+          <h1 className="gallery-album__title mt-10">{title}</h1>
+          {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
+        </header>
+      )}
 
-      <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {gallery.images.map((image, index) => {
-          const caption = imageCaption(image.caption);
-          return (
-            <button
-              key={photoParam(image, index)}
-              type="button"
-              onClick={() => openPhoto(photoParam(image, index))}
-              className="group block w-full cursor-pointer overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-left transition hover:border-[var(--color-accent)]"
-            >
-              <img
-                src={image.imageUrl}
-                srcSet={image.imageSrcSet}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                alt={image.alt || title}
-                className="pointer-events-none w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                loading="lazy"
-              />
-              {caption ? (
-                <p className="pointer-events-none p-3 text-sm text-[var(--color-muted)]">{caption}</p>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
+      {(description || tags.length > 0) && (
+        <div className={`gallery-album__intro ${coverImage ? "border-t border-[var(--color-border)]" : ""}`}>
+          {description ? <p className="gallery-album__description">{description}</p> : null}
+          {tags.length > 0 ? (
+            <p className="gallery-album__tags">
+              {tags.map((tag, i) => (
+                <span key={tagToParam(tag)}>
+                  {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
+                  <Link
+                    to={`${base}/photography?tag=${encodeURIComponent(tagToParam(tag))}`}
+                    className="gallery-album__tag"
+                  >
+                    {tag}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {moreImages.length > 0 ? (
+        <div className="gallery-album__stream">
+          {moreImages.map((image, index) => (
+            <AlbumPhoto
+              key={image._key}
+              image={image}
+              index={coverImage ? index + 1 : index}
+              total={gallery.imageCount}
+              title={title}
+              caption={imageCaption(image.caption)}
+              onOpen={openPhoto}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {activeImage ? (
         <Modal
@@ -130,18 +209,15 @@ export function GalleryView({ gallery }: GalleryViewProps) {
           onClose={closePhoto}
           ariaLabel={title}
           positionClassName="modal-overlay--center"
-          panelClassName="relative max-w-5xl px-1 sm:px-0"
+          panelClassName="relative max-w-[min(96vw,1800px)] px-0"
         >
-          <p className="absolute left-1 top-1 z-20 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white sm:left-0 sm:top-0">
-            {t("photography.lightboxCounter", {
-              current: activeIndex + 1,
-              total: gallery.images.length,
-            })}
+          <p className="absolute left-2 top-2 z-20 font-mono text-[11px] uppercase tracking-[0.2em] text-white/70 sm:left-4 sm:top-4">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
           </p>
           <button
             type="button"
             onClick={closePhoto}
-            className="absolute right-1 top-1 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-lg text-white hover:bg-black/80 sm:right-0 sm:top-0"
+            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-lg text-white backdrop-blur-sm transition hover:bg-white/20 sm:right-4 sm:top-4"
             aria-label={t("photography.close")}
           >
             ✕
@@ -149,10 +225,8 @@ export function GalleryView({ gallery }: GalleryViewProps) {
           {activeIndex > 0 ? (
             <button
               type="button"
-              className="absolute left-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:left-2"
-              onClick={() =>
-                openPhoto(photoParam(gallery.images[activeIndex - 1], activeIndex - 1))
-              }
+              className="absolute left-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur-sm transition hover:bg-white/20 sm:left-4"
+              onClick={() => setActiveKey(gallery.images[activeIndex - 1]._key)}
               aria-label={t("photography.previous")}
             >
               ‹
@@ -161,25 +235,23 @@ export function GalleryView({ gallery }: GalleryViewProps) {
           {activeIndex < gallery.images.length - 1 ? (
             <button
               type="button"
-              className="absolute right-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80 sm:right-2"
-              onClick={() =>
-                openPhoto(photoParam(gallery.images[activeIndex + 1], activeIndex + 1))
-              }
+              className="absolute right-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur-sm transition hover:bg-white/20 sm:right-4"
+              onClick={() => setActiveKey(gallery.images[activeIndex + 1]._key)}
               aria-label={t("photography.next")}
             >
               ›
             </button>
           ) : null}
-          <figure className="flex flex-col items-center">
+          <figure className="flex flex-col items-center px-2 py-8 sm:px-4">
             <img
               src={activeImage.imageUrl}
               srcSet={activeImage.imageSrcSet}
               sizes="100vw"
               alt={activeImage.alt || title}
-              className="max-h-[85vh] w-full rounded-lg object-contain"
+              className="max-h-[88vh] w-full object-contain"
             />
             {imageCaption(activeImage.caption) ? (
-              <figcaption className="mt-4 max-w-2xl text-center text-sm text-white/90">
+              <figcaption className="gallery-album__caption mt-8 text-center text-white/85">
                 {imageCaption(activeImage.caption)}
               </figcaption>
             ) : null}

@@ -184,3 +184,240 @@ body {
   @apply my-6 block;
 }
 
+/* Photography album — editorial full-bleed layout */
+.gallery-album {
+  --gallery-bleed: max(1rem, calc((100vw - min(100vw, 90rem)) / 2 + 1rem));
+}
+
+.gallery-album__back {
+  @apply fixed left-4 top-[4.25rem] z-40 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-white/80 transition hover:text-white sm:left-6 lg:top-20;
+}
+
+.gallery-album__back--plain {
+  @apply relative left-0 top-0 z-auto text-[var(--color-muted)] hover:text-[var(--color-accent)];
+}
+
+.gallery-album__hero {
+  position: relative;
+  min-height: 100svh;
+  width: 100%;
+}
+
+.gallery-album__hero-media {
+  @apply relative block h-full min-h-[100svh] w-full cursor-pointer overflow-hidden bg-black;
+}
+
+.gallery-album__hero-img {
+  @apply pointer-events-none h-full min-h-[100svh] w-full object-cover transition duration-[1.2s] ease-out;
+}
+
+.gallery-album__hero-media:hover .gallery-album__hero-img {
+  transform: scale(1.03);
+}
+
+.gallery-album__hero-shade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(10 15 14 / 0.55) 0%,
+    transparent 28%,
+    transparent 55%,
+    rgb(10 15 14 / 0.92) 100%
+  );
+}
+
+.gallery-album__hero-copy {
+  @apply absolute inset-x-0 bottom-0 z-10 px-6 pb-10 pt-24 sm:px-10 sm:pb-14 lg:px-14 lg:pb-16;
+}
+
+.gallery-album__title {
+  @apply font-display text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.95] font-normal tracking-tight text-[var(--color-text)];
+}
+
+.gallery-album__meta {
+  @apply mt-4 max-w-xl text-sm tracking-wide text-[var(--color-muted)] sm:text-base;
+}
+
+.gallery-album__intro {
+  @apply mx-auto max-w-2xl px-6 py-16 sm:px-10 sm:py-20 lg:px-14 lg:py-24;
+}
+
+.gallery-album__description {
+  @apply font-display text-2xl leading-snug text-[var(--color-text)] sm:text-3xl;
+}
+
+.gallery-album__tags {
+  @apply mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-[var(--color-muted)];
+}
+
+.gallery-album__tag {
+  @apply transition hover:text-[var(--color-accent)];
+}
+
+.gallery-album__stream {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4rem, 10vw, 7rem);
+  padding-bottom: clamp(5rem, 12vw, 8rem);
+}
+
+.gallery-album__figure {
+  margin: 0;
+}
+
+.gallery-album__shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gallery-album__frame {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+}
+
+.gallery-album__img {
+  display: block;
+  width: 100%;
+  max-height: min(92svh, 1800px);
+  height: auto;
+  object-fit: contain;
+  transition: opacity 0.5s ease;
+}
+
+.gallery-album__shot:hover .gallery-album__img {
+  opacity: 0.92;
+}
+
+.gallery-album__caption {
+  @apply mx-auto mt-5 max-w-3xl px-6 font-display text-lg leading-relaxed text-[var(--color-muted)] sm:px-10 sm:text-xl;
+}
+
+.gallery-album__index {
+  @apply mb-3 block px-6 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)] sm:px-10;
+}
+
+/* Photography overview — editorial album index */
+.gallery-overview__header {
+  @apply mx-auto max-w-3xl px-6 pt-16 pb-12 sm:px-10 sm:pt-20 sm:pb-14 lg:px-14 lg:pt-24;
+}
+
+.gallery-overview__title {
+  @apply font-display text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.95] font-normal tracking-tight text-[var(--color-text)];
+}
+
+.gallery-overview__lede {
+  @apply mt-5 font-display text-xl leading-snug text-[var(--color-muted)] sm:text-2xl;
+}
+
+.gallery-overview__filter {
+  @apply border-y border-[var(--color-border)] px-6 py-5 sm:px-10 lg:px-14;
+}
+
+.gallery-overview__filter-inner {
+  @apply mx-auto flex max-w-6xl flex-wrap items-center gap-x-1 gap-y-2;
+}
+
+.gallery-overview__filter-label {
+  @apply mr-3 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)];
+}
+
+.gallery-overview__filter-btn {
+  @apply font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)] transition hover:text-[var(--color-accent)];
+}
+
+.gallery-overview__filter-btn--active {
+  @apply text-[var(--color-accent)];
+}
+
+.gallery-overview__filter-sep {
+  @apply mx-2 text-[var(--color-border)] select-none;
+}
+
+.gallery-overview__count {
+  @apply px-6 pb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)] sm:px-10 lg:px-14;
+}
+
+.gallery-overview__list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3.5rem, 8vw, 6rem);
+  padding-bottom: clamp(5rem, 12vw, 8rem);
+}
+
+.gallery-overview__item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.gallery-overview__item-index {
+  @apply mb-3 block px-6 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)] sm:px-10;
+}
+
+.gallery-overview__item-visual {
+  position: relative;
+  display: block;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: min(72svh, 900px);
+  overflow: hidden;
+  background: #000;
+}
+
+.gallery-overview__item-img {
+  @apply h-full min-h-[min(72svh,900px)] w-full object-cover transition duration-[1.2s] ease-out;
+}
+
+.gallery-overview__item:hover .gallery-overview__item-img {
+  transform: scale(1.03);
+}
+
+.gallery-overview__item-shade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgb(10 15 14 / 0.75) 75%,
+    rgb(10 15 14 / 0.95) 100%
+  );
+}
+
+.gallery-overview__item-copy {
+  @apply absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 px-6 pb-8 pt-16 sm:px-10 sm:pb-10 lg:px-14;
+}
+
+.gallery-overview__item-title {
+  @apply font-display text-[clamp(1.75rem,5vw,3.5rem)] leading-tight font-normal tracking-tight text-[var(--color-text)] transition group-hover:text-[var(--color-accent)];
+}
+
+.gallery-overview__item-meta {
+  @apply text-sm tracking-wide text-[var(--color-muted)] sm:text-base;
+}
+
+.gallery-overview__item-tags {
+  @apply mt-1 flex flex-wrap gap-x-3 text-sm text-[var(--color-muted)];
+}
+
+.gallery-overview__item-tag {
+  @apply transition hover:text-[var(--color-accent)];
+}
+
+.gallery-overview__empty {
+  @apply px-6 py-24 text-center sm:px-10 lg:px-14;
+}
+

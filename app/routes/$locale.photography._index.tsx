@@ -32,10 +32,10 @@ export default function PhotographyIndex() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <header className="max-w-2xl">
-        <h1 className="font-display text-4xl font-bold">{t("photography.title")}</h1>
-        <p className="mt-4 text-[var(--color-muted)]">{t("photography.description")}</p>
+    <div className="gallery-overview">
+      <header className="gallery-overview__header">
+        <h1 className="gallery-overview__title">{t("photography.title")}</h1>
+        <p className="gallery-overview__lede">{t("photography.description")}</p>
       </header>
       <GalleryGrid galleries={galleries} />
     </div>

@@ -20,6 +20,7 @@ export type GalleryListItem = {
   imageCount: number;
   coverUrl: string;
   coverSrcSet: string;
+  coverImageKey?: string;
 };
 
 export type GalleryDetail = GalleryListItem & {

@@ -111,6 +111,7 @@ async function mapGalleryToListItem(
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,
     coverSrcSet: srcSet,
+    coverImageKey: gallery.coverImageKey,
   };
 }
 
@@ -122,7 +123,7 @@ async function mapGalleryToDetail(
   if (!list) return null;
   const { photoSrcSet } = await import("./image.server");
   const images: GalleryImageItem[] = (gallery.images ?? []).map((item) => {
-    const { src, srcSet } = photoSrcSet(item.image, [400, 800, 1200, 1600]);
+    const { src, srcSet } = photoSrcSet(item.image, [1200, 1800, 2400, 3200]);
     const caption = resolveSanityString(item.caption, locale);
     return {
       _key: item._key,
@@ -158,7 +159,7 @@ export async function fetchGalleryBySlug(slug: string): Promise<GalleryDocument 
 export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
   const galleries = await fetchGalleries();
   const items = await Promise.all(
-    galleries.map((g) => mapGalleryToListItem(g, [400, 600, 800])),
+    galleries.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
   );
   return items.filter((g): g is GalleryListItem => g !== null);
 }
@@ -169,7 +170,7 @@ export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]
   try {
     const galleries: GalleryDocument[] = await client.fetch(FEATURED_GALLERIES_QUERY);
     const items = await Promise.all(
-      galleries.map((g) => mapGalleryToListItem(g, [400, 600, 800])),
+      galleries.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
     );
     return items.filter((g): g is GalleryListItem => g !== null);
   } catch {

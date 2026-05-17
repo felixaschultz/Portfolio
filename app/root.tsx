@@ -7,6 +7,12 @@ import {
   ScrollRestoration,
 } from "react-router";
 import type { Route } from "./+types/root";
+import {
+  GoogleTagManagerHead,
+  GoogleTagManagerNoScript,
+  GoogleTagManagerRouteTracker,
+} from "./components/GoogleTagManager";
+import { getGtmId } from "./lib/gtm";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -24,15 +30,19 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const gtmId = getGtmId();
+
   return (
     <html lang="da" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {gtmId ? <GoogleTagManagerHead containerId={gtmId} /> : null}
         <Meta />
         <Links />
       </head>
       <body>
+        {gtmId ? <GoogleTagManagerNoScript containerId={gtmId} /> : null}
         <div id="root-app">{children}</div>
         <ScrollRestoration />
         <Scripts />
@@ -42,7 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <GoogleTagManagerRouteTracker />
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

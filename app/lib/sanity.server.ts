@@ -1,6 +1,5 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { GalleryDetail, GalleryImageItem, GalleryListItem, PortfolioPhotoItem } from "./galleries";
-import { gridSrcWidths, isLargeGallery } from "./gallery-performance";
 import { resolveGalleryCoverImage } from "./gallery-cover";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
@@ -66,6 +65,19 @@ function imageDimensionsFromAsset(image: SanityImageRef): { width?: number; heig
   const dims = image.dimensions;
   if (!dims?.width || !dims?.height) return {};
   return { width: dims.width, height: dims.height };
+}
+
+/** Server-only — keep in sync with gallery-performance.ts (not imported to avoid bundle interop). */
+const LARGE_GALLERY_IMAGE_THRESHOLD = 32;
+const GRID_SRC_WIDTHS = [480, 720, 1080, 1440];
+const GRID_SRC_WIDTHS_LARGE = [360, 540, 720, 960, 1200];
+
+function isLargeGalleryImageCount(imageCount: number): boolean {
+  return imageCount > LARGE_GALLERY_IMAGE_THRESHOLD;
+}
+
+function gridSrcWidthsForCount(imageCount: number): number[] {
+  return isLargeGalleryImageCount(imageCount) ? GRID_SRC_WIDTHS_LARGE : GRID_SRC_WIDTHS;
 }
 
 export type GalleryDocument = {
@@ -162,8 +174,8 @@ async function mapGalleryToDetail(
   if (!list) return null;
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const imageCount = gallery.images?.length ?? 0;
-  const large = isLargeGallery(imageCount);
-  const gridWidths = gridSrcWidths(imageCount);
+  const large = isLargeGalleryImageCount(imageCount);
+  const gridWidths = gridSrcWidthsForCount(imageCount);
   const images: GalleryImageItem[] = [];
 
   for (const item of gallery.images ?? []) {
@@ -253,7 +265,6 @@ export async function fetchGalleryDetailBySlug(
 export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioPhotoItem[]> {
   const galleries = await fetchGalleries();
   const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
-  const { GRID_SRC_WIDTHS_LARGE } = await import("./gallery-performance");
   const { toSanityImageSource } = await import("./image.server");
   const photos: PortfolioPhotoItem[] = [];
 

@@ -572,19 +572,63 @@ body {
 }
 
 .gallery-album__meta {
-  @apply mt-4 max-w-xl text-sm tracking-wide text-[var(--color-muted)] sm:text-base;
+  @apply mt-3 max-w-xl text-sm tracking-wide text-[var(--color-muted)] sm:mt-4 sm:text-base;
 }
 
-.gallery-album__intro {
-  @apply mx-auto max-w-2xl px-6 py-16 sm:px-10 sm:py-20 lg:px-14 lg:py-24;
+.gallery-album__masthead {
+  padding: 1.25rem 1.5rem 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-album__masthead {
+    padding: 1.5rem 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery-album__masthead {
+    padding: 1.75rem 3.5rem 2.25rem;
+  }
+}
+
+.gallery-album__details {
+  margin-top: 1.25rem;
+  max-width: 38rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 640px) {
+  .gallery-album__details {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
 }
 
 .gallery-album__description {
-  @apply font-display text-2xl leading-snug text-[var(--color-text)] sm:text-3xl;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+@media (min-width: 640px) {
+  .gallery-album__description {
+    font-size: 1rem;
+  }
 }
 
 .gallery-album__tags {
-  @apply mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-[var(--color-muted)];
+  margin-top: 1rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.gallery-album__tag-sep {
+  margin-inline: 0.35rem;
+  color: var(--color-border);
 }
 
 .gallery-album__tag {

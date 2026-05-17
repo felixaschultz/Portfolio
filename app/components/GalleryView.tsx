@@ -36,6 +36,34 @@ type AlbumPhotoProps = {
   onOpen: (key: string) => void;
 };
 
+type GalleryDetailsProps = {
+  description: string;
+  tags: string[];
+  lng: Locale;
+};
+
+function GalleryDetails({ description, tags, lng }: GalleryDetailsProps) {
+  if (!description && tags.length === 0) return null;
+
+  return (
+    <div className="gallery-album__details">
+      {description ? <p className="gallery-album__description">{description}</p> : null}
+      {tags.length > 0 ? (
+        <p className="gallery-album__tags">
+          {tags.map((tag, i) => (
+            <span key={tagToParam(tag)}>
+              {i > 0 ? <span className="gallery-album__tag-sep" aria-hidden> / </span> : null}
+              <Link to={photographyTagPath(lng, tag)} className="gallery-album__tag">
+                {tag}
+              </Link>
+            </span>
+          ))}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function AlbumPhoto({ image, index, title, caption, onOpen }: AlbumPhotoProps) {
   const indexLabel = String(index + 1).padStart(2, "0");
 
@@ -144,10 +172,11 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             </p>
             <h1 className="gallery-album__title">{title}</h1>
             {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
+            <GalleryDetails description={description} tags={tags} lng={lng} />
           </div>
         </section>
       ) : (
-        <header className="gallery-album__intro">
+        <header className="gallery-album__masthead">
           <div className="gallery-album__intro-toolbar">
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
               ← {t("photography.back")}
@@ -156,32 +185,8 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
           </div>
           <h1 className="gallery-album__title mt-10">{title}</h1>
           {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
+          <GalleryDetails description={description} tags={tags} lng={lng} />
         </header>
-      )}
-
-      {(description || tags.length > 0) && (
-        <Reveal
-          className={`gallery-album__intro ${coverImage ? "border-t border-[var(--color-border)]" : ""}`}
-          variant="fade"
-          immediate
-        >
-          {description ? <p className="gallery-album__description">{description}</p> : null}
-          {tags.length > 0 ? (
-            <p className="gallery-album__tags">
-              {tags.map((tag, i) => (
-                <span key={tagToParam(tag)}>
-                  {i > 0 ? <span className="text-[var(--color-border)]"> / </span> : null}
-                  <Link
-                    to={photographyTagPath(lng, tag)}
-                    className="gallery-album__tag"
-                  >
-                    {tag}
-                  </Link>
-                </span>
-              ))}
-            </p>
-          ) : null}
-        </Reveal>
       )}
 
       {moreImages.length > 0 ? (

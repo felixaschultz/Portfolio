@@ -329,33 +329,20 @@ body {
 }
 
 .gallery-album__back {
-  @apply fixed left-4 top-[4.25rem] z-40 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-white/80 transition hover:text-white sm:left-6 lg:top-20;
+  @apply inline-flex shrink-0 items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] transition;
 }
 
-.gallery-album__hero .gallery-album__back--on-cover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: auto;
-  z-index: 20;
-  padding: 1.25rem 1.5rem;
+.gallery-album__back--on-cover {
+  @apply text-white/80 hover:text-white;
   text-shadow: 0 1px 12px rgb(0 0 0 / 0.65);
 }
 
-@media (min-width: 640px) {
-  .gallery-album__back--on-cover {
-    padding: 1.5rem 2rem;
-  }
-}
-
 .gallery-album__back--plain {
-  @apply relative left-0 top-0 z-auto text-[var(--color-muted)] hover:text-[var(--color-accent)];
+  @apply text-[var(--color-muted)] hover:text-[var(--color-accent)];
 }
 
 .gallery-album__hero-toolbar,
 .gallery-album__intro-toolbar {
-  position: relative;
-  z-index: 20;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -365,6 +352,7 @@ body {
 .gallery-album__hero-toolbar {
   position: absolute;
   inset: 0 0 auto;
+  z-index: 30;
   padding: 1.25rem 1.5rem;
   pointer-events: none;
 }
@@ -379,13 +367,8 @@ body {
   }
 }
 
-.gallery-album__hero .gallery-album__back--on-cover {
-  position: static;
-  padding: 0;
-}
-
 .gallery-album__intro-toolbar {
-  @apply mb-2;
+  @apply relative z-auto mb-2;
 }
 
 /* Album share — native + SoMe */
@@ -492,6 +475,7 @@ body {
 
 .gallery-album__hero-media {
   position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;

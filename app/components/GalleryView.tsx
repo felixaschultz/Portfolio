@@ -113,13 +113,6 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
       {coverImage ? (
         <section className="gallery-album__hero">
           <div className="gallery-cover__scrim gallery-cover__scrim--top" aria-hidden />
-          <div className="gallery-album__hero-toolbar">
-            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
-              ← {t("photography.back")}
-            </Link>
-            <GalleryShare payload={sharePayload} className="gallery-album__share--on-cover" />
-          </div>
-
           <button
             type="button"
             className="gallery-album__hero-media"
@@ -138,6 +131,13 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             />
             <div className="gallery-album__hero-shade" aria-hidden />
           </button>
+
+          <div className="gallery-album__hero-toolbar">
+            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
+              ← {t("photography.back")}
+            </Link>
+            <GalleryShare payload={sharePayload} />
+          </div>
 
           <div className="gallery-album__hero-copy gallery-cover__copy">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-muted)]">

@@ -15,6 +15,10 @@ import {
 import { getGtmId } from "./lib/gtm";
 import "./app.css";
 
+export const config = {
+  includeFiles: ["node_modules/react-router/dist/**"],
+};
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

@@ -1,6 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "react-router",
   "buildCommand": "npm run build",
-  "installCommand": "npm ci && node scripts/ensure-react-router-dist.mjs"
+  "installCommand": "npm ci",
+  "outputDirectory": "build/client",
+  "functions": {
+    "api/server.mjs": {
+      "includeFiles": "build/server/assets/**"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/server" }]
 }

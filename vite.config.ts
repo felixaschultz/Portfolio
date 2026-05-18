@@ -16,10 +16,6 @@ export default defineConfig({
     },
   },
   ssr: {
-    // Keep react-router in the server bundle. Vercel's serverless tracer often drops
-    // node_modules/react-router/dist/development, but Node still resolves the package
-    // to that path at runtime → ERR_MODULE_NOT_FOUND on deploy.
     external: ["sanitize-html"],
-    noExternal: ["react-router", "@react-router/node"],
   },
 });

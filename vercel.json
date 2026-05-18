@@ -3,10 +3,5 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "outputDirectory": "build/client",
-  "functions": {
-    "api/server.mjs": {
-      "includeFiles": "build/server/assets/**"
-    }
-  },
   "rewrites": [{ "source": "/(.*)", "destination": "/api/server" }]
 }

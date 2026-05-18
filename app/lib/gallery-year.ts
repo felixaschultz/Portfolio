@@ -2,9 +2,9 @@ import type { GalleryListItem } from "./galleries";
 
 export function parseGalleryYear(takenAt?: string): number | null {
   if (!takenAt) return null;
-  const date = new Date(takenAt.includes("T") ? takenAt : `${takenAt}T12:00:00`);
+  const date = new Date(takenAt.includes("T") ? takenAt : `${takenAt}T12:00:00.000Z`);
   if (Number.isNaN(date.getTime())) return null;
-  return date.getFullYear();
+  return date.getUTCFullYear();
 }
 
 export type GalleryListEntry =

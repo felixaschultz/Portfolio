@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type GalleryImageProps = {
   src: string;
@@ -26,19 +26,26 @@ export function GalleryImage({
 }: GalleryImageProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
+    hydratedRef.current = true;
     const img = imgRef.current;
     if (img?.complete && img.naturalWidth > 0) {
       setLoaded(true);
     }
   }, [src]);
 
+  const markLoaded = useCallback(() => {
+    if (hydratedRef.current) setLoaded(true);
+  }, []);
+
   const protectClass = protectedImage ? " gallery-image--protected" : "";
 
   return (
     <span
       className={`gallery-image ${loaded ? "gallery-image--loaded" : ""}${protectClass}`}
+      suppressHydrationWarning
       onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
     >
       {blurSrc ? (
@@ -62,7 +69,7 @@ export function GalleryImage({
         decoding="async"
         draggable={false}
         className={`gallery-image__main ${className}`.trim()}
-        onLoad={() => setLoaded(true)}
+        onLoad={markLoaded}
         onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
         onDragStart={protectedImage ? (e) => e.preventDefault() : undefined}
       />

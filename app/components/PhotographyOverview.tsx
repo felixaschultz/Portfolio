@@ -8,6 +8,7 @@ import { Reveal } from "./Reveal";
 type PhotographyOverviewProps = {
   galleries: GalleryListItem[];
   publishedCategories?: GalleryCategoryRef[];
+  currentYear?: number;
   activeTag?: string | null;
   activeCategorySlug?: string | null;
 };
@@ -15,6 +16,7 @@ type PhotographyOverviewProps = {
 export function PhotographyOverview({
   galleries,
   publishedCategories = [],
+  currentYear,
   activeTag = null,
   activeCategorySlug = null,
 }: PhotographyOverviewProps) {
@@ -36,6 +38,7 @@ export function PhotographyOverview({
       <GalleryGrid
         galleries={galleries}
         publishedCategories={publishedCategories}
+        currentYear={currentYear}
         activeTag={activeTag}
         activeCategorySlug={activeCategorySlug}
       />

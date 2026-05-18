@@ -20,6 +20,7 @@ import { Reveal } from "./Reveal";
 type GalleryGridProps = {
   galleries: GalleryListItem[];
   publishedCategories?: GalleryCategoryRef[];
+  currentYear?: number;
   activeTag?: string | null;
   activeCategorySlug?: string | null;
 };
@@ -27,6 +28,7 @@ type GalleryGridProps = {
 export function GalleryGrid({
   galleries,
   publishedCategories = [],
+  currentYear,
   activeTag = null,
   activeCategorySlug = null,
 }: GalleryGridProps) {
@@ -45,7 +47,10 @@ export function GalleryGrid({
     return list;
   }, [galleries, activeCategorySlug, activeTag]);
 
-  const listEntries = useMemo(() => buildGalleryListEntries(filtered), [filtered]);
+  const listEntries = useMemo(
+    () => buildGalleryListEntries(filtered, currentYear),
+    [filtered, currentYear],
+  );
 
   const categoryOptions: GalleryCategoryOption[] = useMemo(() => {
     if (publishedCategories.length > 0) {

@@ -21,6 +21,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return {
     galleries,
     publishedCategories,
+    currentYear: new Date().getUTCFullYear(),
     /** @deprecated Stale bundles may still read this */
     photos: galleries,
   };
@@ -40,6 +41,10 @@ export default function PhotographyIndex() {
   const data = useLoaderData<typeof loader>();
   const galleries = data.galleries ?? data.photos ?? [];
   return (
-    <PhotographyOverview galleries={galleries} publishedCategories={data.publishedCategories} />
+    <PhotographyOverview
+      galleries={galleries}
+      publishedCategories={data.publishedCategories}
+      currentYear={data.currentYear}
+    />
   );
 }

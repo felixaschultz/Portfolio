@@ -25,7 +25,14 @@ export async function loader({ params }: Route.LoaderArgs) {
   const categoryLabel =
     categoryOptions.find((c) => c.slug === activeCategorySlug)?.label ?? activeCategorySlug;
 
-  return { galleries, publishedCategories, activeCategorySlug, categoryLabel, locale };
+  return {
+    galleries,
+    publishedCategories,
+    activeCategorySlug,
+    categoryLabel,
+    locale,
+    currentYear: new Date().getUTCFullYear(),
+  };
 }
 
 export function meta({ data, params }: Route.MetaArgs) {
@@ -43,11 +50,13 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyCategoryPage() {
-  const { galleries, publishedCategories, activeCategorySlug } = useLoaderData<typeof loader>();
+  const { galleries, publishedCategories, activeCategorySlug, currentYear } =
+    useLoaderData<typeof loader>();
   return (
     <PhotographyOverview
       galleries={galleries}
       publishedCategories={publishedCategories}
+      currentYear={currentYear}
       activeCategorySlug={activeCategorySlug}
     />
   );

@@ -3,7 +3,8 @@ import type { Route } from "./+types/$locale.photography.$slug";
 import { GalleryView } from "../components/GalleryView";
 import type { GalleryNavItem } from "../lib/galleries";
 import { fetchGalleryDetailBySlug, fetchGalleriesForList } from "../lib/sanity.server";
-import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { createI18n, defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import { buildGalleryAlbumMetaLine } from "../lib/gallery-meta";
 import { buildGalleryPageMeta } from "../lib/gallery-seo";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
@@ -28,8 +29,12 @@ export async function loader({ params }: Route.LoaderArgs) {
         }
       : null;
 
+  const i18n = createI18n(locale);
+  const metaLine = buildGalleryAlbumMetaLine(gallery, locale, i18n.t.bind(i18n));
+
   return {
     gallery,
+    metaLine,
     nextGallery: index >= 0 ? toNav(allGalleries[index + 1]) : null,
     prevGallery: index > 0 ? toNav(allGalleries[index - 1]) : null,
     /** @deprecated Stale bundles may still read this */
@@ -60,6 +65,7 @@ export default function PhotographyGalleryPage() {
   return (
     <GalleryView
       gallery={gallery}
+      metaLine={data.metaLine}
       nextGallery={data.nextGallery ?? null}
       prevGallery={data.prevGallery ?? null}
     />

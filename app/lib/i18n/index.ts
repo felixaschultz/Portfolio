@@ -22,6 +22,7 @@ export function createI18n(locale: Locale) {
     lng: locale,
     fallbackLng: defaultLocale,
     interpolation: { escapeValue: false },
+    initAsync: false,
   });
   return instance;
 }

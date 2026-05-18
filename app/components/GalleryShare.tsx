@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   canUseNativeShare,
@@ -26,33 +26,41 @@ export function GalleryShare({ payload, className = "" }: GalleryShareProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [nativeShare, setNativeShare] = useState(false);
 
-  const items: ShareItem[] = [
-    ...(canUseNativeShare()
-      ? [{ id: "native", labelKey: "photography.shareNative", action: "native" as const }]
-      : []),
-    { id: "copy", labelKey: copied ? "photography.shareCopied" : "photography.shareCopy", action: "copy" },
-    { id: "facebook", labelKey: "photography.shareFacebook", href: shareToFacebook(payload.url), external: true },
-    { id: "x", labelKey: "photography.shareX", href: shareToX(payload.url, payload.title), external: true },
-    {
-      id: "linkedin",
-      labelKey: "photography.shareLinkedIn",
-      href: shareToLinkedIn(payload.url),
-      external: true,
-    },
-    {
-      id: "whatsapp",
-      labelKey: "photography.shareWhatsApp",
-      href: shareToWhatsApp(payload.url, payload.title),
-      external: true,
-    },
-    {
-      id: "email",
-      labelKey: "photography.shareEmail",
-      href: shareToEmail(payload.url, payload.title, payload.text),
-      external: true,
-    },
-  ];
+  useEffect(() => {
+    setNativeShare(canUseNativeShare());
+  }, []);
+
+  const items: ShareItem[] = useMemo(
+    () => [
+      ...(nativeShare
+        ? [{ id: "native", labelKey: "photography.shareNative", action: "native" as const }]
+        : []),
+      { id: "copy", labelKey: copied ? "photography.shareCopied" : "photography.shareCopy", action: "copy" },
+      { id: "facebook", labelKey: "photography.shareFacebook", href: shareToFacebook(payload.url), external: true },
+      { id: "x", labelKey: "photography.shareX", href: shareToX(payload.url, payload.title), external: true },
+      {
+        id: "linkedin",
+        labelKey: "photography.shareLinkedIn",
+        href: shareToLinkedIn(payload.url),
+        external: true,
+      },
+      {
+        id: "whatsapp",
+        labelKey: "photography.shareWhatsApp",
+        href: shareToWhatsApp(payload.url, payload.title),
+        external: true,
+      },
+      {
+        id: "email",
+        labelKey: "photography.shareEmail",
+        href: shareToEmail(payload.url, payload.title, payload.text),
+        external: true,
+      },
+    ],
+    [copied, nativeShare, payload],
+  );
 
   const close = useCallback(() => setOpen(false), []);
 

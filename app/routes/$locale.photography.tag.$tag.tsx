@@ -20,7 +20,13 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw redirect(`/${locale}/photography`);
   }
 
-  return { galleries, publishedCategories, activeTag, locale };
+  return {
+    galleries,
+    publishedCategories,
+    activeTag,
+    locale,
+    currentYear: new Date().getUTCFullYear(),
+  };
 }
 
 export function meta({ data, params }: Route.MetaArgs) {
@@ -38,11 +44,12 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyTagPage() {
-  const { galleries, publishedCategories, activeTag } = useLoaderData<typeof loader>();
+  const { galleries, publishedCategories, activeTag, currentYear } = useLoaderData<typeof loader>();
   return (
     <PhotographyOverview
       galleries={galleries}
       publishedCategories={publishedCategories}
+      currentYear={currentYear}
       activeTag={activeTag}
     />
   );

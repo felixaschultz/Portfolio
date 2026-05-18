@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useRouteLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryCategoryRef, GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
-import { formatGalleryDate } from "../lib/format-gallery-date";
+import { buildGalleryAlbumMetaLine } from "../lib/gallery-meta";
 import { categoryLabel, photographyCategoryPath } from "../lib/gallery-categories";
 import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, resolveSanityString, type Locale } from "../lib/i18n";
@@ -20,6 +20,8 @@ import { ProtectedGallerySurface } from "./ProtectedGallerySurface";
 
 type GalleryViewProps = {
   gallery: GalleryDetail;
+  /** Pre-formatted in the route loader so SSR and hydration stay in sync. */
+  metaLine?: string;
   nextGallery?: GalleryNavItem | null;
   prevGallery?: GalleryNavItem | null;
 };
@@ -133,15 +135,20 @@ function AlbumPhoto({ image, index, title, caption, onOpen, animate }: AlbumPhot
   );
 }
 
-export function GalleryView({ gallery, nextGallery = null, prevGallery = null }: GalleryViewProps) {
-  const { locale } = useParams();
+export function GalleryView({
+  gallery,
+  metaLine: metaLineFromLoader,
+  nextGallery = null,
+  prevGallery = null,
+}: GalleryViewProps) {
+  const { locale: localeParam } = useParams();
+  const parentLocale = useRouteLoaderData("routes/$locale") as { locale: Locale } | undefined;
+  const lng = parentLocale?.locale ?? ((localeParam ?? "da") as Locale);
+  const base = `/${lng}`;
   const { t } = useTranslation();
-  const lng = (locale ?? "da") as Locale;
-  const base = `/${locale}`;
   const openPhoto = useGalleryLightbox();
   const title = localizedField(gallery.title, lng) || "Gallery";
   const description = localizedField(gallery.description, lng);
-  const dateLabel = formatGalleryDate(gallery.takenAt, lng);
   const tags = gallery.tags?.filter((tag) => tag.trim()) ?? [];
   const categories = gallery.categories ?? [];
 
@@ -156,9 +163,8 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     [lng],
   );
 
-  const metaParts = [dateLabel, gallery.location, t("photography.photoCount", { count: gallery.imageCount })].filter(
-    Boolean,
-  );
+  const metaLine =
+    metaLineFromLoader ?? buildGalleryAlbumMetaLine(gallery, lng, t);
 
   const coverIndex = coverImage
     ? gallery.images.findIndex((img) => img._key === coverImage._key)
@@ -170,9 +176,9 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
     () => ({
       url: pageUrl(lng, `/photography/${gallery.slug}`),
       title,
-      text: description || metaParts.join(" · "),
+      text: description || metaLine,
     }),
-    [lng, gallery.slug, title, description, metaParts],
+    [lng, gallery.slug, title, description, metaLine],
   );
 
   return (
@@ -212,7 +218,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
               {String(coverIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
             </p>
             <h1 className="gallery-album__title">{title}</h1>
-            {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
+            {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
             <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
           </div>
         </section>
@@ -225,7 +231,7 @@ export function GalleryView({ gallery, nextGallery = null, prevGallery = null }:
             <GalleryShare payload={sharePayload} />
           </div>
           <h1 className="gallery-album__title mt-10">{title}</h1>
-          {metaParts.length > 0 ? <p className="gallery-album__meta">{metaParts.join(" · ")}</p> : null}
+          {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
           <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
         </header>
       )}

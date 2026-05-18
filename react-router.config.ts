@@ -1,11 +1,34 @@
-import type { Config } from "@react-router/dev/config";
+import type { Config, Preset } from "@react-router/dev/config";
 import { vercelPreset } from "@vercel/react-router/vite";
 import { execSync } from "node:child_process";
 
+function portfolioVercelPreset(): Preset {
+  const vercel = vercelPreset();
+
+  return {
+    name: "portfolio-vercel",
+    async reactRouterConfig({ reactRouterUserConfig }) {
+      const vercelConfig = await Promise.resolve(
+        vercel.reactRouterConfig?.({ reactRouterUserConfig }) ?? {},
+      );
+
+      return {
+        ...vercelConfig,
+        async buildEnd(args) {
+          await vercelConfig.buildEnd?.(args);
+          execSync("node scripts/patch-react-router-exports.mjs", {
+            stdio: "inherit",
+          });
+          execSync("node scripts/inject-vercel-include-files.mjs", {
+            stdio: "inherit",
+          });
+        },
+      };
+    },
+  };
+}
+
 export default {
   ssr: true,
-  presets: [vercelPreset()],
-  async buildEnd() {
-    execSync("node scripts/patch-react-router-exports.mjs", { stdio: "inherit" });
-  },
+  presets: [portfolioVercelPreset()],
 } satisfies Config;

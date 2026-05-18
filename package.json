@@ -6,8 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "node scripts/patch-react-router-exports.mjs && react-router build",
-    "postinstall": "node scripts/patch-react-router-exports.mjs",
+    "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",

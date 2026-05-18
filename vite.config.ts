@@ -17,5 +17,6 @@ export default defineConfig({
   },
   ssr: {
     external: ["sanitize-html"],
+    noExternal: ["react-router", "@react-router/node"],
   },
 });

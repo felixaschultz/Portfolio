@@ -8,6 +8,13 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  server: {
+    // Safari (and others) cache native ESM modules aggressively; stale route
+    // chunks caused SSR (fresh) vs client (cached) hydration mismatches after edits.
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  },
   ssr: {
     external: ["sanitize-html"],
   },

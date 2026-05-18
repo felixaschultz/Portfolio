@@ -1,7 +1,7 @@
 import { Link, useLoaderData, useOutletContext, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale._index";
-import { ProjectCard } from "../components/ProjectCard";
+import { HomeDoors } from "../components/HomeDoors";
 import { Recommendations } from "../components/Recommendations";
 import { getFeaturedProjects } from "../lib/projects.server";
 import { fetchFeaturedGalleriesForList } from "../lib/sanity.server";
@@ -18,7 +18,6 @@ export async function loader() {
   return {
     featuredProjects,
     featuredGalleries,
-    /** @deprecated Stale bundles may still read this — same data as featuredGalleries */
     featuredPhotos: featuredGalleries,
   };
 }
@@ -40,92 +39,51 @@ type OutletContext = { openContact: () => void };
 export default function HomePage() {
   const data = useLoaderData<typeof loader>();
   const featuredProjects = data.featuredProjects ?? [];
-  const featuredGalleries =
-    data.featuredGalleries ?? data.featuredPhotos ?? [];
+  const featuredGalleries = data.featuredGalleries ?? data.featuredPhotos ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
   const { openContact } = useOutletContext<OutletContext>();
   const base = `/${locale}`;
   const lng = (locale ?? "da") as Locale;
 
+  const photoCoverUrl = featuredGalleries[0]?.coverUrl;
+  const devCoverUrl = featuredProjects[0]?.screenshot ?? undefined;
+
   return (
     <>
-      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-accent-soft)_0%,_transparent_55%)]" />
-        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:py-28">
-          <div className="order-2 lg:order-1">
-            <p className="font-mono text-sm text-[var(--color-accent)]">
-              &lt;{t("hero.name")} /&gt;
-            </p>
-            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              {t("hero.role")}
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-[var(--color-muted)] sm:text-lg">
-              {t("hero.intro")}
-            </p>
-            <button type="button" onClick={openContact} className="btn-primary mt-8 w-full sm:w-auto">
-              {t("hero.cta")}
-            </button>
-          </div>
-          <div className="order-1 flex justify-center lg:order-2 lg:items-end lg:justify-end">
-            <img
-              src="/assets/me.jpg"
-              alt="Felix Schultz"
-              className="h-44 w-44 rounded-3xl border-4 border-[var(--color-border)] object-cover shadow-2xl sm:h-56 sm:w-56 lg:h-72 lg:w-72"
-            />
-          </div>
-        </div>
-      </section>
+      <HomeDoors
+        base={base}
+        photoCoverUrl={photoCoverUrl}
+        devCoverUrl={devCoverUrl}
+        onContact={openContact}
+      />
 
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-          <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("featured.projects")}</h2>
-          <Link to={`${base}/projects`} className="text-sm text-[var(--color-accent)] hover:underline">
-            {t("projects.showMore")} →
-          </Link>
-        </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} featured />
-          ))}
-        </div>
-      </section>
-
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-            <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("featured.photos")}</h2>
-            <Link
-              to={`${base}/photography`}
-              className="text-sm text-[var(--color-accent)] hover:underline"
-            >
-              {t("photography.showMore")} →
-            </Link>
-          </div>
-          {featuredGalleries.length > 0 ? (
-            <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
-              {featuredGalleries.map((gallery: GalleryListItem) => (
+      {featuredGalleries.length > 0 ? (
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+                {t("home.photoPreview.title")}
+              </h2>
+              <Link
+                to={`${base}/photography`}
+                className="text-sm text-[var(--color-accent)] hover:underline"
+              >
+                {t("photography.showMore")} →
+              </Link>
+            </div>
+            <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+              {featuredGalleries.slice(0, 4).map((gallery: GalleryListItem) => (
                 <FeaturedGallery key={gallery._id} gallery={gallery} locale={lng} base={base} />
               ))}
             </div>
-          ) : (
-            <p className="mt-8 text-[var(--color-muted)]">{t("photography.empty")}</p>
-          )}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-start">
-          <div>
-            <h2 className="font-display text-3xl font-semibold">{t("about.title")}</h2>
-            <p className="mt-6 leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
           </div>
-          <img
-            src="/assets/me.jpg"
-            alt=""
-            className="hidden h-36 w-36 rounded-2xl object-cover lg:block"
-          />
-        </div>
+        </section>
+      ) : null}
+
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("about.title")}</h2>
+        <p className="mt-6 max-w-3xl leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
       </section>
 
       <Recommendations />

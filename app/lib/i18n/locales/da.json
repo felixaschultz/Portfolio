@@ -28,6 +28,24 @@
     "websites": "Websites",
     "contact": "Kontakt"
   },
+  "home": {
+    "doors": {
+      "heading": "To sider af det, jeg laver",
+      "lede": "Vælg hvor du vil hen — gallerier for fotografen, projekter og virksomhedssider for udvikleren.",
+      "photoEyebrow": "Fotografi",
+      "photoTitle": "Felix fotografen",
+      "photoText": "Rejser, natur og hverdagsbilleder — gennemse album og billeder i fuld størrelse.",
+      "photoCta": "Gå til gallerier",
+      "devEyebrow": "Webudvikling",
+      "devTitle": "Felix udvikleren",
+      "devText": "Websites, produkter og kundearbejde. Til dagligt professionelt web, se virksomhedssiderne nedenfor.",
+      "devCta": "Se portfolioprojekter",
+      "devNote": "Primær professionel tilstedeværelse:"
+    },
+    "photoPreview": {
+      "title": "Fra gallerierne"
+    }
+  },
   "hero": {
     "name": "Felix A. Schultz",
     "role": "Fullstack developer | Photographer",

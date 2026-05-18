@@ -28,6 +28,24 @@
     "websites": "Websites",
     "contact": "Contact"
   },
+  "home": {
+    "doors": {
+      "heading": "Two sides of what I do",
+      "lede": "Choose where you want to go — galleries for the photographer, projects and company work for the developer.",
+      "photoEyebrow": "Photography",
+      "photoTitle": "Felix the photographer",
+      "photoText": "Travel, nature, and everyday scenes — browse albums and full-size work.",
+      "photoCta": "Enter galleries",
+      "devEyebrow": "Web development",
+      "devTitle": "Felix the developer",
+      "devText": "Websites, products, and client work. For day-to-day professional web, see the company sites below.",
+      "devCta": "View portfolio projects",
+      "devNote": "Main professional presence:"
+    },
+    "photoPreview": {
+      "title": "From the galleries"
+    }
+  },
   "hero": {
     "name": "Felix A. Schultz",
     "role": "Fullstack developer | Photographer",

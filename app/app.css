@@ -191,17 +191,42 @@ body {
 }
 
 .home-doors__intro {
-  max-width: 40rem;
+  border-bottom: 1px solid var(--color-border);
+  background: radial-gradient(
+    ellipse 90% 80% at 50% -20%,
+    color-mix(in srgb, var(--color-accent) 11%, transparent),
+    transparent 62%
+  );
+}
+
+.home-doors__intro-inner {
+  max-width: 72rem;
   margin: 0 auto;
-  padding: clamp(2.5rem, 6vw, 4rem) 1.5rem clamp(2rem, 5vw, 3rem);
+  padding: clamp(2.25rem, 5vw, 3.25rem) 1.5rem 1.25rem;
+  display: grid;
+  gap: 1rem 2rem;
+  align-items: end;
   text-align: center;
 }
 
 @media (min-width: 640px) {
-  .home-doors__intro {
+  .home-doors__intro-inner {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
   }
+}
+
+@media (min-width: 900px) {
+  .home-doors__intro-inner {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+    gap: 1.5rem 3rem;
+    padding-bottom: 1.5rem;
+    text-align: left;
+  }
+}
+
+.home-doors__intro-copy {
+  min-width: 0;
 }
 
 .home-doors__eyebrow {
@@ -209,19 +234,103 @@ body {
 }
 
 .home-doors__title {
-  margin: 1rem 0 0;
-  font-size: clamp(2rem, 5vw, 3.25rem);
+  margin: 0.75rem auto 0;
+  max-width: 16ch;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
   line-height: 1.05;
   font-weight: 400;
   letter-spacing: -0.02em;
 }
 
+@media (min-width: 900px) {
+  .home-doors__title {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 14ch;
+  }
+}
+
 .home-doors__lede {
-  margin: 1.25rem auto 0;
-  max-width: 34rem;
-  font-size: 1rem;
+  margin: 0 auto;
+  max-width: 28rem;
+  font-size: 0.9375rem;
   line-height: 1.65;
   color: var(--color-muted);
+}
+
+@media (min-width: 900px) {
+  .home-doors__lede {
+    justify-self: end;
+    padding-bottom: 0.2rem;
+    font-size: 1rem;
+  }
+}
+
+.home-doors__intro-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 1rem;
+  gap: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .home-doors__intro-paths {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .home-doors__intro-paths {
+    grid-template-columns: 1.12fr 1fr;
+    padding-bottom: 1.25rem;
+  }
+}
+
+.home-doors__intro-path {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-muted) 88%, var(--color-text));
+}
+
+.home-doors__intro-path::before {
+  content: "";
+  flex: 0 0 1.5rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+}
+
+.home-doors__intro-path--photo::before {
+  flex: 0 0 1.25rem;
+}
+
+.home-doors__intro-path--dev {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.home-doors__intro-path--dev::before {
+  order: 1;
+}
+
+@media (max-width: 899px) {
+  .home-doors__intro-path {
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+  }
+
+  .home-doors__intro-path::before {
+    flex-basis: 0.75rem;
+  }
 }
 
 .home-doors__grid {

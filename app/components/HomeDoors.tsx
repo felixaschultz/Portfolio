@@ -19,15 +19,27 @@ export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeD
 
   return (
     <section className="home-doors" aria-labelledby="home-doors-heading">
-      <div className="home-doors__intro">
-        <p className="home-doors__eyebrow font-mono text-sm text-[var(--color-accent)]">
-          &lt;{t("hero.name")} /&gt;
-        </p>
-        <h1 id="home-doors-heading" className="home-doors__title font-display">
-          {t("home.doors.heading")}
-        </h1>
-        <p className="home-doors__lede">{t("home.doors.lede")}</p>
-      </div>
+      <header className="home-doors__intro">
+        <div className="home-doors__intro-inner">
+          <div className="home-doors__intro-copy">
+            <p className="home-doors__eyebrow font-mono text-sm text-[var(--color-accent)]">
+              &lt;{t("hero.name")} /&gt;
+            </p>
+            <h1 id="home-doors-heading" className="home-doors__title font-display">
+              {t("home.doors.heading")}
+            </h1>
+          </div>
+          <p className="home-doors__lede">{t("home.doors.lede")}</p>
+        </div>
+        <div className="home-doors__intro-paths" aria-hidden>
+          <span className="home-doors__intro-path home-doors__intro-path--photo">
+            {t("home.doors.photoTitle")}
+          </span>
+          <span className="home-doors__intro-path home-doors__intro-path--dev">
+            {t("home.doors.devTitle")}
+          </span>
+        </div>
+      </header>
 
       <div className="home-doors__grid">
         <Link
@@ -45,7 +57,6 @@ export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeD
           ) : null}
           <div className="home-doors__panel-shade" aria-hidden />
           <div className="home-doors__panel-content">
-            <p className="home-doors__panel-eyebrow">{t("home.doors.photoEyebrow")}</p>
             <h2 className="home-doors__panel-title">{t("home.doors.photoTitle")}</h2>
             <p className="home-doors__panel-text">{t("home.doors.photoText")}</p>
             <span className="home-doors__panel-cta">{t("home.doors.photoCta")} →</span>
@@ -58,7 +69,6 @@ export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeD
           ) : null}
           <div className="home-doors__panel-shade home-doors__panel-shade--dev" aria-hidden />
           <div className="home-doors__panel-content">
-            <p className="home-doors__panel-eyebrow">{t("home.doors.devEyebrow")}</p>
             <h2 className="home-doors__panel-title">{t("home.doors.devTitle")}</h2>
             <p className="home-doors__panel-text">{t("home.doors.devText")}</p>
             <Link to={`${base}/projects`} className="home-doors__panel-cta home-doors__panel-cta--link">

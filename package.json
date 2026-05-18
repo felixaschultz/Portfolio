@@ -6,8 +6,8 @@
     "node": "22.x"
   },
   "scripts": {
-    "postinstall": "node scripts/patch-react-router-exports.mjs",
-    "build": "node scripts/patch-react-router-exports.mjs && react-router build",
+    "postinstall": "node scripts/ensure-react-router-dist.mjs",
+    "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
@@ -19,6 +19,7 @@
     "migrate:gallery-tags": "tsx scripts/migrate-gallery-tags.ts"
   },
   "dependencies": {
+    "@mjackson/node-fetch-server": "^0.2.0",
     "@react-router/node": "7.15.1",
     "@react-router/serve": "7.15.1",
     "@sanity/client": "^7.22.0",

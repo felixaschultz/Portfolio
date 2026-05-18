@@ -5,6 +5,7 @@ import { formatGalleryDate } from "../lib/format-gallery-date";
 import { categoryLabel, photographyCategoryPath } from "../lib/gallery-categories";
 import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
+import { shouldDisableReveal } from "../lib/gallery-performance";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { GalleryImage } from "./GalleryImage";
 import { Reveal } from "./Reveal";
@@ -32,15 +33,11 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
     t("photography.photoCount", { count: gallery.imageCount }),
   ].filter(Boolean);
   const isFeatured = index === 0;
+  const itemClassName = `gallery-overview__item group ${isFeatured ? "gallery-overview__item--featured" : ""}`;
+  const skipReveal = shouldDisableReveal(total);
 
-  return (
-    <Reveal
-      as="article"
-      className={`gallery-overview__item group ${isFeatured ? "gallery-overview__item--featured" : ""}`}
-      variant="rise"
-      delay={revealStagger(index)}
-      immediate={index === 0}
-    >
+  const card = (
+    <>
       <span className="gallery-overview__item-index" aria-hidden>
         {indexLabel} / {totalLabel}
       </span>
@@ -97,6 +94,22 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
           </p>
         ) : null}
       </div>
+    </>
+  );
+
+  if (skipReveal) {
+    return <article className={itemClassName}>{card}</article>;
+  }
+
+  return (
+    <Reveal
+      as="article"
+      className={itemClassName}
+      variant="rise"
+      delay={revealStagger(index)}
+      immediate={index < 3}
+    >
+      {card}
     </Reveal>
   );
 }

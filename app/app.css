@@ -1590,6 +1590,17 @@ body {
   transform: none;
 }
 
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .gallery-image__main {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;

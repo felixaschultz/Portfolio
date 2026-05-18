@@ -29,6 +29,13 @@ export function useRevealOnScroll<T extends HTMLElement = HTMLDivElement>(
     const el = ref.current;
     if (!el) return;
 
+    const { top, bottom } = el.getBoundingClientRect();
+    const inView = top < window.innerHeight && bottom > 0;
+    if (inView) {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

@@ -19,7 +19,7 @@ function portfolioVercelPreset(): Preset {
           execSync("node scripts/patch-react-router-exports.mjs", {
             stdio: "inherit",
           });
-          execSync("node scripts/inject-vercel-include-files.mjs", {
+          execSync("node scripts/copy-react-router-into-server-bundles.mjs", {
             stdio: "inherit",
           });
         },

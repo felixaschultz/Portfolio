@@ -679,9 +679,9 @@ body {
 .gallery-album__back--on-cover {
   @apply text-white/80 hover:text-white;
   text-shadow: 0 1px 12px rgb(0 0 0 / 0.65);
-  background-color: rgb(163, 133, 64);
+  @apply border border-white/25 bg-black/35 text-white backdrop-blur-md transition hover:border-white/50 hover:bg-black/50;
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0.9rem;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.875rem;

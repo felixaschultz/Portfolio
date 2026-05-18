@@ -3,7 +3,10 @@ import { vercelPreset } from "@vercel/react-router/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+const isProdBuild = (command: string, mode: string) =>
+  command === "build" && mode === "production";
+
+export default defineConfig(({ command, mode }) => ({
   plugins: [tailwindcss(), reactRouter(), vercelPreset()],
   resolve: {
     tsconfigPaths: true,
@@ -17,5 +20,11 @@ export default defineConfig({
   },
   ssr: {
     external: ["sanitize-html"],
+    // Vercel's server-index.mjs imports "react-router" at runtime. The package
+    // resolves to dist/development/, which the deployment tracer often omits.
+    // Bundle react-router into the server build so requests don't depend on that path.
+    ...(isProdBuild(command, mode)
+      ? { noExternal: ["react-router", "@react-router/node"] }
+      : {}),
   },
-});
+}));

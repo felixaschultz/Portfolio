@@ -17,6 +17,8 @@ import {
   skipMessageForFile,
   uploadSingleImage,
 } from "../lib/bulk-upload";
+import { randomKey, randomQueueId } from "../lib/crypto";
+import { isIos, supportsFolderUpload } from "../lib/device";
 import { UploadQueuePanel, type UploadQueueItem } from "./UploadQueuePanel";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
@@ -27,7 +29,7 @@ function isImageFile(file: File): boolean {
 }
 
 function newKey(): string {
-  return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  return randomKey(12);
 }
 
 function safeFilename(name: string): string {
@@ -35,7 +37,7 @@ function safeFilename(name: string): string {
 }
 
 function queueId(): string {
-  return crypto.randomUUID();
+  return randomQueueId();
 }
 
 function assetToGalleryItem(asset: { _id: string }) {
@@ -68,6 +70,7 @@ function revokeQueuePreviews(items: UploadQueueItem[]) {
 }
 
 export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
+  const folderUpload = supportsFolderUpload();
   const documentId = useFormValue(["_id"]) as string | undefined;
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
@@ -356,7 +359,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
       <Flex align="center" gap={3} wrap="wrap">
         <Button
           icon={UploadIcon}
-          text={uploading ? "Uploading…" : "Upload folder"}
+          text={uploading ? "Uploading…" : folderUpload ? "Upload folder" : "Upload photos"}
           tone="primary"
           mode="ghost"
           disabled={uploading || Boolean(props.readOnly) || !canUpload}
@@ -372,8 +375,12 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         />
         <Text size={1} muted>
           {canUpload
-            ? "Large folders upload one file at a time (slower, more reliable). Progress is saved every few photos."
-            : "Sign in to Sanity (top right) to enable folder upload."}
+            ? folderUpload
+              ? "Large folders upload one file at a time (slower, more reliable). Progress is saved every few photos."
+              : isIos()
+                ? "On iPhone, pick multiple photos from the library (folder upload is not supported in Safari)."
+                : "Select multiple image files. Progress is saved every few photos."
+            : "Sign in to Sanity (top right) to enable uploads."}
         </Text>
       </Flex>
 
@@ -383,7 +390,9 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         accept="image/*"
         multiple
         hidden
-        {...({ webkitdirectory: "", directory: "" } as React.InputHTMLAttributes<HTMLInputElement>)}
+        {...(folderUpload
+          ? ({ webkitdirectory: "", directory: "" } as React.InputHTMLAttributes<HTMLInputElement>)
+          : {})}
         onChange={onFolderChange}
       />
 

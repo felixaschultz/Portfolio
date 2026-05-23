@@ -2,6 +2,7 @@ import { DownloadIcon, LinkIcon, ResetIcon } from "@sanity/icons";
 import { Box, Button, Card, Flex, Stack, Text, TextInput, useToast } from "@sanity/ui";
 import { useCallback, useMemo } from "react";
 import { PatchEvent, type StringInputProps, set, unset } from "sanity";
+import { randomHex } from "../lib/crypto";
 
 function siteBaseUrl(): string {
   const fromEnv = import.meta.env.SANITY_STUDIO_SITE_URL as string | undefined;
@@ -10,9 +11,7 @@ function siteBaseUrl(): string {
 }
 
 function newDownloadToken(): string {
-  const bytes = new Uint8Array(24);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return randomHex(24);
 }
 
 export function GalleryDownloadLinkInput(props: StringInputProps) {

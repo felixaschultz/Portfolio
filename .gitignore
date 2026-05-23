@@ -6,7 +6,6 @@
 .env.local
 .vercel
 /build
-/api/server.mjs
 .react-router
 node_modules
 .env*.local

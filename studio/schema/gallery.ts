@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType, type PreviewValue } from "sanity";
 import { CoverImageInput } from "../components/CoverImageInput";
+import { GalleryDownloadLinkInput } from "../components/GalleryDownloadLinkInput";
 import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
@@ -88,6 +89,17 @@ export const gallery = defineType({
       initialValue: false,
     }),
     defineField({ name: "sortOrder", title: "Sort order", type: "number" }),
+    defineField({
+      name: "downloadToken",
+      title: "Customer download link",
+      type: "string",
+      description:
+        "Secret URL for full-size ZIP downloads. Manage the link here only — it is never shown on the public site.",
+      readOnly: true,
+      components: {
+        input: GalleryDownloadLinkInput,
+      },
+    }),
   ],
   preview: {
     select: {

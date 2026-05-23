@@ -20,6 +20,8 @@ const env = {
    * would override the Studio login session in the browser bundle.
    */
   SANITY_STUDIO_API_TOKEN: process.env.SANITY_STUDIO_API_TOKEN ?? "",
+  SANITY_STUDIO_SITE_URL:
+    process.env.SANITY_STUDIO_SITE_URL ?? process.env.SITE_URL ?? "https://www.felix-schultz.net",
 };
 
 if (!env.SANITY_STUDIO_PROJECT_ID || env.SANITY_STUDIO_PROJECT_ID === "your_project_id") {

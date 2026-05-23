@@ -4,6 +4,7 @@ import { getSiteUrl } from "../lib/seo";
 export function loader({}: Route.LoaderArgs) {
   const body = `User-agent: *
 Allow: /
+Disallow: /download/
 
 Sitemap: ${getSiteUrl()}/sitemap.xml
 `;

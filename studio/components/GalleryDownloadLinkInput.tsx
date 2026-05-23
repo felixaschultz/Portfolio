@@ -69,8 +69,8 @@ export function GalleryDownloadLinkInput(props: StringInputProps) {
   return (
     <Stack space={4}>
       <Text size={1} muted>
-        Private link for customers to download full-size photos as a ZIP. This is only shown in
-        Studio — it is not on the public gallery page.
+        Private link for customers to download full-size photos as a ZIP. Works before the gallery
+        is published on the site. Only shown here — not on the public gallery page.
       </Text>
 
       {downloadUrl ? (
@@ -111,7 +111,7 @@ export function GalleryDownloadLinkInput(props: StringInputProps) {
                 <DownloadIcon aria-hidden />
               </Text>
               <Text size={1} muted>
-                No download link yet. Publish the gallery first, then generate a link.
+                No download link yet. Generate one when the photos are ready to share.
               </Text>
             </Flex>
             <Box>

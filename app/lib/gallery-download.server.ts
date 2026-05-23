@@ -1,7 +1,7 @@
 import { Readable } from "node:stream";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import archiver from "archiver";
-import { getSanityClient } from "./sanity.server";
+import { getSanityDownloadClient } from "./sanity.server";
 import { localizedField } from "./i18n";
 
 export type GalleryDownloadSource = {
@@ -18,7 +18,6 @@ const GALLERY_BY_DOWNLOAD_TOKEN_QUERY = `*[
   _type == "gallery"
   && downloadToken == $token
   && defined(slug.current)
-  && !(_id in path("drafts.**"))
 ][0] {
   "slug": slug.current,
   title,
@@ -47,7 +46,7 @@ function zipBaseName(slug: string, title: string): string {
 export async function fetchGalleryForDownload(
   token: string,
 ): Promise<GalleryDownloadSource | null> {
-  const client = getSanityClient();
+  const client = getSanityDownloadClient();
   if (!client || !token.trim()) return null;
 
   try {

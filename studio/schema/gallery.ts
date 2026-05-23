@@ -94,7 +94,7 @@ export const gallery = defineType({
       title: "Customer download link",
       type: "string",
       description:
-        "Secret URL for full-size ZIP downloads. Manage the link here only — it is never shown on the public site.",
+        "Secret URL for full-size ZIP downloads. Works before publish; manage the link here only — never on the public site.",
       readOnly: true,
       components: {
         input: GalleryDownloadLinkInput,

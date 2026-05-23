@@ -29,6 +29,23 @@ export function getSanityClient(): SanityClient | null {
   });
 }
 
+/**
+ * Token-gated gallery ZIP downloads. Uses draft content when present so the link
+ * works before the gallery is published. Requires SANITY_API_TOKEN with read access.
+ */
+export function getSanityDownloadClient(): SanityClient | null {
+  if (!isSanityConfigured()) return null;
+  if (!token) return getSanityClient();
+  return createClient({
+    projectId: projectId!,
+    dataset,
+    apiVersion,
+    token,
+    useCdn: false,
+    perspective: "previewDrafts",
+  });
+}
+
 function isPublishedDocumentId(id: string): boolean {
   return !id.startsWith("drafts.") && !id.startsWith("versions.");
 }

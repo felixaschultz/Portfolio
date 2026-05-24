@@ -229,14 +229,23 @@ export const GALLERY_CATEGORIES_QUERY = `*[${publishedCategoryFilter}] | order(c
 
 async function mapGalleryToListItem(
   gallery: GalleryDocument,
-  widths: number[],
+  widths: readonly number[] | number[],
+  options?: import("./image.server").PhotoSrcSetOptions & {
+    includeHomeHero?: boolean;
+  },
 ): Promise<GalleryListItem | null> {
-  const { photoSrcSet, photoBlurPlaceholder, photoOgImage } = await import("./image.server");
+  const { photoSrcSet, photoBlurPlaceholder, photoOgImage, COVER_WIDTHS_HOME_HERO } =
+    await import("./image.server");
   const cover = resolveGalleryCoverImage(gallery);
   if (!cover) return null;
   const { toSanityImageSource } = await import("./image.server");
   const coverSource = toSanityImageSource(cover);
-  const { src, srcSet } = photoSrcSet(coverSource, widths, { crop16x9: true });
+  const { includeHomeHero, ...fitOptions } = options ?? {};
+  const { src, srcSet } = photoSrcSet(coverSource, widths, fitOptions);
+  const hero =
+    includeHomeHero ?
+      photoSrcSet(coverSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" })
+    : null;
   return {
     _id: gallery._id,
     slug: gallery.slug,
@@ -253,6 +262,8 @@ async function mapGalleryToListItem(
     coverSrcSet: srcSet,
     coverBlurUrl: photoBlurPlaceholder(coverSource),
     coverImageKey: gallery.coverImageKey,
+    coverHeroUrl: hero?.src,
+    coverHeroSrcSet: hero?.srcSet,
     shopUrl: resolvePublicGalleryShopUrl(gallery),
   };
 }
@@ -261,7 +272,7 @@ async function mapGalleryToDetail(
   gallery: GalleryDocument,
   locale: Locale,
 ): Promise<GalleryDetail | null> {
-  const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400]);
+  const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400], { fit: "16x9" });
   if (!list) return null;
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const imageCount = gallery.images?.length ?? 0;
@@ -335,9 +346,10 @@ export async function fetchPublishedGalleryCategories(): Promise<GalleryCategory
 }
 
 export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
+  const { COVER_WIDTHS_OVERVIEW } = await import("./image.server");
   const galleries = await fetchGalleries();
   const items = await Promise.all(
-    galleries.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
+    galleries.map((g) => mapGalleryToListItem(g, COVER_WIDTHS_OVERVIEW, { fit: "16x9" })),
   );
   return items.filter((g): g is GalleryListItem => g !== null);
 }
@@ -350,9 +362,8 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   try {
     const galleries: GalleryDocument[] = await client.fetch(GALLERY_NAV_QUERY);
     const published = dedupeGalleriesBySlug(galleries);
-    const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import(
-      "./image.server"
-    );
+    const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource, COVER_WIDTHS_NAV } =
+      await import("./image.server");
 
     const items: GalleryNavItem[] = [];
     for (const gallery of published) {
@@ -361,13 +372,14 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       if (!cover) continue;
 
       const source = toSanityImageSource(cover);
-      const { src } = photoSrcSet(source, [320], { crop16x9: true });
+      const { src, srcSet } = photoSrcSet(source, COVER_WIDTHS_NAV, { fit: "16x9" });
       if (!src) continue;
 
       items.push({
         slug: gallery.slug,
         title: gallery.title,
         coverUrl: src,
+        coverSrcSet: srcSet,
         coverBlurUrl: photoBlurPlaceholder(source),
       });
     }
@@ -380,13 +392,19 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
 }
 
 export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {
+  const { COVER_WIDTHS_HOME_TILE } = await import("./image.server");
   const client = getSanityClient();
   if (!client) return [];
   try {
     const galleries: GalleryDocument[] = await client.fetch(FEATURED_GALLERIES_QUERY);
     const published = dedupeGalleriesBySlug(galleries);
     const items = await Promise.all(
-      published.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
+      published.map((g, index) =>
+        mapGalleryToListItem(g, COVER_WIDTHS_HOME_TILE, {
+          fit: "square",
+          includeHomeHero: index === 0,
+        }),
+      ),
     );
     return items.filter((g): g is GalleryListItem => g !== null);
   } catch {

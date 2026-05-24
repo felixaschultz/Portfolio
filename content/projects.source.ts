@@ -134,7 +134,7 @@ export const projects = [
     {
         id: "instastellarsignin",
         name: "'Sign in with Intastellar' - authenticator",
-        screenshot: "/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png",
+        screenshot: "/projects/intastellarsignin/cover-1200.webp",
         highlight: true,
         description: {
             de: "",

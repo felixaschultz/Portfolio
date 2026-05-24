@@ -22,26 +22,53 @@ export function urlFor(source: SanityImageSource) {
   return createImageUrlBuilder(client).image(source);
 }
 
-type PhotoSrcSetOptions = {
-  /** Center-crop to 16:9 (covers). */
+export type PhotoFit = "16x9" | "square" | "max";
+
+export type PhotoSrcSetOptions = {
+  /** @deprecated Use `fit: "16x9"` */
   crop16x9?: boolean;
+  fit?: PhotoFit;
+  /** Sanity image quality 1–100 (default 80). */
+  quality?: number;
 };
+
+/** Cover tiles on the home page (square grid). */
+export const COVER_WIDTHS_HOME_TILE = [320, 420, 560, 720] as const;
+
+/** Photography door panel (~50vw). */
+export const COVER_WIDTHS_HOME_HERO = [640, 960, 1200, 1600] as const;
+
+/** Gallery overview cards (16:9). */
+export const COVER_WIDTHS_OVERVIEW = [640, 960, 1200, 1600, 2000] as const;
+
+/** Album prev/next nav thumbs. */
+export const COVER_WIDTHS_NAV = [160, 240, 320, 480] as const;
+
+function resolveFit(options?: PhotoSrcSetOptions): PhotoFit {
+  if (options?.fit) return options.fit;
+  if (options?.crop16x9) return "16x9";
+  return "max";
+}
 
 function sizedBuilder(
   builder: NonNullable<ReturnType<typeof urlFor>>,
   width: number,
   options?: PhotoSrcSetOptions,
 ) {
+  const fit = resolveFit(options);
+  const quality = options?.quality ?? 80;
   let chain = builder.width(width);
-  if (options?.crop16x9) {
+  if (fit === "16x9") {
     chain = chain.height(Math.round((width * 9) / 16)).fit("crop");
+  } else if (fit === "square") {
+    chain = chain.height(width).fit("crop");
   }
-  return chain.auto("format");
+  return chain.auto("format").quality(quality);
 }
 
 export function photoSrcSet(
   source: SanityImageSource,
-  widths = [400, 800, 1200, 1600],
+  widths: readonly number[] | number[] = [400, 800, 1200, 1600],
   options?: PhotoSrcSetOptions,
 ): { src: string; srcSet: string } {
   const builder = urlFor(source);

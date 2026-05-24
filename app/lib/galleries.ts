@@ -21,7 +21,15 @@ export type GalleryNavItem = {
   slug: string;
   title: LocalizedString;
   coverUrl: string;
+  coverSrcSet?: string;
   coverBlurUrl?: string;
+};
+
+export type ResponsiveCoverImage = {
+  src: string;
+  srcSet?: string;
+  blurSrc?: string;
+  sizes: string;
 };
 
 export type GalleryListItem = {
@@ -41,6 +49,9 @@ export type GalleryListItem = {
   coverSrcSet: string;
   coverBlurUrl?: string;
   coverImageKey?: string;
+  /** 16:9 hero URLs for the home photography door (first featured gallery only). */
+  coverHeroUrl?: string;
+  coverHeroSrcSet?: string;
   /** Present when prints/downloads can be purchased from the public shop. */
   shopUrl?: string;
 };

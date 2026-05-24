@@ -34,6 +34,8 @@ function NavCard({
         <span className="gallery-album__nav-visual">
           <GalleryImage
             src={gallery.coverUrl}
+            srcSet={gallery.coverSrcSet}
+            sizes="(max-width: 767px) 40vw, 12rem"
             blurSrc={gallery.coverBlurUrl}
             alt=""
             loading="lazy"

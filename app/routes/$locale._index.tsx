@@ -1,11 +1,16 @@
 import { Link, useLoaderData, useOutletContext, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale._index";
+import { GalleryImage } from "../components/GalleryImage";
 import { HomeDoors } from "../components/HomeDoors";
 import { Recommendations } from "../components/Recommendations";
 import { getFeaturedProjects } from "../lib/projects.server";
 import { fetchFeaturedGalleriesForList } from "../lib/sanity.server";
-import type { GalleryListItem } from "../lib/galleries";
+import type { GalleryListItem, ResponsiveCoverImage } from "../lib/galleries";
+import {
+  INTASTELLAR_SIGNIN_COVER_VARIANTS,
+  staticImageSrcSet,
+} from "../lib/static-image";
 import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
@@ -46,17 +51,22 @@ export default function HomePage() {
   const base = `/${locale}`;
   const lng = (locale ?? "da") as Locale;
 
-  const photoCoverUrl = featuredGalleries[0]?.coverUrl;
-  const devCoverUrl = featuredProjects[0]?.screenshot ?? undefined;
+  const leadGallery = featuredGalleries[0];
+  const photoCover: ResponsiveCoverImage | null =
+    leadGallery ?
+      {
+        src: leadGallery.coverHeroUrl ?? leadGallery.coverUrl,
+        srcSet: leadGallery.coverHeroSrcSet ?? leadGallery.coverSrcSet,
+        blurSrc: leadGallery.coverBlurUrl,
+        sizes: "(max-width: 1023px) 100vw, 50vw",
+      }
+    : null;
+
+  const devCover = resolveDevDoorCover(featuredProjects[0]?.screenshot);
 
   return (
     <>
-      <HomeDoors
-        base={base}
-        photoCoverUrl={photoCoverUrl}
-        devCoverUrl={devCoverUrl}
-        onContact={openContact}
-      />
+      <HomeDoors base={base} photoCover={photoCover} devCover={devCover} onContact={openContact} />
 
       {featuredGalleries.length > 0 ? (
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-20">
@@ -106,8 +116,11 @@ function FeaturedGallery({
       to={`${base}/photography/${gallery.slug}`}
       className="group relative aspect-square overflow-hidden rounded-xl"
     >
-      <img
+      <GalleryImage
         src={gallery.coverUrl}
+        srcSet={gallery.coverSrcSet}
+        sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 18rem"
+        blurSrc={gallery.coverBlurUrl}
         alt={title}
         className="h-full w-full object-cover transition group-hover:scale-105"
         loading="lazy"
@@ -117,4 +130,15 @@ function FeaturedGallery({
       </div>
     </Link>
   );
+}
+
+function resolveDevDoorCover(
+  screenshot: string | null | undefined,
+): Pick<ResponsiveCoverImage, "src" | "srcSet" | "sizes"> | null {
+  if (!screenshot) return null;
+  if (screenshot.includes("intastellarsignin")) {
+    const { src, srcSet } = staticImageSrcSet(INTASTELLAR_SIGNIN_COVER_VARIANTS);
+    return { src, srcSet, sizes: "(max-width: 1023px) 100vw, 50vw" };
+  }
+  return { src: screenshot, sizes: "(max-width: 1023px) 100vw, 50vw" };
 }

@@ -1,5 +1,8 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import type { ResponsiveCoverImage } from "../lib/galleries";
+import { GalleryImage } from "./GalleryImage";
+import { ResponsiveImage } from "./ResponsiveImage";
 
 const companyLinks = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
@@ -9,12 +12,12 @@ const companyLinks = [
 
 type HomeDoorsProps = {
   base: string;
-  photoCoverUrl?: string;
-  devCoverUrl?: string;
+  photoCover?: ResponsiveCoverImage | null;
+  devCover?: Pick<ResponsiveCoverImage, "src" | "srcSet" | "sizes"> | null;
   onContact: () => void;
 };
 
-export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeDoorsProps) {
+export function HomeDoors({ base, photoCover, devCover, onContact }: HomeDoorsProps) {
   const { t } = useTranslation();
 
   return (
@@ -46,9 +49,12 @@ export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeD
           to={`${base}/photography`}
           className="home-doors__panel home-doors__panel--photo group"
         >
-          {photoCoverUrl ? (
-            <img
-              src={photoCoverUrl}
+          {photoCover ? (
+            <GalleryImage
+              src={photoCover.src}
+              srcSet={photoCover.srcSet}
+              sizes={photoCover.sizes}
+              blurSrc={photoCover.blurSrc}
               alt=""
               className="home-doors__panel-bg"
               loading="eager"
@@ -64,8 +70,15 @@ export function HomeDoors({ base, photoCoverUrl, devCoverUrl, onContact }: HomeD
         </Link>
 
         <div className="home-doors__panel home-doors__panel--dev group">
-          {devCoverUrl ? (
-            <img src={devCoverUrl} alt="" className="home-doors__panel-bg" loading="lazy" />
+          {devCover ? (
+            <ResponsiveImage
+              src={devCover.src}
+              srcSet={devCover.srcSet}
+              sizes={devCover.sizes}
+              alt=""
+              className="home-doors__panel-bg"
+              loading="lazy"
+            />
           ) : null}
           <div className="home-doors__panel-shade home-doors__panel-shade--dev" aria-hidden />
           <div className="home-doors__panel-content">

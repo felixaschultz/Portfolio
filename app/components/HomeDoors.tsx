@@ -1,8 +1,6 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { ResponsiveCoverImage } from "../lib/galleries";
-import { GalleryImage } from "./GalleryImage";
-import { ResponsiveImage } from "./ResponsiveImage";
 
 const companyLinks = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
@@ -50,15 +48,15 @@ export function HomeDoors({ base, photoCover, devCover, onContact }: HomeDoorsPr
           className="home-doors__panel home-doors__panel--photo group"
         >
           {photoCover ? (
-            <GalleryImage
+            <img
               src={photoCover.src}
               srcSet={photoCover.srcSet}
               sizes={photoCover.sizes}
-              blurSrc={photoCover.blurSrc}
               alt=""
               className="home-doors__panel-bg"
               loading="eager"
               fetchPriority="high"
+              decoding="async"
             />
           ) : null}
           <div className="home-doors__panel-shade" aria-hidden />
@@ -71,13 +69,14 @@ export function HomeDoors({ base, photoCover, devCover, onContact }: HomeDoorsPr
 
         <div className="home-doors__panel home-doors__panel--dev group">
           {devCover ? (
-            <ResponsiveImage
+            <img
               src={devCover.src}
               srcSet={devCover.srcSet}
               sizes={devCover.sizes}
               alt=""
               className="home-doors__panel-bg"
               loading="lazy"
+              decoding="async"
             />
           ) : null}
           <div className="home-doors__panel-shade home-doors__panel-shade--dev" aria-hidden />

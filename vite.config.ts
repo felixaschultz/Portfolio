@@ -1,10 +1,26 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { vercelPreset } from "@vercel/react-router/vite";
 import tailwindcss from "@tailwindcss/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 
+const analyze = process.env.ANALYZE === "true";
+
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter(), vercelPreset()],
+  plugins: [
+    tailwindcss(),
+    reactRouter(),
+    vercelPreset(),
+    analyze &&
+      visualizer({
+        filename: "build/bundle-stats.html",
+        title: "Portfolio bundle",
+        template: "treemap",
+        gzipSize: true,
+        brotliSize: true,
+        open: true,
+      }),
+  ].filter((plugin) => Boolean(plugin)),
   resolve: {
     tsconfigPaths: true,
   },

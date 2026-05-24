@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 type GalleryImageProps = {
   src: string;
@@ -26,18 +26,20 @@ export function GalleryImage({
 }: GalleryImageProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
-  const hydratedRef = useRef(false);
 
-  useEffect(() => {
-    hydratedRef.current = true;
+  const revealIfReady = useCallback(() => {
     const img = imgRef.current;
     if (img?.complete && img.naturalWidth > 0) {
       setLoaded(true);
     }
-  }, [src]);
+  }, []);
+
+  useLayoutEffect(() => {
+    revealIfReady();
+  }, [src, srcSet, revealIfReady]);
 
   const markLoaded = useCallback(() => {
-    if (hydratedRef.current) setLoaded(true);
+    setLoaded(true);
   }, []);
 
   const protectClass = protectedImage ? " gallery-image--protected" : "";

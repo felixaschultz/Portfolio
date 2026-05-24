@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "react-router build",
+    "analyze": "ANALYZE=true npm run build",
     "dev": "react-router dev",
     "dev:shop-link": "tsx scripts/dev-shop-link.ts",
     "start": "react-router-serve ./build/server/index.js",

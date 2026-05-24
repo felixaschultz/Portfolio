@@ -15,6 +15,7 @@ import type { ShopPurchasePayload } from "./purchase-token.server";
 import {
   SHOP_CURRENCY,
   formatShopMoney,
+  calculateShopOrderPricing,
   getLicenseTier,
   resolveLicenseTiers,
   type ShopLicenseTier,
@@ -81,6 +82,9 @@ export type ShopCheckoutView = {
   galleryTitle: string;
   imageCount: number;
   totalOre: number;
+  subtotalOre: number;
+  discountOre: number;
+  discountPercent: number;
   licenseLabel: string;
   currency: typeof SHOP_CURRENCY;
   cancelUrl: string;
@@ -258,11 +262,18 @@ export async function createShopPaymentIntent(options: {
   const tier = getLicenseTier(gallery.licenseTiers, options.licenseId);
   if (!tier) return { error: "Choose a license type." };
 
-  const amount = tier.unitAmountOre * imageKeys.length;
+  const pricing = calculateShopOrderPricing({
+    unitAmountOre: tier.unitAmountOre,
+    imageCount: imageKeys.length,
+  });
+
+  if (pricing.totalOre < 250) {
+    return { error: "Order total is too low to charge." };
+  }
 
   try {
     const intent = await stripe.paymentIntents.create({
-      amount,
+      amount: pricing.totalOre,
       currency: SHOP_CURRENCY,
       // MobilePay and similar methods need redirects; cards/wallets stay on-page via
       // confirmPayment({ redirect: "if_required" }) on the client.
@@ -273,6 +284,9 @@ export async function createShopPaymentIntent(options: {
         licenseId: tier.id,
         licenseLabel: tier.label,
         imageKeys: JSON.stringify(imageKeys),
+        subtotalOre: String(pricing.subtotalOre),
+        discountOre: String(pricing.discountOre),
+        discountPercent: String(pricing.percentOff),
       },
     });
 
@@ -313,6 +327,20 @@ export async function loadShopCheckout(
       getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId)?.label ||
       "License";
 
+    const tierForPricing = getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId);
+    const repriced =
+      tierForPricing && imageKeys.length > 0
+        ? calculateShopOrderPricing({
+            unitAmountOre: tierForPricing.unitAmountOre,
+            imageCount: imageKeys.length,
+          })
+        : null;
+    const subtotalOre =
+      Number(intent.metadata?.subtotalOre) || repriced?.subtotalOre || intent.amount;
+    const discountOre = Number(intent.metadata?.discountOre) || repriced?.discountOre || 0;
+    const discountPercent =
+      Number(intent.metadata?.discountPercent) || repriced?.percentOff || 0;
+
     return {
       paymentIntentId: intent.id,
       clientSecret: intent.client_secret,
@@ -321,6 +349,9 @@ export async function loadShopCheckout(
       galleryTitle: gallery.title,
       imageCount: imageKeys.length,
       totalOre: intent.amount,
+      subtotalOre,
+      discountOre,
+      discountPercent,
       licenseLabel,
       currency: SHOP_CURRENCY,
       cancelUrl: `${siteUrl}/shop/gallery/${shopToken}`,

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ComponentType } from "react";
 import type { Route } from "./+types/shop.gallery.$token";
 import { fetchShopGallery, isShopConfigured, type ShopGalleryView } from "../lib/shop.server";
-import { formatShopMoney } from "../lib/shop-licenses";
+import { describeVolumeDiscountOffer, formatShopMoney } from "../lib/shop-licenses";
 
 export const handle = { shopWide: true };
 
@@ -39,6 +39,7 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
 
   const personalPrice = formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900);
   const commercialPrice = formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900);
+  const volumeOffer = describeVolumeDiscountOffer();
 
   return (
     <>
@@ -47,6 +48,7 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
         <p className="customer-portal__muted">
           Select photos, choose a license, then checkout. From {personalPrice} (personal) or{" "}
           {commercialPrice} (commercial) per image.
+          {volumeOffer ? <> {volumeOffer}.</> : null}
         </p>
       </header>
 

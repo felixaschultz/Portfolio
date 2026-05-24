@@ -141,7 +141,22 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
         <h1 className="customer-portal__title">Checkout</h1>
         <p className="customer-portal__muted">
           {checkout.galleryTitle} · {checkout.imageCount} photo
-          {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel} · {totalLabel}
+          {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel}
+          {checkout.discountOre > 0 ? (
+            <>
+              {" · "}
+              <span className="shop-checkout__was">
+                {formatShopMoney(checkout.subtotalOre)}
+              </span>{" "}
+              {totalLabel}
+              <span className="shop-checkout__discount">
+                {" "}
+                (−{checkout.discountPercent}% volume)
+              </span>
+            </>
+          ) : (
+            <> · {totalLabel}</>
+          )}
         </p>
       </header>
 

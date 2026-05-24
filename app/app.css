@@ -2086,6 +2086,43 @@ body {
   line-height: 1.4;
 }
 
+.shop-licenses__volume-offer {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-accent, #15b0ab);
+}
+
+.shop-toolbar__summary {
+  display: inline;
+}
+
+.shop-toolbar__was {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.shop-toolbar__discount {
+  color: var(--color-accent, #15b0ab);
+}
+
+.shop-toolbar__hint {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--color-accent, #15b0ab);
+}
+
+.shop-checkout__was {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.shop-checkout__discount {
+  color: var(--color-accent, #15b0ab);
+}
+
 .shop-grid__item {
   position: relative;
   display: block;

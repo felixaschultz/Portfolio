@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Form } from "react-router";
 import type { ShopGalleryView } from "../lib/shop.server";
 import type { ShopLicenseId } from "../lib/shop-licenses";
-import { formatShopMoney } from "../lib/shop-licenses";
+import {
+  calculateShopOrderPricing,
+  describeVolumeDiscountOffer,
+  formatShopMoney,
+  getNextVolumeDiscountHint,
+} from "../lib/shop-licenses";
 
 type ShopGalleryPickerProps = {
   shopToken: string;
@@ -21,8 +26,12 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
 
   const tier =
     gallery.licenseTiers.find((t) => t.id === licenseId) ?? gallery.licenseTiers[0]!;
-  const unitOre = tier.unitAmountOre;
-  const totalOre = selected.size * unitOre;
+  const pricing = calculateShopOrderPricing({
+    unitAmountOre: tier.unitAmountOre,
+    imageCount: selected.size,
+  });
+  const nextDiscountHint = getNextVolumeDiscountHint(selected.size);
+  const volumeOffer = describeVolumeDiscountOffer();
 
   const toggle = (key: string) => {
     setSelected((prev) => {
@@ -73,6 +82,9 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
             );
           })}
         </div>
+        {volumeOffer ? (
+          <p className="shop-licenses__volume-offer">{volumeOffer}</p>
+        ) : null}
       </fieldset>
 
       <div className="customer-portal__toolbar">
@@ -82,9 +94,29 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
         <button type="button" className="customer-portal__link-btn" onClick={clearAll}>
           Clear
         </button>
-        <span className="customer-portal__muted">
-          {selected.size} selected · {formatShopMoney(totalOre)} total
+        <span className="customer-portal__muted shop-toolbar__summary">
+          {selected.size} selected
+          {selected.size > 0 ? (
+            <>
+              {" · "}
+              {pricing.discountOre > 0 ? (
+                <>
+                  <span className="shop-toolbar__was">{formatShopMoney(pricing.subtotalOre)}</span>{" "}
+                  {formatShopMoney(pricing.totalOre)}
+                  <span className="shop-toolbar__discount">
+                    {" "}
+                    (−{pricing.percentOff}% volume)
+                  </span>
+                </>
+              ) : (
+                formatShopMoney(pricing.totalOre)
+              )}
+            </>
+          ) : null}
         </span>
+        {nextDiscountHint ? (
+          <span className="shop-toolbar__hint">{nextDiscountHint}</span>
+        ) : null}
       </div>
 
       <ul className="shop-grid">
@@ -121,7 +153,7 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
             className="customer-portal__button"
             disabled={!shopReady || selected.size === 0}
           >
-            Continue to checkout · {formatShopMoney(totalOre)}
+            Continue to checkout · {formatShopMoney(pricing.totalOre)}
           </button>
         </Form>
       </footer>

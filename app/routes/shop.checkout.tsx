@@ -88,18 +88,16 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
 
   if (loaderData.mode === "missing") {
     return (
-      <div className="customer-portal">
-        <main className="customer-portal__main">
-          <h1 className="customer-portal__title">Checkout</h1>
-          {actionData?.error ? (
-            <p className="customer-portal__error" role="alert">
-              {actionData.error}
-            </p>
-          ) : (
-            <p className="customer-portal__muted">Start by selecting photos from your gallery link.</p>
-          )}
-        </main>
-      </div>
+      <>
+        <h1 className="customer-portal__title">Checkout</h1>
+        {actionData?.error ? (
+          <p className="customer-portal__error" role="alert">
+            {actionData.error}
+          </p>
+        ) : (
+          <p className="customer-portal__muted">Start by selecting photos from your gallery link.</p>
+        )}
+      </>
     );
   }
 
@@ -110,54 +108,52 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   );
 
   return (
-    <div className="customer-portal">
-      <main className="customer-portal__main shop-checkout">
-        <header className="customer-portal__header">
-          <p className="customer-portal__muted">
-            <Link to={checkout.cancelUrl} className="customer-portal__link-btn">
-              ← Back to selection
-            </Link>
-          </p>
-          <h1 className="customer-portal__title">Checkout</h1>
-          <p className="customer-portal__muted">
-            {checkout.galleryTitle} · {checkout.imageCount} photo
-            {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel} · {totalLabel}
-          </p>
-        </header>
+    <div className="shop-checkout">
+      <header className="customer-portal__header">
+        <p className="customer-portal__muted">
+          <Link to={checkout.cancelUrl} className="customer-portal__link-btn">
+            ← Back to selection
+          </Link>
+        </p>
+        <h1 className="customer-portal__title">Checkout</h1>
+        <p className="customer-portal__muted">
+          {checkout.galleryTitle} · {checkout.imageCount} photo
+          {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel} · {totalLabel}
+        </p>
+      </header>
 
-        {actionData?.error ? (
-          <p className="customer-portal__error" role="alert">
-            {actionData.error}
-          </p>
-        ) : null}
+      {actionData?.error ? (
+        <p className="customer-portal__error" role="alert">
+          {actionData.error}
+        </p>
+      ) : null}
 
-        {mounted ? (
-          <Elements
-            stripe={stripePromise}
-            options={{
-              clientSecret: checkout.clientSecret,
-              appearance: {
-                theme: "night",
-                variables: {
-                  colorPrimary: "#15b0ab",
-                  colorBackground: "#0f1615",
-                  colorText: "#e8f0ef",
-                  colorDanger: "#f87171",
-                  borderRadius: "6px",
-                },
+      {mounted ? (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret: checkout.clientSecret,
+            appearance: {
+              theme: "night",
+              variables: {
+                colorPrimary: "#15b0ab",
+                colorBackground: "#0f1615",
+                colorText: "#e8f0ef",
+                colorDanger: "#f87171",
+                borderRadius: "6px",
               },
-            }}
-          >
-            <ShopCheckoutPayment
-              paymentIntentId={checkout.paymentIntentId}
-              returnUrl={returnUrl}
-              totalLabel={totalLabel}
-            />
-          </Elements>
-        ) : (
-          <p className="customer-portal__muted">Loading payment form…</p>
-        )}
-      </main>
+            },
+          }}
+        >
+          <ShopCheckoutPayment
+            paymentIntentId={checkout.paymentIntentId}
+            returnUrl={returnUrl}
+            totalLabel={totalLabel}
+          />
+        </Elements>
+      ) : (
+        <p className="customer-portal__muted">Loading payment form…</p>
+      )}
     </div>
   );
 }

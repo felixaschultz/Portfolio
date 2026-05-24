@@ -43,7 +43,16 @@ export function ShopCheckoutPayment({
       <div className="shop-checkout__element">
         <PaymentElement
           options={{
-            layout: "tabs",
+            layout: {
+              type: "accordion",
+              defaultCollapsed: false,
+              radios: true,
+              spacedAccordionItems: true,
+            },
+            wallets: {
+              applePay: "auto",
+              googlePay: "auto",
+            },
           }}
         />
       </div>
@@ -63,7 +72,11 @@ export function ShopCheckoutPayment({
       </button>
 
       <p className="customer-portal__hint">
-        Payment ID: {paymentIntentId.slice(-8)} · Secured by Stripe
+        Apple Pay and Google Pay appear when your browser and device support them. Card payment is
+        always available below.
+      </p>
+      <p className="customer-portal__hint">
+        Reference: {paymentIntentId.slice(-8)} · Secured by Stripe
       </p>
     </form>
   );

@@ -3,6 +3,8 @@ import type { Route } from "./+types/shop.gallery.$token";
 import { fetchShopGallery, isShopConfigured, type ShopGalleryView } from "../lib/shop.server";
 import { formatShopMoney } from "../lib/shop-licenses";
 
+export const handle = { shopWide: true };
+
 export async function loader({ params }: Route.LoaderArgs) {
   const token = params.token?.trim();
   if (!token) {
@@ -39,29 +41,27 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const commercialPrice = formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900);
 
   return (
-    <div className="customer-portal">
-      <main className="customer-portal__main customer-portal__main--wide shop-gallery">
-        <header className="customer-portal__header">
-          <h1 className="customer-portal__title">{gallery.title}</h1>
-          <p className="customer-portal__muted">
-            Select photos, choose a license, then checkout. From {personalPrice} (personal) or{" "}
-            {commercialPrice} (commercial) per image.
-          </p>
-        </header>
+    <>
+      <header className="customer-portal__header">
+        <h1 className="customer-portal__title">{gallery.title}</h1>
+        <p className="customer-portal__muted">
+          Select photos, choose a license, then checkout. From {personalPrice} (personal) or{" "}
+          {commercialPrice} (commercial) per image.
+        </p>
+      </header>
 
-        {!shopReady ? (
-          <p className="customer-portal__error">Online checkout is not available right now.</p>
-        ) : null}
+      {!shopReady ? (
+        <p className="customer-portal__error">Online checkout is not available right now.</p>
+      ) : null}
 
-        {Picker ? (
-          <Picker shopToken={shopToken} gallery={gallery} shopReady={shopReady} />
-        ) : (
-          <p className="customer-portal__muted" aria-busy="true">
-            Loading…
-          </p>
-        )}
-      </main>
-    </div>
+      {Picker ? (
+        <Picker shopToken={shopToken} gallery={gallery} shopReady={shopReady} />
+      ) : (
+        <p className="customer-portal__muted" aria-busy="true">
+          Loading…
+        </p>
+      )}
+    </>
   );
 }
 

@@ -222,7 +222,10 @@ export async function createShopPaymentIntent(options: {
     const intent = await stripe.paymentIntents.create({
       amount,
       currency: SHOP_CURRENCY,
-      automatic_payment_methods: { enabled: true },
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: "never",
+      },
       metadata: {
         shopToken: options.shopToken,
         gallerySlug: gallery.slug,

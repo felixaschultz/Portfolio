@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.gallery.$token";
 import { ShopGalleryPicker } from "../components/ShopGalleryPicker";
 import { ShopStripePreload } from "../components/ShopStripePreload";
@@ -6,35 +7,47 @@ import {
   getStripePublishableKey,
   isShopConfigured,
 } from "../lib/shop.server";
-import { describeVolumeDiscountOffer, formatShopMoney } from "../lib/shop-licenses";
+import { describeVolumeDiscountOffer } from "../lib/shop-i18n.server";
+import { formatShopMoney } from "../lib/shop-licenses";
+import { resolveShopLocale } from "../lib/shop-locale";
 
 export const handle = { shopWide: true };
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const token = params.token?.trim();
   if (!token) {
     throw new Response("Not found", { status: 404 });
   }
 
-  const gallery = await fetchShopGallery(token);
+  const locale = resolveShopLocale(request);
+  const gallery = await fetchShopGallery(token, { locale });
   if (!gallery) {
     throw new Response("Not found", { status: 404 });
   }
 
   return {
+    locale,
     shopToken: token,
     gallery,
     shopReady: isShopConfigured(),
     stripePublishableKey: getStripePublishableKey(),
+    volumeOffer: describeVolumeDiscountOffer(locale),
+    personalPrice: formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900, locale),
+    commercialPrice: formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900, locale),
   };
 }
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
-  const { gallery, shopToken, shopReady, stripePublishableKey } = loaderData;
-
-  const personalPrice = formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900);
-  const commercialPrice = formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900);
-  const volumeOffer = describeVolumeDiscountOffer();
+  const { t } = useTranslation();
+  const {
+    gallery,
+    shopToken,
+    shopReady,
+    stripePublishableKey,
+    volumeOffer,
+    personalPrice,
+    commercialPrice,
+  } = loaderData;
 
   return (
     <>
@@ -42,14 +55,13 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
       <header className="customer-portal__header">
         <h1 className="customer-portal__title">{gallery.title}</h1>
         <p className="customer-portal__muted">
-          Select photos, choose a license, then checkout. From {personalPrice} (personal) or{" "}
-          {commercialPrice} (commercial) per image.
+          {t("shop.galleryIntro", { personalPrice, commercialPrice })}
           {volumeOffer ? <> {volumeOffer}.</> : null}
         </p>
       </header>
 
       {!shopReady ? (
-        <p className="customer-portal__error">Online checkout is not available right now.</p>
+        <p className="customer-portal__error">{t("shop.galleryNotConfigured")}</p>
       ) : null}
 
       <ShopGalleryPicker
@@ -64,5 +76,8 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
 
 export function meta({ data }: Route.MetaArgs) {
   const title = data?.gallery?.title ?? "Shop";
-  return [{ title: `${title} — Shop` }, { name: "robots", content: "noindex" }];
+  return [
+    { title: data ? `${title} — Shop` : "Shop" },
+    { name: "robots", content: "noindex" },
+  ];
 }

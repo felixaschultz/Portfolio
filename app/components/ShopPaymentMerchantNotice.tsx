@@ -1,3 +1,5 @@
+import { Trans, useTranslation } from "react-i18next";
+
 const MERCHANT_URL = "https://www.intastellarsolutions.com";
 
 type ShopPaymentMerchantNoticeProps = {
@@ -5,14 +7,21 @@ type ShopPaymentMerchantNoticeProps = {
 };
 
 export function ShopPaymentMerchantNotice({ className = "" }: ShopPaymentMerchantNoticeProps) {
+  const { t } = useTranslation();
+
   return (
     <p className={`shop-payment-notice${className ? ` ${className}` : ""}`}>
-      Your bank statement and Apple Pay will show{" "}
-      <a href={MERCHANT_URL} target="_blank" rel="noopener noreferrer">
-        Intastellar Solutions
-      </a>{" "}
-      as the merchant (e.g. “Pay Intastellar Solutions”), not Felix Schultz. You are buying
-      photo licenses from Felix Schultz.
+      <Trans
+        i18nKey="shop.merchantNotice"
+        t={t}
+        components={{
+          merchantLink: (
+            <a href={MERCHANT_URL} target="_blank" rel="noopener noreferrer">
+              Intastellar Solutions
+            </a>
+          ),
+        }}
+      />
     </p>
   );
 }

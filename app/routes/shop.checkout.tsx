@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Link, redirect, useActionData } from "react-router";
+import { Link, redirect, useActionData, useTranslation } from "react-router";
 import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { formatShopMoney } from "../lib/shop-licenses";
 import { resolveSiteUrl } from "../lib/seo";
+import { getCheckoutReturnMessage } from "../lib/shop-i18n.server";
+import { resolveShopLocale } from "../lib/shop-locale";
 import {
   createShopPaymentIntent,
-  getCheckoutReturnMessage,
   loadShopCheckout,
 } from "../lib/shop.server";
 
@@ -27,6 +28,7 @@ export function links() {
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const locale = resolveShopLocale(request);
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -63,6 +65,7 @@ export async function action({ request }: Route.ActionArgs) {
     shopToken: shopToken?.trim() ?? "",
     imageKeys,
     licenseId,
+    locale,
   });
 
   if ("error" in result) {
@@ -73,12 +76,13 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveShopLocale(request);
   const url = new URL(request.url);
   const paymentIntentId =
     url.searchParams.get("pi")?.trim() ||
     url.searchParams.get("payment_intent")?.trim();
   if (!paymentIntentId) {
-    return { mode: "missing" as const };
+    return { mode: "missing" as const, locale };
   }
 
   const redirectStatus = url.searchParams.get("redirect_status");
@@ -88,20 +92,21 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
   }
 
-  const checkout = await loadShopCheckout(paymentIntentId);
+  const checkout = await loadShopCheckout(paymentIntentId, locale);
   if (!checkout) {
     throw new Response("Not found", { status: 404 });
   }
 
   const siteUrl = resolveSiteUrl(request);
   const returnUrl = `${siteUrl}/shop/checkout?pi=${encodeURIComponent(checkout.paymentIntentId)}`;
-  const paymentMessage = getCheckoutReturnMessage(redirectStatus);
+  const paymentMessage = getCheckoutReturnMessage(locale, redirectStatus);
 
   return {
     mode: "pay" as const,
+    locale,
     checkout,
     returnUrl,
-    totalLabel: formatShopMoney(checkout.totalOre),
+    totalLabel: formatShopMoney(checkout.totalOre, locale),
     paymentMessage,
   };
 }
@@ -116,6 +121,7 @@ function CheckoutPaymentFallback() {
 }
 
 export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   const actionData = useActionData<{ error?: string }>();
 
   useEffect(() => {
@@ -131,13 +137,13 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   if (loaderData.mode === "missing") {
     return (
       <>
-        <h1 className="customer-portal__title">Checkout</h1>
+        <h1 className="customer-portal__title">{t("shop.checkoutTitle")}</h1>
         {actionData?.error ? (
           <p className="customer-portal__error" role="alert">
             {actionData.error}
           </p>
         ) : (
-          <p className="customer-portal__muted">Start by selecting photos from your gallery link.</p>
+          <p className="customer-portal__muted">{t("shop.checkoutMissing")}</p>
         )}
       </>
     );
@@ -150,13 +156,11 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
       <header className="customer-portal__header shop-checkout__header">
         <p className="customer-portal__muted">
           <Link to={checkout.backToGalleryPath} className="customer-portal__link-btn">
-            ← Back to gallery
+            {t("shop.backToGallery")}
           </Link>
         </p>
-        <h1 className="customer-portal__title">Checkout</h1>
-        <p className="customer-portal__muted shop-checkout__intro">
-          Review your order, then pay below.
-        </p>
+        <h1 className="customer-portal__title">{t("shop.checkoutTitle")}</h1>
+        <p className="customer-portal__muted shop-checkout__intro">{t("shop.checkoutIntro")}</p>
       </header>
 
       {actionData?.error ? (
@@ -168,8 +172,8 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
       <div className="shop-checkout__layout">
         <ShopCheckoutSummary checkout={checkout} totalLabel={totalLabel} />
 
-        <section className="shop-checkout__payment" aria-label="Payment">
-          <h2 className="shop-checkout__payment-title">Payment</h2>
+        <section className="shop-checkout__payment" aria-label={t("shop.paymentSection")}>
+          <h2 className="shop-checkout__payment-title">{t("shop.paymentSection")}</h2>
           <ShopPaymentMerchantNotice />
 
           <Suspense fallback={<CheckoutPaymentFallback />}>

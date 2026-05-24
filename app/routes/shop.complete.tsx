@@ -1,5 +1,7 @@
-import { Form, redirect, useNavigation } from "react-router";
+import { Form, redirect, useNavigation, useTranslation } from "react-router";
 import type { Route } from "./+types/shop.complete";
+import { shopT } from "../lib/shop-i18n.server";
+import { resolveShopLocale } from "../lib/shop-locale";
 import {
   getCheckoutRetryPath,
   isShopEmailConfigured,
@@ -8,34 +10,37 @@ import {
 } from "../lib/shop.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveShopLocale(request);
   const url = new URL(request.url);
   const paymentIntentId =
     url.searchParams.get("payment_intent")?.trim() ||
     url.searchParams.get("pi")?.trim();
 
   if (!paymentIntentId) {
-    return { ok: false as const, reason: "missing_payment" as const };
+    return { ok: false as const, reason: "missing_payment" as const, locale };
   }
 
-  const purchase = await resolvePaidPurchase(paymentIntentId);
+  const purchase = await resolvePaidPurchase(paymentIntentId, locale);
   if (!purchase) {
     const retryPath = await getCheckoutRetryPath(paymentIntentId);
     if (retryPath) {
       throw redirect(retryPath);
     }
-    return { ok: false as const, reason: "invalid_payment" as const };
+    return { ok: false as const, reason: "invalid_payment" as const, locale };
   }
 
   return {
     ok: true as const,
+    locale,
     purchase,
     emailConfigured: isShopEmailConfigured(),
   };
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const locale = resolveShopLocale(request);
   if (request.method !== "POST") {
-    return Response.json({ error: "Method not allowed" }, { status: 405 });
+    return Response.json({ error: shopT(locale, "errors.methodNotAllowed") }, { status: 405 });
   }
 
   const form = await request.formData();
@@ -43,10 +48,10 @@ export async function action({ request }: Route.ActionArgs) {
   const email = String(form.get("email") ?? "").trim();
 
   if (!paymentIntentId) {
-    return { error: "Missing order reference." };
+    return { error: shopT(locale, "errors.missingOrderRef") };
   }
 
-  const result = await sendPurchaseDownloadEmail(paymentIntentId, email);
+  const result = await sendPurchaseDownloadEmail(paymentIntentId, email, locale);
   if ("error" in result) {
     return { error: result.error };
   }
@@ -55,17 +60,18 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ShopCompletePage({ loaderData, actionData }: Route.ComponentProps) {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const sending = navigation.state !== "idle";
 
   if (!loaderData.ok) {
     return (
       <>
-        <h1 className="customer-portal__title">Payment</h1>
+        <h1 className="customer-portal__title">{t("shop.completePaymentTitle")}</h1>
         <p className="customer-portal__muted">
           {loaderData.reason === "missing_payment"
-            ? "No payment information was found."
-            : "We could not verify your payment yet. If you were charged, contact the photographer."}
+            ? t("shop.completeMissingPayment")
+            : t("shop.completeInvalidPayment")}
         </p>
       </>
     );
@@ -75,52 +81,53 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
   const sent = actionData?.sent;
   const error = actionData?.error;
   const alreadyEmailed = purchase.emailSent;
+  const photoWord = t(
+    purchase.imageCount === 1 ? "shop.photoWord_one" : "shop.photoWord_other",
+  );
 
   return (
     <>
-      <h1 className="customer-portal__title">Thank you</h1>
+      <h1 className="customer-portal__title">{t("shop.thankYou")}</h1>
       <p className="customer-portal__muted">
-        Payment received for <strong>{purchase.imageCount}</strong> photo
-        {purchase.imageCount === 1 ? "" : "s"} from <em>{purchase.galleryTitle}</em> (
-        {purchase.licenseLabel}).
+        {t("shop.thankYouIntro", {
+          count: purchase.imageCount,
+          photoWord,
+          gallery: purchase.galleryTitle,
+          license: purchase.licenseLabel,
+        })}
       </p>
 
       <a className="customer-portal__button" href={purchase.downloadPath}>
-        Download ZIP now
+        {t("shop.downloadZip")}
       </a>
 
       <section className="shop-complete__email" aria-labelledby="email-heading">
         <h2 id="email-heading" className="shop-complete__email-title">
-          Email me the download link
+          {t("shop.emailSectionTitle")}
         </h2>
 
         {!emailConfigured ? (
-          <p className="customer-portal__muted">
-            Email delivery is not configured on this site. Use the download button above and save
-            the link — it works for 7 days.
-          </p>
+          <p className="customer-portal__muted">{t("shop.emailNotConfigured")}</p>
         ) : sent || alreadyEmailed ? (
           <p className="customer-portal__muted">
             {sent
-              ? `We sent a download link to ${actionData?.email ?? purchase.customerEmail}.`
-              : `A download link was already sent to ${purchase.customerEmail}.`}
+              ? t("shop.emailSent", { email: actionData?.email ?? purchase.customerEmail })
+              : t("shop.emailAlreadySent", { email: purchase.customerEmail })}
           </p>
         ) : (
           <>
-            <p className="customer-portal__muted">
-              We will send a link valid for 7 days. You can also download immediately above.
-            </p>
+            <p className="customer-portal__muted">{t("shop.emailPrompt")}</p>
             <Form method="post" className="shop-complete__email-form">
               <input type="hidden" name="paymentIntentId" value={purchase.paymentIntentId} />
               <label className="shop-complete__label">
-                <span className="customer-portal__muted">Email address</span>
+                <span className="customer-portal__muted">{t("shop.emailLabel")}</span>
                 <input
                   type="email"
                   name="email"
                   required
                   autoComplete="email"
                   className="shop-complete__input"
-                  placeholder="you@example.com"
+                  placeholder={t("shop.emailPlaceholder")}
                 />
               </label>
               {error ? (
@@ -129,16 +136,14 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
                 </p>
               ) : null}
               <button type="submit" className="customer-portal__button" disabled={sending}>
-                {sending ? "Sending…" : "Send download link"}
+                {sending ? t("shop.sending") : t("shop.sendDownloadLink")}
               </button>
             </Form>
           </>
         )}
       </section>
 
-      <p className="customer-portal__hint">
-        Link expires after 7 days. Keep this page or your email for later access.
-      </p>
+      <p className="customer-portal__hint">{t("shop.completeHint")}</p>
     </>
   );
 }

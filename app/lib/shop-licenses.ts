@@ -11,19 +11,9 @@ export type ShopLicenseTier = {
   unitAmountOre: number;
 };
 
-export const DEFAULT_LICENSE_TIERS: Record<ShopLicenseId, Omit<ShopLicenseTier, "unitAmountOre"> & { unitAmountOre: number }> = {
-  personal: {
-    id: "personal",
-    label: "Personal download",
-    description: "Private, non-commercial use (prints, social, personal projects).",
-    unitAmountOre: 14_900,
-  },
-  commercial: {
-    id: "commercial",
-    label: "Commercial license",
-    description: "Business use, marketing, publications, and client work.",
-    unitAmountOre: 79_900,
-  },
+const DEFAULT_LICENSE_PRICES: Record<ShopLicenseId, number> = {
+  personal: 14_900,
+  commercial: 79_900,
 };
 
 export type GalleryLicenseOverrides = {
@@ -37,18 +27,22 @@ export function resolveLicenseTiers(overrides?: GalleryLicenseOverrides): ShopLi
 
   return [
     {
-      ...DEFAULT_LICENSE_TIERS.personal,
+      id: "personal",
+      label: "",
+      description: "",
       unitAmountOre:
         typeof personalDkk === "number" && personalDkk >= 1
           ? Math.round(personalDkk * 100)
-          : DEFAULT_LICENSE_TIERS.personal.unitAmountOre,
+          : DEFAULT_LICENSE_PRICES.personal,
     },
     {
-      ...DEFAULT_LICENSE_TIERS.commercial,
+      id: "commercial",
+      label: "",
+      description: "",
       unitAmountOre:
         typeof commercialDkk === "number" && commercialDkk >= 1
           ? Math.round(commercialDkk * 100)
-          : DEFAULT_LICENSE_TIERS.commercial.unitAmountOre,
+          : DEFAULT_LICENSE_PRICES.commercial,
     },
   ];
 }
@@ -62,8 +56,9 @@ export function getLicenseTier(
   return tiers.find((t) => t.id === id) ?? null;
 }
 
-export function formatShopMoney(amountOre: number): string {
-  return new Intl.NumberFormat("da-DK", {
+export function formatShopMoney(amountOre: number, locale = "da-DK"): string {
+  const tag = locale.length === 2 ? `${locale}-DK` : locale;
+  return new Intl.NumberFormat(tag, {
     style: "currency",
     currency: "DKK",
     minimumFractionDigits: 0,
@@ -114,20 +109,3 @@ export function calculateShopOrderPricing(options: {
   };
 }
 
-/** Short line for gallery header / license area. */
-export function describeVolumeDiscountOffer(): string {
-  const tiers = [...SHOP_VOLUME_DISCOUNT_TIERS].sort((a, b) => a.minImages - b.minImages);
-  if (tiers.length === 0) return "";
-  const parts = tiers.map(
-    (t) => `${t.percentOff}% off from ${t.minImages} photos`,
-  );
-  return parts.join(" · ");
-}
-
-export function getNextVolumeDiscountHint(imageCount: number): string | null {
-  const tiers = [...SHOP_VOLUME_DISCOUNT_TIERS].sort((a, b) => a.minImages - b.minImages);
-  const next = tiers.find((t) => imageCount < t.minImages);
-  if (!next) return null;
-  const needed = next.minImages - imageCount;
-  return `Select ${needed} more for ${next.percentOff}% off`;
-}

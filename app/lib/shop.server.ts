@@ -2,7 +2,8 @@ import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
-import { localizedField } from "./i18n";
+import { localizedField, type Locale } from "./i18n";
+import { shopLicenseLabel, shopT, translateLicenseTiers } from "./shop-i18n.server";
 import { getSiteUrl, shopGalleryPath } from "./seo";
 import { signShopPurchase } from "./purchase-token.server";
 import {
@@ -95,22 +96,6 @@ export function getStripePublishableKey(): string | null {
   return key || null;
 }
 
-/** User-facing copy after Stripe redirects back to checkout (MobilePay, etc.). */
-export function getCheckoutReturnMessage(
-  redirectStatus: string | null | undefined,
-): string | null {
-  switch (redirectStatus?.trim()) {
-    case "failed":
-      return "Your payment could not be completed. Check your card details or try another payment method, then pay again.";
-    case "canceled":
-      return "Payment was cancelled. You can try again when you are ready.";
-    case "processing":
-      return "Your payment is still processing. If it does not complete, try again or use another payment method.";
-    default:
-      return null;
-  }
-}
-
 /** Send unpaid intents back to checkout so the customer can retry. */
 export async function getCheckoutRetryPath(
   paymentIntentId: string,
@@ -139,8 +124,9 @@ export async function getCheckoutRetryPath(
 
 export async function fetchShopGallery(
   token: string,
-  options?: { onlyKeys?: string[] },
+  options?: { onlyKeys?: string[]; locale?: Locale },
 ): Promise<ShopGalleryView | null> {
+  const locale = options?.locale ?? "da";
   const client = getSanityDownloadClient();
   if (!client || !token.trim()) return null;
 
@@ -192,14 +178,17 @@ export async function fetchShopGallery(
 
     if (images.length === 0) return null;
 
-    const licenseTiers = resolveLicenseTiers({
-      shopPricePersonalDkk: doc.shopPricePersonalDkk,
-      shopPriceCommercialDkk: doc.shopPriceCommercialDkk,
-    });
+    const licenseTiers = translateLicenseTiers(
+      locale,
+      resolveLicenseTiers({
+        shopPricePersonalDkk: doc.shopPricePersonalDkk,
+        shopPriceCommercialDkk: doc.shopPriceCommercialDkk,
+      }),
+    );
 
     return {
       slug: doc.slug,
-      title: localizedField(doc.title, "en") || doc.slug,
+      title: localizedField(doc.title, locale) || doc.slug,
       currency: SHOP_CURRENCY,
       licenseTiers,
       images,
@@ -219,19 +208,23 @@ export async function createShopPaymentIntent(options: {
   shopToken: string;
   imageKeys: string[];
   licenseId: string;
+  locale: Locale;
 }): Promise<{ paymentIntentId: string } | { error: string }> {
+  const { locale } = options;
   const stripe = getStripe();
   const publishableKey = getStripePublishableKey();
-  if (!stripe || !publishableKey) return { error: "Shop is not configured." };
+  if (!stripe || !publishableKey) {
+    return { error: shopT(locale, "errors.notConfigured") };
+  }
 
-  const gallery = await fetchShopGallery(options.shopToken);
-  if (!gallery) return { error: "Invalid shop link." };
+  const gallery = await fetchShopGallery(options.shopToken, { locale });
+  if (!gallery) return { error: shopT(locale, "errors.invalidLink") };
 
   const imageKeys = validatedImageKeys(gallery, options.imageKeys);
-  if (imageKeys.length === 0) return { error: "Select at least one photo." };
+  if (imageKeys.length === 0) return { error: shopT(locale, "errors.selectPhoto") };
 
   const tier = getLicenseTier(gallery.licenseTiers, options.licenseId);
-  if (!tier) return { error: "Choose a license type." };
+  if (!tier) return { error: shopT(locale, "errors.chooseLicense") };
 
   const pricing = calculateShopOrderPricing({
     unitAmountOre: tier.unitAmountOre,
@@ -239,7 +232,7 @@ export async function createShopPaymentIntent(options: {
   });
 
   if (pricing.totalOre < 250) {
-    return { error: "Order total is too low to charge." };
+    return { error: shopT(locale, "errors.totalTooLow") };
   }
 
   try {
@@ -262,18 +255,19 @@ export async function createShopPaymentIntent(options: {
     });
 
     if (!intent.id || !intent.client_secret) {
-      return { error: "Could not start checkout." };
+      return { error: shopT(locale, "errors.checkoutFailed") };
     }
 
     return { paymentIntentId: intent.id };
   } catch (err) {
     console.error("[shop] create payment intent failed:", err);
-    return { error: "Could not start checkout." };
+    return { error: shopT(locale, "errors.checkoutFailed") };
   }
 }
 
 export async function loadShopCheckout(
   paymentIntentId: string,
+  locale: Locale,
 ): Promise<ShopCheckoutView | null> {
   const stripe = getStripe();
   const publishableKey = getStripePublishableKey();
@@ -288,7 +282,7 @@ export async function loadShopCheckout(
     const imageKeys = parseImageKeysFromMetadata(intent.metadata ?? undefined);
     if (!gallerySlug || !shopToken || !imageKeys?.length) return null;
 
-    const gallery = await fetchShopGallery(shopToken, { onlyKeys: imageKeys });
+    const gallery = await fetchShopGallery(shopToken, { onlyKeys: imageKeys, locale });
     if (
       !gallery ||
       gallery.slug !== gallerySlug ||
@@ -297,10 +291,11 @@ export async function loadShopCheckout(
       return null;
     }
 
+    const licenseId =
+      intent.metadata?.licenseId === "commercial" ? "commercial" : "personal";
     const licenseLabel =
-      intent.metadata?.licenseLabel ||
-      getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId)?.label ||
-      "License";
+      getLicenseTier(gallery.licenseTiers, licenseId)?.label ||
+      shopLicenseLabel(locale, licenseId);
 
     const tierForPricing = getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId);
     const repriced =
@@ -354,6 +349,7 @@ export async function loadShopCheckout(
 
 export async function resolvePaidPurchase(
   paymentIntentId: string,
+  locale: Locale,
 ): Promise<ShopPurchaseSummary | null> {
   const stripe = getStripe();
   if (!stripe || !paymentIntentId.trim()) return null;
@@ -373,7 +369,9 @@ export async function resolvePaidPurchase(
           { slug: gallerySlug },
         )
       : null;
-    const galleryTitle = localizedField(titleDoc?.title, "en") || gallerySlug;
+    const galleryTitle = localizedField(titleDoc?.title, locale) || gallerySlug;
+    const licenseId =
+      intent.metadata?.licenseId === "commercial" ? "commercial" : "personal";
 
     const downloadJwt = await signShopPurchase({
       type: "shop",
@@ -390,7 +388,7 @@ export async function resolvePaidPurchase(
       gallerySlug,
       galleryTitle,
       imageCount: imageKeys.length,
-      licenseLabel: intent.metadata?.licenseLabel || "License",
+      licenseLabel: shopLicenseLabel(locale, licenseId),
       downloadJwt,
       downloadPath,
       emailSent: intent.metadata?.downloadEmailSent === "true",
@@ -405,15 +403,16 @@ export async function resolvePaidPurchase(
 export async function sendPurchaseDownloadEmail(
   paymentIntentId: string,
   email: string,
+  locale: Locale,
 ): Promise<{ ok: true } | { error: string }> {
   const stripe = getStripe();
-  if (!stripe) return { error: "Shop is not configured." };
+  if (!stripe) return { error: shopT(locale, "errors.notConfigured") };
 
-  const purchase = await resolvePaidPurchase(paymentIntentId);
-  if (!purchase) return { error: "Payment not found or not completed." };
+  const purchase = await resolvePaidPurchase(paymentIntentId, locale);
+  if (!purchase) return { error: shopT(locale, "errors.paymentNotFound") };
 
   if (purchase.emailSent && purchase.customerEmail && purchase.customerEmail !== email.trim().toLowerCase()) {
-    return { error: "A download link was already sent for this order." };
+    return { error: shopT(locale, "errors.emailAlreadySent") };
   }
 
   const { sendShopDownloadEmail } = await import("./shop-email.server");

@@ -7,6 +7,7 @@ import {
 import type { StripeExpressCheckoutElementConfirmEvent } from "@stripe/stripe-js";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 type ShopCheckoutPaymentProps = {
   paymentIntentId: string;
@@ -50,6 +51,7 @@ export function ShopCheckoutPayment({
   totalLabel,
   initialError = null,
 }: ShopCheckoutPaymentProps) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -76,14 +78,14 @@ export function ShopCheckoutPayment({
 
   const runPaymentConfirmation = useCallback(async () => {
     if (!stripe || !elements) {
-      return { ok: false as const, message: "Payment is still loading. Try again." };
+      return { ok: false as const, message: t("shop.errors.paymentLoading") };
     }
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
       return {
         ok: false as const,
-        message: submitError.message ?? "Check your payment details.",
+        message: submitError.message ?? t("shop.errors.checkPaymentDetails"),
       };
     }
 
@@ -98,7 +100,7 @@ export function ShopCheckoutPayment({
     if (confirmError) {
       return {
         ok: false as const,
-        message: confirmError.message ?? "Payment could not be completed.",
+        message: confirmError.message ?? t("shop.errors.paymentCouldNotComplete"),
       };
     }
 
@@ -110,13 +112,12 @@ export function ShopCheckoutPayment({
     if (paymentIntent?.status === "processing") {
       return {
         ok: false as const,
-        message:
-          "Your payment is still processing. If it does not complete, try again or use another payment method.",
+        message: t("shop.errors.paymentProcessing"),
       };
     }
 
-    return { ok: false as const, message: "Payment could not be completed." };
-  }, [completePath, elements, navigate, returnUrl, stripe]);
+    return { ok: false as const, message: t("shop.errors.paymentCouldNotComplete") };
+  }, [completePath, elements, navigate, returnUrl, stripe, t]);
 
   const onExpressConfirm = useCallback(
     async (event: StripeExpressCheckoutElementConfirmEvent) => {
@@ -157,8 +158,8 @@ export function ShopCheckoutPayment({
   return (
     <form onSubmit={onSubmit} className="shop-checkout__form">
       {showExpressSection ? (
-        <section className="shop-checkout__express shop-checkout__express--visible" aria-label="Quick pay">
-          <p className="shop-checkout__express-label">Quick pay</p>
+        <section className="shop-checkout__express shop-checkout__express--visible" aria-label={t("shop.quickPay")}>
+          <p className="shop-checkout__express-label">{t("shop.quickPay")}</p>
           <div className="shop-checkout__express-mount">
             {!expressReady ? (
               <div className="shop-checkout__express-skeleton" aria-hidden>
@@ -184,7 +185,7 @@ export function ShopCheckoutPayment({
 
       {expressWallets ? (
         <div className="shop-checkout__divider" role="separator">
-          <span>Or pay another way</span>
+          <span>{t("shop.orPayAnotherWay")}</span>
         </div>
       ) : null}
 
@@ -223,18 +224,17 @@ export function ShopCheckoutPayment({
         className="customer-portal__button shop-checkout__pay"
         disabled={!stripe || !elements || paying || !mountPaymentElement}
       >
-        {paying ? "Processing…" : `Pay ${totalLabel}`}
+        {paying
+          ? t("shop.processing")
+          : t("shop.payAmountButton", { amount: totalLabel })}
       </button>
 
       <p className="customer-portal__hint">
-        {expressWallets
-          ? "Use the buttons above for Apple Pay or Google Pay when available."
-          : "Apple Pay and Google Pay appear at the top when your browser and domain support them (HTTPS, registered in Stripe)."}
-        {" "}
-        MobilePay, PayPal, Revolut Pay, and card are below. MobilePay opens via redirect.
+        {expressWallets ? t("shop.walletHintWithExpress") : t("shop.walletHintNoExpress")}{" "}
+        {t("shop.paymentMethodsHint")}
       </p>
       <p className="customer-portal__hint">
-        Reference: {paymentIntentId.slice(-8)} · Card data handled by Stripe
+        {t("shop.paymentReference", { ref: paymentIntentId.slice(-8) })}
       </p>
     </form>
   );

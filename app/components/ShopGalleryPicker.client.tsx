@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { Form } from "react-router";
+import { Form, useRouteLoaderData } from "react-router";
+import { useTranslation } from "react-i18next";
 import { preloadStripe } from "../lib/stripe-client";
+import type { Locale } from "../lib/i18n";
 import type { ShopGalleryView } from "../lib/shop.types";
 import type { ShopLicenseId } from "../lib/shop-licenses";
 import {
   calculateShopOrderPricing,
-  describeVolumeDiscountOffer,
   formatShopMoney,
-  getNextVolumeDiscountHint,
 } from "../lib/shop-licenses";
+import {
+  describeVolumeDiscountOfferClient,
+  getNextVolumeDiscountHintClient,
+} from "../lib/shop-volume.client";
 import { ShopPaymentMerchantNotice } from "./ShopPaymentMerchantNotice";
 
 type ShopGalleryPickerProps = {
@@ -24,6 +28,10 @@ export function ShopGalleryPicker({
   shopReady,
   stripePublishableKey = null,
 }: ShopGalleryPickerProps) {
+  const { t } = useTranslation();
+  const layoutData = useRouteLoaderData("routes/shop") as { locale: Locale } | undefined;
+  const locale = layoutData?.locale ?? "da";
+
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");
 
@@ -34,13 +42,13 @@ export function ShopGalleryPicker({
   }, [selected.size, shopReady, stripePublishableKey]);
 
   const tier =
-    gallery.licenseTiers.find((t) => t.id === licenseId) ?? gallery.licenseTiers[0]!;
+    gallery.licenseTiers.find((item) => item.id === licenseId) ?? gallery.licenseTiers[0]!;
   const pricing = calculateShopOrderPricing({
     unitAmountOre: tier.unitAmountOre,
     imageCount: selected.size,
   });
-  const nextDiscountHint = getNextVolumeDiscountHint(selected.size);
-  const volumeOffer = describeVolumeDiscountOffer();
+  const nextDiscountHint = getNextVolumeDiscountHintClient(t, selected.size);
+  const volumeOffer = describeVolumeDiscountOfferClient(t);
 
   const selectedImages = useMemo(
     () => gallery.images.filter((image) => selected.has(image.key)),
@@ -63,43 +71,41 @@ export function ShopGalleryPicker({
     <div className="shop-gallery-layout">
       <div className="shop-gallery-layout__main">
         <fieldset className="shop-licenses">
-          <legend className="shop-licenses__legend">License type (per photo)</legend>
+          <legend className="shop-licenses__legend">{t("shop.licensesLegend")}</legend>
           <div className="shop-licenses__options">
-            {gallery.licenseTiers.map((t) => {
-              const active = licenseId === t.id;
+            {gallery.licenseTiers.map((item) => {
+              const active = licenseId === item.id;
               return (
                 <label
-                  key={t.id}
+                  key={item.id}
                   className={`shop-licenses__option${active ? " shop-licenses__option--active" : ""}`}
                 >
                   <input
                     type="radio"
                     name="license"
-                    value={t.id}
+                    value={item.id}
                     checked={active}
-                    onChange={() => setLicenseId(t.id)}
+                    onChange={() => setLicenseId(item.id)}
                     className="shop-licenses__radio"
                   />
-                  <span className="shop-licenses__option-title">{t.label}</span>
+                  <span className="shop-licenses__option-title">{item.label}</span>
                   <span className="shop-licenses__option-price">
-                    {formatShopMoney(t.unitAmountOre)} / photo
+                    {formatShopMoney(item.unitAmountOre, locale)} / {t("shop.perPhoto")}
                   </span>
-                  <span className="shop-licenses__option-desc">{t.description}</span>
+                  <span className="shop-licenses__option-desc">{item.description}</span>
                 </label>
               );
             })}
           </div>
-          {volumeOffer ? (
-            <p className="shop-licenses__volume-offer">{volumeOffer}</p>
-          ) : null}
+          {volumeOffer ? <p className="shop-licenses__volume-offer">{volumeOffer}</p> : null}
         </fieldset>
 
         <div className="customer-portal__toolbar">
           <button type="button" className="customer-portal__link-btn" onClick={selectAll}>
-            Select all
+            {t("shop.selectAll")}
           </button>
           <button type="button" className="customer-portal__link-btn" onClick={clearAll}>
-            Clear
+            {t("shop.clear")}
           </button>
         </div>
 
@@ -128,12 +134,14 @@ export function ShopGalleryPicker({
         </ul>
       </div>
 
-      <aside className="shop-cart" aria-label="Cart">
+      <aside className="shop-cart" aria-label={t("shop.cartLabel")}>
         <div className="shop-cart__panel">
           <header className="shop-cart__header">
-            <h2 className="shop-cart__title">Cart</h2>
+            <h2 className="shop-cart__title">{t("shop.cartLabel")}</h2>
             <span className="shop-cart__count">
-              {selected.size} {selected.size === 1 ? "photo" : "photos"}
+              {t(selected.size === 1 ? "shop.photoCount_one" : "shop.photoCount_other", {
+                count: selected.size,
+              })}
             </span>
           </header>
 
@@ -141,7 +149,7 @@ export function ShopGalleryPicker({
 
           <ul className="shop-cart__items" aria-live="polite">
             {selectedImages.length === 0 ? (
-              <li className="shop-cart__empty">No photos selected yet.</li>
+              <li className="shop-cart__empty">{t("shop.cartEmpty")}</li>
             ) : (
               selectedImages.map((image) => (
                 <li key={image.key} className="shop-cart__item">
@@ -155,9 +163,9 @@ export function ShopGalleryPicker({
                     type="button"
                     className="shop-cart__remove"
                     onClick={() => toggle(image.key)}
-                    aria-label="Remove from cart"
+                    aria-label={t("shop.removeFromCart")}
                   >
-                    Remove
+                    {t("shop.remove")}
                   </button>
                 </li>
               ))
@@ -169,29 +177,29 @@ export function ShopGalleryPicker({
               <>
                 <div className="shop-cart__row">
                   <span>
-                    {selected.size} × {formatShopMoney(tier.unitAmountOre)}
+                    {selected.size} × {formatShopMoney(tier.unitAmountOre, locale)}
                   </span>
-                  <span>{formatShopMoney(pricing.subtotalOre)}</span>
+                  <span>{formatShopMoney(pricing.subtotalOre, locale)}</span>
                 </div>
                 {pricing.discountOre > 0 ? (
                   <div className="shop-cart__row shop-cart__row--discount">
-                    <span>Volume discount (−{pricing.percentOff}%)</span>
-                    <span>−{formatShopMoney(pricing.discountOre)}</span>
+                    <span>
+                      {t("shop.volumeDiscount", { percent: pricing.percentOff })}
+                    </span>
+                    <span>−{formatShopMoney(pricing.discountOre, locale)}</span>
                   </div>
                 ) : null}
                 <div className="shop-cart__row shop-cart__row--total">
-                  <span>Total</span>
-                  <span>{formatShopMoney(pricing.totalOre)}</span>
+                  <span>{t("shop.total")}</span>
+                  <span>{formatShopMoney(pricing.totalOre, locale)}</span>
                 </div>
               </>
             ) : (
               <p className="shop-cart__empty-total customer-portal__muted">
-                Total updates when you select photos.
+                {t("shop.cartTotalEmpty")}
               </p>
             )}
-            {nextDiscountHint ? (
-              <p className="shop-cart__hint">{nextDiscountHint}</p>
-            ) : null}
+            {nextDiscountHint ? <p className="shop-cart__hint">{nextDiscountHint}</p> : null}
           </div>
 
           <ShopPaymentMerchantNotice className="shop-cart__merchant" />
@@ -206,8 +214,10 @@ export function ShopGalleryPicker({
               disabled={!shopReady || selected.size === 0}
             >
               {selected.size === 0
-                ? "Continue to checkout"
-                : `Pay ${formatShopMoney(pricing.totalOre)}`}
+                ? t("shop.continueCheckout")
+                : t("shop.payAmount", {
+                    amount: formatShopMoney(pricing.totalOre, locale),
+                  })}
             </button>
           </Form>
         </div>

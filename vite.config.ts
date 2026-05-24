@@ -12,10 +12,19 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules/@stripe/") || id.includes("node_modules/@stripe")) {
-            return "stripe";
+          // Keep React in its own chunks — do not group with @stripe (was preloading
+          // Payment Element on every page via a misnamed "stripe-*.js" shared bundle).
+          if (id.includes("node_modules/react-dom")) {
+            return "react-dom";
           }
-          if (id.includes("node_modules/stripe")) {
+          if (/node_modules\/react\//.test(id)) {
+            return "react";
+          }
+          if (id.includes("node_modules/@stripe/")) {
+            return "stripe-vendor";
+          }
+          // Server SDK only (never imported from client components).
+          if (/node_modules\/stripe\//.test(id)) {
             return "stripe-server";
           }
           if (id.includes("node_modules/match-sorter")) {

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { ShopCheckoutView } from "../lib/shop.server";
+import type { ShopCheckoutView } from "../lib/shop.types";
 import { formatShopMoney } from "../lib/shop-licenses";
 
 type ShopCheckoutSummaryProps = {

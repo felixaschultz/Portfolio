@@ -1,0 +1,55 @@
+import type { ShopLicenseTier } from "./shop-licenses";
+
+export type ShopGalleryImage = {
+  key: string;
+  alt?: string;
+  thumbUrl: string;
+  width: number;
+  height: number;
+};
+
+export type ShopGalleryView = {
+  slug: string;
+  title: string;
+  currency: "dkk";
+  licenseTiers: ShopLicenseTier[];
+  images: ShopGalleryImage[];
+};
+
+export type ShopCheckoutLineItem = {
+  key: string;
+  thumbUrl: string;
+  alt?: string;
+};
+
+export type ShopCheckoutView = {
+  paymentIntentId: string;
+  clientSecret: string;
+  publishableKey: string;
+  shopToken: string;
+  galleryTitle: string;
+  imageCount: number;
+  lineItems: ShopCheckoutLineItem[];
+  unitAmountOre: number;
+  totalOre: number;
+  subtotalOre: number;
+  discountOre: number;
+  discountPercent: number;
+  licenseLabel: string;
+  licenseId: string;
+  currency: "dkk";
+  /** Relative path — use with React Router `Link` so dev/staging hosts stay correct. */
+  backToGalleryPath: string;
+};
+
+export type ShopPurchaseSummary = {
+  paymentIntentId: string;
+  gallerySlug: string;
+  galleryTitle: string;
+  imageCount: number;
+  licenseLabel: string;
+  downloadJwt: string;
+  downloadPath: string;
+  emailSent: boolean;
+  customerEmail: string | null;
+};

@@ -1,11 +1,10 @@
-import { useEffect, useState, type ComponentType } from "react";
 import type { Route } from "./+types/shop.gallery.$token";
+import { ShopGalleryPicker } from "../components/ShopGalleryPicker.client";
 import { ShopStripePreload } from "../components/ShopStripePreload";
 import {
   fetchShopGallery,
   getStripePublishableKey,
   isShopConfigured,
-  type ShopGalleryView,
 } from "../lib/shop.server";
 import { describeVolumeDiscountOffer, formatShopMoney } from "../lib/shop-licenses";
 
@@ -32,17 +31,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const { gallery, shopToken, shopReady, stripePublishableKey } = loaderData;
-  const [Picker, setPicker] = useState<ComponentType<{
-    shopToken: string;
-    gallery: ShopGalleryView;
-    shopReady: boolean;
-  }> | null>(null);
-
-  useEffect(() => {
-    void import("../components/ShopGalleryPicker.client").then((mod) => {
-      setPicker(() => mod.ShopGalleryPicker);
-    });
-  }, []);
 
   const personalPrice = formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900);
   const commercialPrice = formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900);
@@ -64,13 +52,12 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
         <p className="customer-portal__error">Online checkout is not available right now.</p>
       ) : null}
 
-      {Picker ? (
-        <Picker shopToken={shopToken} gallery={gallery} shopReady={shopReady} />
-      ) : (
-        <p className="customer-portal__muted" aria-busy="true">
-          Loading…
-        </p>
-      )}
+      <ShopGalleryPicker
+        shopToken={shopToken}
+        gallery={gallery}
+        shopReady={shopReady}
+        stripePublishableKey={stripePublishableKey}
+      />
     </>
   );
 }

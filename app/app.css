@@ -2465,6 +2465,8 @@ body {
   overflow: hidden;
   cursor: pointer;
   background: var(--color-surface);
+  content-visibility: auto;
+  contain-intrinsic-size: 160px 120px;
 }
 
 .shop-grid__checkbox {
@@ -2591,6 +2593,16 @@ body {
   );
   background-size: 200% 100%;
   animation: shop-checkout-shimmer 1.1s ease-in-out infinite;
+}
+
+.shop-checkout__payment-skeleton--spaced {
+  margin-top: 1rem;
+}
+
+.shop-checkout__payment-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 @keyframes shop-checkout-shimmer {

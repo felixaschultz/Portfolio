@@ -18,14 +18,30 @@ import {
   calculateShopOrderPricing,
   getLicenseTier,
   resolveLicenseTiers,
-  type ShopLicenseTier,
 } from "./shop-licenses";
 import {
   buildImageKeysMetadata,
   parseImageKeysFromMetadata,
 } from "./shop-stripe-metadata";
+import type {
+  ShopCheckoutLineItem,
+  ShopCheckoutView,
+  ShopGalleryImage,
+  ShopGalleryView,
+  ShopPurchaseSummary,
+} from "./shop.types";
 
 export { SHOP_CURRENCY, formatShopMoney };
+export type {
+  ShopCheckoutLineItem,
+  ShopCheckoutView,
+  ShopGalleryImage,
+  ShopGalleryView,
+  ShopPurchaseSummary,
+} from "./shop.types";
+
+/** Grid thumbnails — smaller = faster first load on large galleries. */
+const SHOP_GRID_THUMB_WIDTH = 320;
 
 const SHOP_GALLERY_BY_TOKEN_QUERY = `*[
   _type == "gallery"
@@ -61,60 +77,6 @@ const SHOP_GALLERY_IMAGES_QUERY = `*[
     "filename": coalesce(image.asset->originalFilename, image.asset->_id)
   }
 }`;
-
-export type ShopGalleryImage = {
-  key: string;
-  alt?: string;
-  thumbUrl: string;
-  width: number;
-  height: number;
-};
-
-export type ShopGalleryView = {
-  slug: string;
-  title: string;
-  currency: typeof SHOP_CURRENCY;
-  licenseTiers: ShopLicenseTier[];
-  images: ShopGalleryImage[];
-};
-
-export type ShopCheckoutLineItem = {
-  key: string;
-  thumbUrl: string;
-  alt?: string;
-};
-
-export type ShopCheckoutView = {
-  paymentIntentId: string;
-  clientSecret: string;
-  publishableKey: string;
-  shopToken: string;
-  galleryTitle: string;
-  imageCount: number;
-  lineItems: ShopCheckoutLineItem[];
-  unitAmountOre: number;
-  totalOre: number;
-  subtotalOre: number;
-  discountOre: number;
-  discountPercent: number;
-  licenseLabel: string;
-  licenseId: string;
-  currency: typeof SHOP_CURRENCY;
-  /** Relative path — use with React Router `Link` so dev/staging hosts stay correct. */
-  backToGalleryPath: string;
-};
-
-export type ShopPurchaseSummary = {
-  paymentIntentId: string;
-  gallerySlug: string;
-  galleryTitle: string;
-  imageCount: number;
-  licenseLabel: string;
-  downloadJwt: string;
-  downloadPath: string;
-  emailSent: boolean;
-  customerEmail: string | null;
-};
 
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
@@ -175,9 +137,14 @@ export async function getCheckoutRetryPath(
   }
 }
 
-export async function fetchShopGallery(token: string): Promise<ShopGalleryView | null> {
+export async function fetchShopGallery(
+  token: string,
+  options?: { onlyKeys?: string[] },
+): Promise<ShopGalleryView | null> {
   const client = getSanityDownloadClient();
   if (!client || !token.trim()) return null;
+
+  const onlyKeys = options?.onlyKeys?.length ? new Set(options.onlyKeys) : null;
 
   try {
     const doc = await client.fetch<{
@@ -203,15 +170,16 @@ export async function fetchShopGallery(token: string): Promise<ShopGalleryView |
     const builder = createImageUrlBuilder(client);
     const images: ShopGalleryImage[] = (doc.images ?? [])
       .filter((row) => row?._key && row.image?.asset?._id)
+      .filter((row) => !onlyKeys || onlyKeys.has(row._key!))
       .map((row) => {
         const dims = row.image!.asset!.metadata?.dimensions;
         const width = dims?.width ?? 3;
         const height = dims?.height ?? 2;
         const thumbUrl = builder
           .image(row.image!)
-          .width(480)
+          .width(SHOP_GRID_THUMB_WIDTH)
           .auto("format")
-          .quality(80)
+          .quality(75)
           .url();
         return {
           key: row._key!,
@@ -320,8 +288,14 @@ export async function loadShopCheckout(
     const imageKeys = parseImageKeysFromMetadata(intent.metadata ?? undefined);
     if (!gallerySlug || !shopToken || !imageKeys?.length) return null;
 
-    const gallery = await fetchShopGallery(shopToken);
-    if (!gallery || gallery.slug !== gallerySlug) return null;
+    const gallery = await fetchShopGallery(shopToken, { onlyKeys: imageKeys });
+    if (
+      !gallery ||
+      gallery.slug !== gallerySlug ||
+      gallery.images.length !== imageKeys.length
+    ) {
+      return null;
+    }
 
     const licenseLabel =
       intent.metadata?.licenseLabel ||

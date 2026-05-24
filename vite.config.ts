@@ -8,6 +8,20 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/@stripe/") || id.includes("node_modules/@stripe")) {
+            return "stripe";
+          }
+          if (id.includes("node_modules/stripe")) {
+            return "stripe-server";
+          }
+        },
+      },
+    },
+  },
   server: {
     headers: {
       "Cache-Control": "no-store",

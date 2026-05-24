@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Form } from "react-router";
-import type { ShopGalleryView } from "../lib/shop.server";
+import { preloadStripe } from "../lib/stripe-client";
+import type { ShopGalleryView } from "../lib/shop.types";
 import type { ShopLicenseId } from "../lib/shop-licenses";
 import {
   calculateShopOrderPricing,
@@ -14,16 +15,23 @@ type ShopGalleryPickerProps = {
   shopToken: string;
   gallery: ShopGalleryView;
   shopReady: boolean;
+  stripePublishableKey?: string | null;
 };
 
-export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGalleryPickerProps) {
+export function ShopGalleryPicker({
+  shopToken,
+  gallery,
+  shopReady,
+  stripePublishableKey = null,
+}: ShopGalleryPickerProps) {
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setHydrated(true);
-  }, []);
+    if (!shopReady || selected.size === 0 || !stripePublishableKey) return;
+    preloadStripe(stripePublishableKey);
+    void import("./ShopCheckoutStripe.client");
+  }, [selected.size, shopReady, stripePublishableKey]);
 
   const tier =
     gallery.licenseTiers.find((t) => t.id === licenseId) ?? gallery.licenseTiers[0]!;
@@ -50,14 +58,6 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
 
   const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
   const clearAll = () => setSelected(new Set());
-
-  if (!hydrated) {
-    return (
-      <p className="customer-portal__muted" aria-busy="true">
-        Loading shop…
-      </p>
-    );
-  }
 
   return (
     <div className="shop-gallery-layout">

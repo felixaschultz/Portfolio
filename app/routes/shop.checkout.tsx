@@ -1,9 +1,6 @@
-import { Elements } from "@stripe/react-stripe-js";
-import { useMemo, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Link, redirect, useActionData } from "react-router";
-import { getStripePromise, preloadStripe } from "../lib/stripe-client";
 import type { Route } from "./+types/shop.checkout";
-import { ShopCheckoutPayment } from "../components/ShopCheckoutPayment";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { formatShopMoney } from "../lib/shop-licenses";
@@ -13,6 +10,12 @@ import {
   getCheckoutReturnMessage,
   loadShopCheckout,
 } from "../lib/shop.server";
+
+const ShopCheckoutStripe = lazy(() =>
+  import("../components/ShopCheckoutStripe.client").then((mod) => ({
+    default: mod.ShopCheckoutStripe,
+  })),
+);
 
 export const handle = { shopWide: true };
 
@@ -103,6 +106,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
+function CheckoutPaymentFallback() {
+  return (
+    <div className="shop-checkout__payment-loading" aria-busy="true">
+      <div className="shop-checkout__express-skeleton-btn" />
+      <div className="shop-checkout__payment-skeleton shop-checkout__payment-skeleton--spaced" />
+    </div>
+  );
+}
+
 export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   const actionData = useActionData<{ error?: string }>();
 
@@ -132,14 +144,6 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   }
 
   const { checkout, returnUrl, totalLabel, paymentMessage } = loaderData;
-  const stripePromise = useMemo(
-    () => getStripePromise(checkout.publishableKey),
-    [checkout.publishableKey],
-  );
-
-  useEffect(() => {
-    preloadStripe(checkout.publishableKey);
-  }, [checkout.publishableKey]);
 
   return (
     <div className="shop-checkout">
@@ -168,29 +172,16 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
           <h2 className="shop-checkout__payment-title">Payment</h2>
           <ShopPaymentMerchantNotice />
 
-          <Elements
-            stripe={stripePromise}
-            options={{
-              clientSecret: checkout.clientSecret,
-              appearance: {
-                theme: "night",
-                variables: {
-                  colorPrimary: "#15b0ab",
-                  colorBackground: "#0f1615",
-                  colorText: "#e8f0ef",
-                  colorDanger: "#f87171",
-                  borderRadius: "6px",
-                },
-              },
-            }}
-          >
-            <ShopCheckoutPayment
+          <Suspense fallback={<CheckoutPaymentFallback />}>
+            <ShopCheckoutStripe
+              publishableKey={checkout.publishableKey}
+              clientSecret={checkout.clientSecret}
               paymentIntentId={checkout.paymentIntentId}
               returnUrl={returnUrl}
               totalLabel={totalLabel}
               initialError={paymentMessage}
             />
-          </Elements>
+          </Suspense>
         </section>
       </div>
     </div>

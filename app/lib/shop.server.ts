@@ -116,7 +116,9 @@ export async function getCheckoutRetryPath(
           ? "failed"
           : "failed";
 
-    return `/shop/checkout?pi=${encodeURIComponent(intent.id)}&redirect_status=${redirectStatus}`;
+    const lang = intent.metadata?.locale?.trim();
+    const langParam = lang ? `&lang=${encodeURIComponent(lang)}` : "";
+    return `/shop/checkout?pi=${encodeURIComponent(intent.id)}&redirect_status=${redirectStatus}${langParam}`;
   } catch {
     return null;
   }
@@ -247,6 +249,7 @@ export async function createShopPaymentIntent(options: {
         gallerySlug: gallery.slug,
         licenseId: tier.id,
         licenseLabel: tier.label,
+        locale,
         ...buildImageKeysMetadata(imageKeys),
         subtotalOre: String(pricing.subtotalOre),
         discountOre: String(pricing.discountOre),

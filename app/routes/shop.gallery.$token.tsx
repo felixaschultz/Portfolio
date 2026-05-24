@@ -1,17 +1,60 @@
-import { useTranslation } from "react-i18next";
+import { redirect, useActionData, useTranslation } from "react-router";
 import type { Route } from "./+types/shop.gallery.$token";
 import { ShopGalleryPicker } from "../components/ShopGalleryPicker";
 import { ShopStripePreload } from "../components/ShopStripePreload";
 import {
+  createShopPaymentIntent,
   fetchShopGallery,
   getStripePublishableKey,
   isShopConfigured,
 } from "../lib/shop.server";
-import { describeVolumeDiscountOffer } from "../lib/shop-i18n.server";
+import { describeVolumeDiscountOffer, shopT } from "../lib/shop-i18n.server";
 import { formatShopMoney } from "../lib/shop-licenses";
 import { resolveShopLocale } from "../lib/shop-locale";
 
 export const handle = { shopWide: true };
+
+export async function action({ request, params }: Route.ActionArgs) {
+  const locale = resolveShopLocale(request);
+  const token = params.token?.trim();
+
+  if (request.method !== "POST") {
+    return Response.json({ error: "Method not allowed" }, { status: 405 });
+  }
+
+  if (!token) {
+    return { checkoutError: shopT(locale, "errors.invalidLink") };
+  }
+
+  const form = await request.formData();
+  const licenseId = String(form.get("licenseId") ?? "");
+  let imageKeys: string[] = [];
+  const raw = form.get("imageKeys");
+  if (typeof raw === "string" && raw) {
+    try {
+      imageKeys = JSON.parse(raw) as string[];
+    } catch {
+      imageKeys = [];
+    }
+  }
+
+  const result = await createShopPaymentIntent({
+    shopToken: token,
+    imageKeys,
+    licenseId,
+    locale,
+  });
+
+  if ("error" in result) {
+    return { checkoutError: result.error };
+  }
+
+  const search = new URLSearchParams({
+    pi: result.paymentIntentId,
+    lang: locale,
+  });
+  throw redirect(`/shop/checkout?${search.toString()}`);
+}
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const token = params.token?.trim();
@@ -39,6 +82,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
+  const actionData = useActionData<{ checkoutError?: string }>();
   const {
     gallery,
     shopToken,
@@ -62,6 +106,12 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
 
       {!shopReady ? (
         <p className="customer-portal__error">{t("shop.galleryNotConfigured")}</p>
+      ) : null}
+
+      {actionData?.checkoutError ? (
+        <p className="customer-portal__error" role="alert">
+          {actionData.checkoutError}
+        </p>
       ) : null}
 
       <ShopGalleryPicker

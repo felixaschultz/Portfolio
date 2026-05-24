@@ -2,15 +2,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { useEffect, useMemo } from "react";
 import { getStripePromise, preloadStripe } from "../lib/stripe-client";
 import { ShopCheckoutPayment } from "./ShopCheckoutPayment";
-
-type ShopCheckoutStripeProps = {
-  publishableKey: string;
-  clientSecret: string;
-  paymentIntentId: string;
-  returnUrl: string;
-  totalLabel: string;
-  initialError?: string | null;
-};
+import type { ShopCheckoutStripeProps } from "./shop-checkout-stripe.types";
 
 export function ShopCheckoutStripe({
   publishableKey,

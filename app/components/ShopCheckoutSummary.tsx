@@ -2,6 +2,7 @@ import { Link, useRouteLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Locale } from "../lib/i18n";
 import type { ShopCheckoutView } from "../lib/shop.types";
+import { appendShopLang } from "../lib/shop-locale";
 import { formatShopMoney } from "../lib/shop-licenses";
 
 type ShopCheckoutSummaryProps = {
@@ -66,7 +67,10 @@ export function ShopCheckoutSummary({ checkout, totalLabel }: ShopCheckoutSummar
         </div>
 
         <p className="shop-checkout__change-selection">
-          <Link to={checkout.backToGalleryPath} className="customer-portal__link-btn">
+          <Link
+            to={appendShopLang(checkout.backToGalleryPath, locale)}
+            className="customer-portal__link-btn"
+          >
             {t("shop.changeSelection")}
           </Link>
         </p>

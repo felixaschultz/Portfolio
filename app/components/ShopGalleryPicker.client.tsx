@@ -198,7 +198,7 @@ export function ShopGalleryPicker({
 
           <ShopPaymentMerchantNotice className="shop-cart__merchant" />
 
-          <Form method="post" action="/shop/checkout" className="shop-cart__checkout">
+          <Form method="post" className="shop-cart__checkout">
             <input type="hidden" name="shopToken" value={shopToken} />
             <input type="hidden" name="licenseId" value={licenseId} />
             <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />

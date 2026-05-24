@@ -12,7 +12,6 @@ type ShopGalleryPickerFallbackProps = {
 /** SSR / Suspense fallback — same layout as the interactive picker, no client hooks. */
 export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPickerFallbackProps) {
   const { t } = useTranslation();
-  const tier = gallery.licenseTiers[0];
   const volumeOffer = describeVolumeDiscountOfferClient(t);
 
   return (
@@ -22,10 +21,7 @@ export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPicker
           <legend className="shop-licenses__legend">{t("shop.licensesLegend")}</legend>
           <div className="shop-licenses__options">
             {gallery.licenseTiers.map((item) => (
-              <div
-                key={item.id}
-                className={`shop-licenses__option${item.id === tier?.id ? " shop-licenses__option--active" : ""}`}
-              >
+              <div key={item.id} className="shop-licenses__option">
                 <span className="shop-licenses__option-title">{item.label}</span>
                 <span className="shop-licenses__option-price">
                   {formatShopMoney(item.unitAmountOre, locale)} / {t("shop.perPhoto")}
@@ -37,7 +33,9 @@ export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPicker
           {volumeOffer ? <p className="shop-licenses__volume-offer">{volumeOffer}</p> : null}
         </fieldset>
 
-        <ul className="shop-grid">
+        <section className="shop-gallery__photos shop-gallery__photos--locked" inert="">
+          <p className="shop-gallery__photos-hint">{t("shop.selectLicenseFirst")}</p>
+          <ul className="shop-grid">
           {gallery.images.map((image, index) => (
             <li key={image.key}>
               <div className="shop-grid__item">
@@ -52,7 +50,8 @@ export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPicker
               </div>
             </li>
           ))}
-        </ul>
+          </ul>
+        </section>
       </div>
 
       <aside className="shop-cart" aria-hidden>
@@ -63,7 +62,7 @@ export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPicker
               {t("shop.photoCount_other", { count: 0 })}
             </span>
           </header>
-          {tier ? <p className="shop-cart__license">{tier.label}</p> : null}
+          <p className="shop-cart__license">{t("shop.selectLicenseFirst")}</p>
           <p className="shop-cart__empty customer-portal__muted">{t("shop.loadingSelection")}</p>
         </div>
       </aside>

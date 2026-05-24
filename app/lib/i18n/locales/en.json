@@ -161,6 +161,7 @@
     "continueCheckout": "Continue to checkout",
     "continueCheckoutTotal": "Continue to checkout · {{amount}}",
     "selectPhotosToContinue": "Select photos to continue",
+    "selectLicenseFirst": "Choose a license type above before selecting photos.",
     "payAmount": "Pay {{amount}}",
     "loadingShop": "Loading shop",
     "loadingSelection": "Loading selection…",

@@ -26,7 +26,8 @@ export function ShopGalleryPicker({
   const { t } = useTranslation();
 
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");
+  const [licenseId, setLicenseId] = useState<ShopLicenseId | null>(null);
+  const licenseChosen = licenseId !== null;
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const emailValid = isValidShopEmail(email);
@@ -37,10 +38,11 @@ export function ShopGalleryPicker({
     void import("./ShopCheckoutStripe.client");
   }, [selected.size, shopReady, stripePublishableKey]);
 
-  const tier =
-    gallery.licenseTiers.find((item) => item.id === licenseId) ?? gallery.licenseTiers[0]!;
+  const tier = licenseChosen
+    ? (gallery.licenseTiers.find((item) => item.id === licenseId) ?? gallery.licenseTiers[0]!)
+    : null;
   const pricing = calculateShopOrderPricing({
-    unitAmountOre: tier.unitAmountOre,
+    unitAmountOre: tier?.unitAmountOre ?? 0,
     imageCount: selected.size,
   });
   const nextDiscountHint = getNextVolumeDiscountHintClient(t, selected.size);
@@ -52,6 +54,7 @@ export function ShopGalleryPicker({
   );
 
   const toggle = (key: string) => {
+    if (!licenseChosen) return;
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
@@ -60,7 +63,10 @@ export function ShopGalleryPicker({
     });
   };
 
-  const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
+  const selectAll = () => {
+    if (!licenseChosen) return;
+    setSelected(new Set(gallery.images.map((i) => i.key)));
+  };
   const clearAll = () => setSelected(new Set());
 
   const formattedTotal = formatShopMoney(pricing.totalOre, locale);
@@ -101,12 +107,30 @@ export function ShopGalleryPicker({
           {volumeOffer ? <p className="shop-licenses__volume-offer">{volumeOffer}</p> : null}
         </fieldset>
 
-        <section className="shop-gallery__photos">
+        <section
+          className={`shop-gallery__photos${licenseChosen ? "" : " shop-gallery__photos--locked"}`}
+          {...(!licenseChosen ? { inert: "" } : {})}
+        >
+          {!licenseChosen ? (
+            <p className="shop-gallery__photos-hint" role="status">
+              {t("shop.selectLicenseFirst")}
+            </p>
+          ) : null}
           <div className="customer-portal__toolbar">
-            <button type="button" className="customer-portal__link-btn" onClick={selectAll}>
+            <button
+              type="button"
+              className="customer-portal__link-btn"
+              onClick={selectAll}
+              disabled={!licenseChosen}
+            >
               {t("shop.selectAll")}
             </button>
-            <button type="button" className="customer-portal__link-btn" onClick={clearAll}>
+            <button
+              type="button"
+              className="customer-portal__link-btn"
+              onClick={clearAll}
+              disabled={!licenseChosen}
+            >
               {t("shop.clear")}
             </button>
           </div>
@@ -117,12 +141,13 @@ export function ShopGalleryPicker({
               return (
                 <li key={image.key}>
                   <label
-                    className={`shop-grid__item${isOn ? " shop-grid__item--selected" : ""}`}
+                    className={`shop-grid__item${isOn ? " shop-grid__item--selected" : ""}${!licenseChosen ? " shop-grid__item--disabled" : ""}`}
                   >
                     <input
                       type="checkbox"
                       className="shop-grid__checkbox"
                       checked={isOn}
+                      disabled={!licenseChosen}
                       onChange={() => toggle(image.key)}
                     />
                     <img
@@ -154,7 +179,9 @@ export function ShopGalleryPicker({
               </span>
             </header>
 
-            <p className="shop-cart__license">{tier.label}</p>
+            <p className="shop-cart__license">
+              {tier ? tier.label : t("shop.selectLicenseFirst")}
+            </p>
 
             <ul className="shop-cart__items" aria-live="polite">
               {selectedImages.length === 0 ? (
@@ -186,7 +213,7 @@ export function ShopGalleryPicker({
                 <>
                   <div className="shop-cart__row">
                     <span>
-                      {selected.size} × {formatShopMoney(tier.unitAmountOre, locale)}
+                      {selected.size} × {formatShopMoney(tier!.unitAmountOre, locale)}
                     </span>
                     <span>{formatShopMoney(pricing.subtotalOre, locale)}</span>
                   </div>
@@ -236,7 +263,7 @@ export function ShopGalleryPicker({
             ) : null}
 
             <input type="hidden" name="shopToken" value={shopToken} />
-            <input type="hidden" name="licenseId" value={licenseId} />
+            <input type="hidden" name="licenseId" value={licenseId ?? ""} />
             <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />
             {licenseId === "commercial" ? (
               <label className="shop-cart__email">
@@ -269,9 +296,11 @@ export function ShopGalleryPicker({
             <button
               type="submit"
               className="customer-portal__button shop-cart__pay"
-              disabled={!shopReady || selected.size === 0 || !emailValid}
+              disabled={!shopReady || !licenseChosen || selected.size === 0 || !emailValid}
             >
-              {selected.size === 0 ? (
+              {!licenseChosen ? (
+                t("shop.selectLicenseFirst")
+              ) : selected.size === 0 ? (
                 t("shop.selectPhotosToContinue")
               ) : (
                 <>

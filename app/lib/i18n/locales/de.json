@@ -161,6 +161,7 @@
     "continueCheckout": "Zur Kasse",
     "continueCheckoutTotal": "Zur Kasse · {{amount}}",
     "selectPhotosToContinue": "Fotos auswählen, um fortzufahren",
+    "selectLicenseFirst": "Wähle oben einen Lizenztyp, bevor du Fotos auswählst.",
     "payAmount": "{{amount}} bezahlen",
     "loadingShop": "Shop wird geladen",
     "loadingSelection": "Auswahl wird geladen…",

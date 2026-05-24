@@ -160,6 +160,7 @@
     "continueCheckout": "Fortsæt til betaling",
     "continueCheckoutTotal": "Fortsæt til betaling · {{amount}}",
     "selectPhotosToContinue": "Vælg billeder for at fortsætte",
+    "selectLicenseFirst": "Vælg en licenstype ovenfor, før du vælger billeder.",
     "payAmount": "Betal {{amount}}",
     "loadingShop": "Indlæser shop",
     "loadingSelection": "Indlæser valg…",

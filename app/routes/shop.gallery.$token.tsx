@@ -1,5 +1,5 @@
 import type { Route } from "./+types/shop.gallery.$token";
-import { ShopGalleryPicker } from "../components/ShopGalleryPicker.client";
+import { ShopGalleryPicker } from "../components/ShopGalleryPicker";
 import { ShopStripePreload } from "../components/ShopStripePreload";
 import {
   fetchShopGallery,

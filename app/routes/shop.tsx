@@ -11,7 +11,7 @@ export function loader({ request }: Route.LoaderArgs) {
   return { siteUrl: resolveSiteUrl(request) };
 }
 
-export default function ShopLayoutRoute({ loaderData }: Route.ComponentProps) {
+export default function ShopLayoutRoute() {
   const matches = useMatches();
   const shopWide = matches.some((m) => (m.handle as ShopRouteHandle | undefined)?.shopWide);
 

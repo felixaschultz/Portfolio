@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useFetcher } from "react-router";
+import { useState } from "react";
+import { Form } from "react-router";
 import type { Route } from "./+types/shop.gallery.$token";
 import { fetchShopGallery, isShopConfigured } from "../lib/shop.server";
 
@@ -29,11 +29,9 @@ function formatEur(cents: number): string {
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const { gallery, shopToken, shopReady } = loaderData;
-  const fetcher = useFetcher<{ url?: string; error?: string }>();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const totalCents = selected.size * gallery.priceCents;
-  const checkingOut = fetcher.state !== "idle";
 
   const toggle = (key: string) => {
     setSelected((prev) => {
@@ -47,20 +45,6 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
   const clearAll = () => setSelected(new Set());
 
-  const checkout = () => {
-    if (!shopReady || selected.size === 0) return;
-    void fetcher.submit(
-      JSON.stringify({ shopToken, imageKeys: [...selected] }),
-      { method: "post", action: "/api/shop/checkout", encType: "application/json" },
-    );
-  };
-
-  useEffect(() => {
-    if (fetcher.data?.url) {
-      window.location.href = fetcher.data.url;
-    }
-  }, [fetcher.data]);
-
   return (
     <div className="customer-portal">
       <main className="customer-portal__main customer-portal__main--wide">
@@ -73,12 +57,6 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
 
         {!shopReady ? (
           <p className="customer-portal__error">Online checkout is not available right now.</p>
-        ) : null}
-
-        {fetcher.data?.error ? (
-          <p className="customer-portal__error" role="alert">
-            {fetcher.data.error}
-          </p>
         ) : null}
 
         <div className="customer-portal__toolbar">
@@ -115,14 +93,17 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
         </ul>
 
         <footer className="customer-portal__footer">
-          <button
-            type="button"
-            className="customer-portal__button"
-            disabled={!shopReady || selected.size === 0 || checkingOut}
-            onClick={checkout}
-          >
-            {checkingOut ? "Redirecting to checkout…" : `Pay ${formatEur(totalCents)}`}
-          </button>
+          <Form method="post" action="/shop/checkout">
+            <input type="hidden" name="shopToken" value={shopToken} />
+            <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />
+            <button
+              type="submit"
+              className="customer-portal__button"
+              disabled={!shopReady || selected.size === 0}
+            >
+              Continue to checkout · {formatEur(totalCents)}
+            </button>
+          </Form>
         </footer>
       </main>
     </div>

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
+import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
 import { localizedField } from "./i18n";
 import { getSiteUrl } from "./seo";
@@ -65,6 +66,29 @@ export type ShopGalleryView = {
   images: ShopGalleryImage[];
 };
 
+export type ShopCheckoutView = {
+  paymentIntentId: string;
+  clientSecret: string;
+  publishableKey: string;
+  shopToken: string;
+  galleryTitle: string;
+  imageCount: number;
+  totalCents: number;
+  currency: typeof SHOP_CURRENCY;
+  cancelUrl: string;
+};
+
+export type ShopPurchaseSummary = {
+  paymentIntentId: string;
+  gallerySlug: string;
+  galleryTitle: string;
+  imageCount: number;
+  downloadJwt: string;
+  downloadPath: string;
+  emailSent: boolean;
+  customerEmail: string | null;
+};
+
 function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) return null;
@@ -80,6 +104,17 @@ export function getStripePublishableKey(): string | null {
     process.env.STRIPE_PUBLISHABLE_KEY?.trim() ||
     process.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim();
   return key || null;
+}
+
+function parseImageKeys(raw: string | undefined): string[] | null {
+  if (!raw) return null;
+  try {
+    const keys = JSON.parse(raw) as unknown;
+    if (!Array.isArray(keys) || !keys.every((k) => typeof k === "string")) return null;
+    return keys;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchShopGallery(token: string): Promise<ShopGalleryView | null> {
@@ -148,70 +183,101 @@ export async function fetchShopGallery(token: string): Promise<ShopGalleryView |
   }
 }
 
-export async function createShopCheckoutSession(options: {
+function validatedImageKeys(gallery: ShopGalleryView, imageKeys: string[]): string[] {
+  const validKeys = new Set(gallery.images.map((i) => i.key));
+  return [...new Set(imageKeys.filter((k) => validKeys.has(k)))];
+}
+
+export async function createShopPaymentIntent(options: {
   shopToken: string;
   imageKeys: string[];
-}): Promise<{ url: string } | { error: string }> {
+}): Promise<{ paymentIntentId: string } | { error: string }> {
   const stripe = getStripe();
-  if (!stripe) return { error: "Shop is not configured." };
+  const publishableKey = getStripePublishableKey();
+  if (!stripe || !publishableKey) return { error: "Shop is not configured." };
 
   const gallery = await fetchShopGallery(options.shopToken);
   if (!gallery) return { error: "Invalid shop link." };
 
-  const validKeys = new Set(gallery.images.map((i) => i.key));
-  const imageKeys = [...new Set(options.imageKeys.filter((k) => validKeys.has(k)))];
+  const imageKeys = validatedImageKeys(gallery, options.imageKeys);
   if (imageKeys.length === 0) return { error: "Select at least one photo." };
 
-  const siteUrl = getSiteUrl();
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: SHOP_CURRENCY,
-          unit_amount: gallery.priceCents,
-          product_data: {
-            name: `Digital photos — ${gallery.title}`,
-            description: `${imageKeys.length} full-size image${imageKeys.length === 1 ? "" : "s"}`,
-          },
-        },
-        quantity: imageKeys.length,
-      },
-    ],
-    success_url: `${siteUrl}/shop/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/shop/gallery/${options.shopToken}`,
-    metadata: {
-      shopToken: options.shopToken,
-      gallerySlug: gallery.slug,
-      imageKeys: JSON.stringify(imageKeys),
-    },
-  });
-
-  if (!session.url) return { error: "Could not start checkout." };
-  return { url: session.url };
-}
-
-export async function resolvePurchaseFromStripeSession(
-  sessionId: string,
-): Promise<{ downloadToken: string; imageCount: number; galleryTitle: string } | null> {
-  const stripe = getStripe();
-  if (!stripe || !sessionId.trim()) return null;
+  const amount = gallery.priceCents * imageKeys.length;
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId.trim());
-    if (session.payment_status !== "paid") return null;
+    const intent = await stripe.paymentIntents.create({
+      amount,
+      currency: SHOP_CURRENCY,
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        shopToken: options.shopToken,
+        gallerySlug: gallery.slug,
+        imageKeys: JSON.stringify(imageKeys),
+      },
+    });
 
-    const gallerySlug = session.metadata?.gallerySlug;
-    const imageKeysRaw = session.metadata?.imageKeys;
-    if (!gallerySlug || !imageKeysRaw) return null;
-
-    let imageKeys: string[];
-    try {
-      imageKeys = JSON.parse(imageKeysRaw) as string[];
-      if (!Array.isArray(imageKeys) || !imageKeys.every((k) => typeof k === "string")) return null;
-    } catch {
-      return null;
+    if (!intent.id || !intent.client_secret) {
+      return { error: "Could not start checkout." };
     }
+
+    return { paymentIntentId: intent.id };
+  } catch (err) {
+    console.error("[shop] create payment intent failed:", err);
+    return { error: "Could not start checkout." };
+  }
+}
+
+export async function loadShopCheckout(
+  paymentIntentId: string,
+): Promise<ShopCheckoutView | null> {
+  const stripe = getStripe();
+  const publishableKey = getStripePublishableKey();
+  if (!stripe || !publishableKey || !paymentIntentId.trim()) return null;
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId.trim());
+    if (!intent.client_secret) return null;
+
+    const gallerySlug = intent.metadata?.gallerySlug;
+    const shopToken = intent.metadata?.shopToken;
+    const imageKeys = parseImageKeys(intent.metadata?.imageKeys);
+    if (!gallerySlug || !shopToken || !imageKeys?.length) return null;
+
+    const gallery = await fetchShopGallery(shopToken);
+    if (!gallery || gallery.slug !== gallerySlug) return null;
+
+    const siteUrl = getSiteUrl();
+
+    return {
+      paymentIntentId: intent.id,
+      clientSecret: intent.client_secret,
+      publishableKey,
+      shopToken,
+      galleryTitle: gallery.title,
+      imageCount: imageKeys.length,
+      totalCents: intent.amount,
+      currency: SHOP_CURRENCY,
+      cancelUrl: `${siteUrl}/shop/gallery/${shopToken}`,
+    };
+  } catch (err) {
+    console.error("[shop] load checkout failed:", err);
+    return null;
+  }
+}
+
+export async function resolvePaidPurchase(
+  paymentIntentId: string,
+): Promise<ShopPurchaseSummary | null> {
+  const stripe = getStripe();
+  if (!stripe || !paymentIntentId.trim()) return null;
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId.trim());
+    if (intent.status !== "succeeded") return null;
+
+    const gallerySlug = intent.metadata?.gallerySlug;
+    const imageKeys = parseImageKeys(intent.metadata?.imageKeys);
+    if (!gallerySlug || !imageKeys?.length) return null;
 
     const client = getSanityDownloadClient();
     const titleDoc = client
@@ -220,20 +286,75 @@ export async function resolvePurchaseFromStripeSession(
           { slug: gallerySlug },
         )
       : null;
-    const title = localizedField(titleDoc?.title, "en") || gallerySlug;
+    const galleryTitle = localizedField(titleDoc?.title, "en") || gallerySlug;
 
-    const downloadToken = await signShopPurchase({
+    const downloadJwt = await signShopPurchase({
       type: "shop",
       gallerySlug,
       imageKeys,
     });
-    if (!downloadToken) return null;
+    if (!downloadJwt) return null;
 
-    return { downloadToken, imageCount: imageKeys.length, galleryTitle: title };
+    const siteUrl = getSiteUrl();
+    const downloadPath = `/shop/download?token=${encodeURIComponent(downloadJwt)}`;
+
+    return {
+      paymentIntentId: intent.id,
+      gallerySlug,
+      galleryTitle,
+      imageCount: imageKeys.length,
+      downloadJwt,
+      downloadPath,
+      emailSent: intent.metadata?.downloadEmailSent === "true",
+      customerEmail: intent.metadata?.downloadEmail?.trim() || null,
+    };
   } catch (err) {
-    console.error("[shop] session resolve failed:", err);
+    console.error("[shop] resolve purchase failed:", err);
     return null;
   }
+}
+
+export async function sendPurchaseDownloadEmail(
+  paymentIntentId: string,
+  email: string,
+): Promise<{ ok: true } | { error: string }> {
+  const stripe = getStripe();
+  if (!stripe) return { error: "Shop is not configured." };
+
+  const purchase = await resolvePaidPurchase(paymentIntentId);
+  if (!purchase) return { error: "Payment not found or not completed." };
+
+  if (purchase.emailSent && purchase.customerEmail && purchase.customerEmail !== email.trim().toLowerCase()) {
+    return { error: "A download link was already sent for this order." };
+  }
+
+  const { sendShopDownloadEmail } = await import("./shop-email.server");
+  const siteUrl = getSiteUrl();
+  const downloadUrl = `${siteUrl}${purchase.downloadPath}`;
+
+  const sent = await sendShopDownloadEmail({
+    to: email,
+    galleryTitle: purchase.galleryTitle,
+    imageCount: purchase.imageCount,
+    downloadUrl,
+  });
+
+  if ("error" in sent) return sent;
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    await stripe.paymentIntents.update(paymentIntentId, {
+      metadata: {
+        ...intent.metadata,
+        downloadEmailSent: "true",
+        downloadEmail: email.trim().toLowerCase(),
+      },
+    });
+  } catch (err) {
+    console.warn("[shop] could not update payment intent metadata:", err);
+  }
+
+  return { ok: true };
 }
 
 export async function buildShopPurchaseZip(payload: ShopPurchasePayload): Promise<Response | null> {
@@ -267,3 +388,5 @@ export function getDeliveryContactEmail(): string | null {
   const email = process.env.DELIVERY_CONTACT_EMAIL?.trim();
   return email && email.includes("@") ? email : null;
 }
+
+export { isShopEmailConfigured };

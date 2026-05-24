@@ -2018,3 +2018,53 @@ body {
   opacity: 1;
 }
 
+.shop-checkout__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.shop-checkout__element {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.shop-complete__email {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.shop-complete__email-title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.shop-complete__email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.shop-complete__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shop-complete__input {
+  width: 100%;
+  max-width: 20rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+

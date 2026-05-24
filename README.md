@@ -80,6 +80,20 @@ Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 | `SANITY_DATASET` | e.g. `production` |
 | `SANITY_API_VERSION` | e.g. `2024-05-16` |
 | `SANITY_API_TOKEN` | Optional read token for private datasets |
+| `STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY` | Shop checkout (Stripe) |
+| `PURCHASE_JWT_SECRET` | Signs download links (7-day ZIP access) |
+| `RESEND_API_KEY` | [Resend](https://resend.com) API key for post-purchase emails |
+| `SHOP_EMAIL_FROM` | Sender, e.g. `Felix A. Schultz <photos@felix-schultz.net>` |
+| `DELIVERY_CONTACT_EMAIL` | Optional reply-to on download emails |
+
+### Shop download email (Resend)
+
+1. Create an API key at [resend.com](https://resend.com).
+2. Add `RESEND_API_KEY` and `SHOP_EMAIL_FROM` to `.env.local` and Vercel (Production + Preview).
+3. For local testing before your domain is verified, use  
+   `SHOP_EMAIL_FROM=Felix A. Schultz <onboarding@resend.dev>` (Resend only delivers to your own address in sandbox mode).
+4. Verify `felix-schultz.net` (or `.dk`) in Resend → **Domains**, then switch `SHOP_EMAIL_FROM` to an address on that domain.
+5. After a successful payment, the thank-you page sends a localized email with a **Download ZIP** button (same 7-day link as on the page).
 
 ## Build & deploy
 

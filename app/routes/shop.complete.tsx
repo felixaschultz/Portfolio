@@ -21,7 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return { ok: false as const, reason: "missing_payment" as const, locale };
   }
 
-  const purchase = await resolvePaidPurchase(paymentIntentId, locale);
+  let purchase = await resolvePaidPurchase(paymentIntentId, locale);
   if (!purchase) {
     const retryPath = await getCheckoutRetryPath(paymentIntentId);
     if (retryPath) {
@@ -30,11 +30,34 @@ export async function loader({ request }: Route.LoaderArgs) {
     return { ok: false as const, reason: "invalid_payment" as const, locale };
   }
 
+  const emailConfigured = isShopEmailConfigured();
+  let autoEmail: { sent: true; email: string } | { sent: false; error: string; email: string } | null =
+    null;
+
+  if (
+    emailConfigured &&
+    purchase.customerEmail &&
+    !purchase.emailSent
+  ) {
+    const result = await sendPurchaseDownloadEmail(
+      paymentIntentId,
+      purchase.customerEmail,
+      locale,
+    );
+    if ("error" in result) {
+      autoEmail = { sent: false, error: result.error, email: purchase.customerEmail };
+    } else {
+      autoEmail = { sent: true, email: purchase.customerEmail };
+      purchase = { ...purchase, emailSent: true };
+    }
+  }
+
   return {
     ok: true as const,
     locale,
     purchase,
-    emailConfigured: isShopEmailConfigured(),
+    emailConfigured,
+    autoEmail,
   };
 }
 
@@ -78,10 +101,11 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
     );
   }
 
-  const { purchase, emailConfigured } = loaderData;
-  const sent = actionData?.sent;
-  const error = actionData?.error;
+  const { purchase, emailConfigured, autoEmail } = loaderData;
+  const sent = actionData?.sent || autoEmail?.sent === true;
+  const error = actionData?.error ?? (autoEmail?.sent === false ? autoEmail.error : undefined);
   const alreadyEmailed = purchase.emailSent;
+  const emailedTo = actionData?.email ?? autoEmail?.email ?? purchase.customerEmail;
   const photoWord = t(
     purchase.imageCount === 1 ? "shop.photoWord_one" : "shop.photoWord_other",
   );
@@ -111,9 +135,9 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
           <p className="customer-portal__muted">{t("shop.emailNotConfigured")}</p>
         ) : sent || alreadyEmailed ? (
           <p className="customer-portal__muted">
-            {sent
-              ? t("shop.emailSent", { email: actionData?.email ?? purchase.customerEmail })
-              : t("shop.emailAlreadySent", { email: purchase.customerEmail })}
+            {alreadyEmailed && !sent
+              ? t("shop.emailAlreadySent", { email: purchase.customerEmail ?? emailedTo })
+              : t("shop.emailSent", { email: emailedTo ?? "" })}
           </p>
         ) : (
           <>

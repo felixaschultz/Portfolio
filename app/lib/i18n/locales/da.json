@@ -214,6 +214,16 @@
     "sendDownloadLink": "Send downloadlink",
     "sending": "Sender…",
     "completeHint": "Linket udløber efter 7 dage. Gem denne side eller din e-mail til senere adgang.",
+    "emailAutoSending": "Sender dit downloadlink…",
+    "downloadEmail": {
+      "subject": "Dine billeder — {{gallery}}",
+      "thanks": "Tak for dit køb.",
+      "ready_one": "Dit digitale billede fra «{{gallery}}» er klar til download.",
+      "ready_other": "Dine {{count}} digitale billeder fra «{{gallery}}» er klar til download.",
+      "cta": "Download ZIP",
+      "expiry": "Linket er gyldigt i 7 dage.",
+      "fallback": "Hvis knappen ikke virker, kan du kopiere denne adresse ind i browseren:"
+    },
     "merchantNoticeBefore": "På dit kontoudtog og Apple Pay vises",
     "merchantNoticeAfter": "som forhandler (fx «Betal Intastellar Solutions»), ikke Felix Schultz. Du køber fotolicenser fra Felix Schultz.",
     "licenses": {
@@ -246,7 +256,9 @@
       "paymentLoading": "Betalingen indlæses stadig. Prøv igen.",
       "checkPaymentDetails": "Tjek dine betalingsoplysninger.",
       "paymentCouldNotComplete": "Betalingen kunne ikke gennemføres.",
-      "licenseFallback": "Licens"
+      "licenseFallback": "Licens",
+      "emailNotConfigured": "E-mail er ikke konfigureret.",
+      "emailSendFailed": "Kunne ikke sende e-mail. Prøv igen eller download direkte på siden."
     }
   }
 }

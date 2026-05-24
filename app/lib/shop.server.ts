@@ -536,8 +536,12 @@ export async function sendPurchaseDownloadEmail(
   const purchase = await resolvePaidPurchase(paymentIntentId, locale);
   if (!purchase) return { error: shopT(locale, "errors.paymentNotFound") };
 
-  if (purchase.emailSent && purchase.customerEmail && purchase.customerEmail !== email.trim().toLowerCase()) {
-    return { error: shopT(locale, "errors.emailAlreadySent") };
+  const normalizedEmail = email.trim().toLowerCase();
+  if (purchase.emailSent) {
+    if (purchase.customerEmail && purchase.customerEmail !== normalizedEmail) {
+      return { error: shopT(locale, "errors.emailAlreadySent") };
+    }
+    return { ok: true };
   }
 
   const { sendShopDownloadEmail } = await import("./shop-email.server");
@@ -549,6 +553,7 @@ export async function sendPurchaseDownloadEmail(
     galleryTitle: purchase.galleryTitle,
     imageCount: purchase.imageCount,
     downloadUrl,
+    locale,
   });
 
   if ("error" in sent) return sent;

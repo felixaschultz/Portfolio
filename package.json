@@ -8,6 +8,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
+    "dev:shop-link": "tsx scripts/dev-shop-link.ts",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "studio": "npm run dev --prefix studio",

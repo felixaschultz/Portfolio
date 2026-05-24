@@ -7,6 +7,18 @@ const studioDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const rootDir = resolve(studioDir, "..");
 
 config({ path: resolve(rootDir, ".env") });
+config({ path: resolve(rootDir, ".env.local"), override: true });
+
+const args = process.argv.slice(2);
+const isStudioDev = args[0] === "dev";
+
+const defaultSiteUrl = isStudioDev
+  ? (process.env.SANITY_STUDIO_SITE_URL ??
+    process.env.SITE_URL ??
+    "http://localhost:5173")
+  : (process.env.SANITY_STUDIO_SITE_URL ??
+    process.env.SITE_URL ??
+    "https://www.felix-schultz.net");
 
 const env = {
   ...process.env,
@@ -20,8 +32,7 @@ const env = {
    * would override the Studio login session in the browser bundle.
    */
   SANITY_STUDIO_API_TOKEN: process.env.SANITY_STUDIO_API_TOKEN ?? "",
-  SANITY_STUDIO_SITE_URL:
-    process.env.SANITY_STUDIO_SITE_URL ?? process.env.SITE_URL ?? "https://www.felix-schultz.net",
+  SANITY_STUDIO_SITE_URL: defaultSiteUrl.replace(/\/$/, ""),
 };
 
 if (!env.SANITY_STUDIO_PROJECT_ID || env.SANITY_STUDIO_PROJECT_ID === "your_project_id") {
@@ -31,7 +42,6 @@ if (!env.SANITY_STUDIO_PROJECT_ID || env.SANITY_STUDIO_PROJECT_ID === "your_proj
   process.exit(1);
 }
 
-const args = process.argv.slice(2);
 const result = spawnSync("npx", ["sanity", ...args], {
   stdio: "inherit",
   env,

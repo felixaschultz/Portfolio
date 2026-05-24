@@ -7,7 +7,9 @@ import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { shopShowsEurPrices } from "../lib/shop-licenses";
 import { resolveSiteUrl } from "../lib/seo";
-import { getCheckoutReturnMessage, shopT } from "../lib/shop-i18n.server";
+import da from "../lib/i18n/locales/da.json";
+import de from "../lib/i18n/locales/de.json";
+import en from "../lib/i18n/locales/en.json";
 import type { Locale } from "../lib/i18n";
 import { resolveShopLocale } from "../lib/shop-locale";
 import { loadShopCheckout } from "../lib/shop.server";
@@ -47,6 +49,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const siteUrl = resolveSiteUrl(request);
   const returnUrl = `${siteUrl}/shop/checkout?pi=${encodeURIComponent(checkout.paymentIntentId)}&lang=${encodeURIComponent(locale)}`;
+  const { getCheckoutReturnMessage } = await import("../lib/shop-i18n.server");
   const paymentMessage = getCheckoutReturnMessage(locale, redirectStatus);
 
   return {
@@ -120,8 +123,14 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   );
 }
 
+const checkoutMetaTitle: Record<Locale, string> = {
+  da: da.shop.metaCheckout,
+  de: de.shop.metaCheckout,
+  en: en.shop.metaCheckout,
+};
+
 export function meta({ matches }: Route.MetaArgs) {
   const shop = matches.find((m) => m.id === "routes/shop")?.data as { locale?: Locale } | undefined;
-  const title = shop?.locale ? shopT(shop.locale, "metaCheckout") : "Checkout";
+  const title = shop?.locale ? checkoutMetaTitle[shop.locale] : "Checkout";
   return [{ title }, { name: "robots", content: "noindex" }];
 }

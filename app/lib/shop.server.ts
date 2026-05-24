@@ -509,10 +509,20 @@ export async function resolvePaidPurchase(
     const licenseId =
       intent.metadata?.licenseId === "commercial" ? "commercial" : "personal";
 
+    await import("./shop-orders.server").then(({ upsertShopOrderFromStripeIntent }) =>
+      upsertShopOrderFromStripeIntent({
+        id: intent.id,
+        amount: intent.amount,
+        created: intent.created,
+        metadata: intent.metadata as Record<string, string>,
+      }),
+    );
+
     const downloadJwt = await signShopPurchase({
       type: "shop",
       gallerySlug,
       imageKeys,
+      paymentIntentId: intent.id,
     });
     if (!downloadJwt) return null;
 
@@ -573,6 +583,86 @@ export async function sendPurchaseDownloadEmail(
   });
 
   if ("error" in sent) return sent;
+
+  const { markShopOrderEmailSent } = await import("./shop-orders.server");
+  await markShopOrderEmailSent(paymentIntentId);
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    await stripe.paymentIntents.update(paymentIntentId, {
+      metadata: {
+        ...intent.metadata,
+        downloadEmailSent: "true",
+        downloadEmail: email.trim().toLowerCase(),
+      },
+    });
+  } catch (err) {
+    console.warn("[shop] could not update payment intent metadata:", err);
+  }
+
+  return { ok: true };
+}
+
+/** Admin: resend download link (extends 7-day window when expired / not yet downloaded). */
+export async function adminResendShopDownloadEmail(
+  paymentIntentId: string,
+  email: string,
+  locale: Locale,
+): Promise<{ ok: true } | { error: string }> {
+  const {
+    canResendDownloadLink,
+    extendShopOrderDownloadWindow,
+    getShopOrder,
+    markShopOrderEmailSent,
+  } = await import("./shop-orders.server");
+
+  const order = await getShopOrder(paymentIntentId);
+  if (!order) {
+    return { error: "Order not found. Open the thank-you page once so it is recorded." };
+  }
+  if (!canResendDownloadLink(order)) {
+    return {
+      error: "Cannot resend: photos were already downloaded before the link expired.",
+    };
+  }
+
+  const stripe = getStripe();
+  if (!stripe) return { error: shopT(locale, "errors.notConfigured") };
+
+  let purchase = await resolvePaidPurchase(paymentIntentId, locale);
+  if (!purchase) return { error: shopT(locale, "errors.paymentNotFound") };
+
+  await extendShopOrderDownloadWindow(paymentIntentId);
+
+  const imageKeys = await stripe.paymentIntents
+    .retrieve(paymentIntentId)
+    .then((intent) => parseImageKeysFromMetadata(intent.metadata ?? undefined));
+  if (!imageKeys?.length) {
+    return { error: shopT(locale, "errors.paymentNotFound") };
+  }
+
+  const downloadJwt = await signShopPurchase({
+    type: "shop",
+    gallerySlug: purchase.gallerySlug,
+    imageKeys,
+    paymentIntentId,
+  });
+  if (!downloadJwt) return { error: shopT(locale, "errors.notConfigured") };
+
+  const siteUrl = getSiteUrl();
+  const downloadUrl = `${siteUrl}/shop/download?token=${encodeURIComponent(downloadJwt)}`;
+
+  const { sendShopDownloadEmail } = await import("./shop-email.server");
+  const sent = await sendShopDownloadEmail({
+    to: email.trim(),
+    galleryTitle: purchase.galleryTitle,
+    imageCount: purchase.imageCount,
+    downloadUrl,
+    locale,
+  });
+  if ("error" in sent) return sent;
+
+  await markShopOrderEmailSent(paymentIntentId);
 
   try {
     const intent = await stripe.paymentIntents.retrieve(paymentIntentId);

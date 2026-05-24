@@ -4,6 +4,7 @@ export type ShopPurchasePayload = {
   type: "shop";
   gallerySlug: string;
   imageKeys: string[];
+  paymentIntentId?: string;
 };
 
 function secretKey(): Uint8Array | null {
@@ -20,6 +21,7 @@ export async function signShopPurchase(payload: ShopPurchasePayload): Promise<st
     type: payload.type,
     gallerySlug: payload.gallerySlug,
     imageKeys: payload.imageKeys,
+    ...(payload.paymentIntentId ? { paymentIntentId: payload.paymentIntentId } : {}),
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -38,10 +40,14 @@ export async function verifyShopPurchase(token: string): Promise<ShopPurchasePay
     if (!Array.isArray(payload.imageKeys) || !payload.imageKeys.every((k) => typeof k === "string")) {
       return null;
     }
+    const paymentIntentId =
+      typeof payload.paymentIntentId === "string" ? payload.paymentIntentId : undefined;
+
     return {
       type: "shop",
       gallerySlug: payload.gallerySlug,
       imageKeys: payload.imageKeys as string[],
+      paymentIntentId,
     };
   } catch {
     return null;

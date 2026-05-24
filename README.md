@@ -85,13 +85,18 @@ Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 | `RESEND_API_KEY` | [Resend](https://resend.com) API key for post-purchase emails |
 | `SHOP_EMAIL_FROM` | Sender, e.g. `Felix A. Schultz <photos@felix-schultz.net>` |
 | `DELIVERY_CONTACT_EMAIL` | Optional reply-to on download emails |
-| `SHOP_ADMIN_SECRET` | Password for `/shop/admin` (orders + revenue, min. 16 chars) |
+| `DATABASE_URL` | Postgres (Vercel Postgres / Neon) for orders + admin users |
+| `ADMIN_BOOTSTRAP_EMAIL` / `ADMIN_BOOTSTRAP_PASSWORD` | Create first admin when DB is empty (min. 12 char password) |
+| `ADMIN_SESSION_SECRET` | Optional; defaults to `PURCHASE_JWT_SECRET` for admin cookies |
+| `WEBAUTHN_RP_ID` / `WEBAUTHN_ORIGIN` | Passkey sign-in (defaults from `SITE_URL` hostname) |
 
 ### Shop admin dashboard
 
-1. Set `SHOP_ADMIN_SECRET` (e.g. `openssl rand -hex 24`) in `.env.local` and Vercel.
-2. Open **`/shop/admin`** and sign in with that password.
-3. View paid orders, customer name, email, gallery, and total revenue (DKK, from Stripe).
+1. Provision Postgres and set `DATABASE_URL` in `.env.local` and Vercel.
+2. Set `ADMIN_BOOTSTRAP_EMAIL` and `ADMIN_BOOTSTRAP_PASSWORD`, then run `npx tsx scripts/bootstrap-admin.ts` or open `/shop/admin` once (auto-bootstrap on first load).
+3. Sign in with **email + password**, or register a **passkey** after signing in.
+4. View paid orders, **download status** (downloaded before 7-day expiry or not), and **send download link** for orders that never downloaded or expired without download.
+5. Add more admin users from the dashboard (email + password; they can add passkeys after login).
 
 Customer names also appear in the **Stripe Dashboard** on each payment (description + `customerName` metadata) after they complete the buyer step at checkout.
 

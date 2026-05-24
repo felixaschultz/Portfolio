@@ -2792,6 +2792,119 @@ body {
   font-size: 0.8125em;
 }
 
+.shop-admin__login-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 22rem;
+}
+
+.shop-admin__login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.shop-admin__login-divider::before,
+.shop-admin__login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border, rgba(255, 255, 255, 0.12));
+}
+
+.shop-admin__section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+}
+
+.shop-admin__section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0 0 0.75rem;
+}
+
+.shop-admin__user-list {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.shop-admin__create-user-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .shop-admin__create-user-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .shop-admin__create-user-grid .shop-admin__label:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.shop-admin__download-cell {
+  min-width: 11rem;
+  font-size: 0.875rem;
+}
+
+.shop-admin__download-badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.shop-admin__download-badge--pending {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.shop-admin__download-badge--downloaded {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.shop-admin__download-badge--expired_not_downloaded {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.shop-admin__download-badge--expired_downloaded {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.shop-admin__download-badge--unknown {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--color-muted);
+}
+
+.shop-admin__download-meta {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.shop-admin__resend-form {
+  margin-top: 0.5rem;
+}
+
+.shop-admin__feedback {
+  margin-bottom: 1rem;
+}
+
 .customer-portal__header {
   margin-bottom: 1.5rem;
 }
@@ -2863,6 +2976,12 @@ body {
 .customer-portal__button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.customer-portal__button--secondary {
+  background: transparent;
+  color: var(--color-text, #f5f5f4);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.2));
 }
 
 .shop-grid {

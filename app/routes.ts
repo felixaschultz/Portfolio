@@ -17,6 +17,7 @@ export default [
     route("complete", "routes/shop.complete.tsx"),
     route("success", "routes/shop.success.tsx"),
     route("admin", "routes/shop.admin.tsx"),
+    route("admin/api/:action", "routes/shop.admin.api.tsx"),
   ]),
   route("shop/download", "routes/shop.download.tsx"),
   route("fotografi", "routes/fotografi.tsx"),

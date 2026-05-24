@@ -1,5 +1,6 @@
 import type { Route } from "./+types/shop.download";
 import { verifyShopPurchase } from "../lib/purchase-token.server";
+import { recordShopDownload } from "../lib/shop-orders.server";
 import { buildShopPurchaseZip } from "../lib/shop.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -17,6 +18,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const zip = await buildShopPurchaseZip(payload);
   if (!zip) {
     throw new Response("Not found", { status: 404 });
+  }
+
+  if (payload.paymentIntentId) {
+    void recordShopDownload(payload.paymentIntentId);
   }
 
   return zip;

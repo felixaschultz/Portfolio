@@ -1,6 +1,14 @@
 import Stripe from "stripe";
 import { formatShopMoney } from "./shop-licenses";
 import { parseImageKeysFromMetadata } from "./shop-stripe-metadata";
+import {
+  getDownloadStatus,
+  canResendDownloadLink,
+  getShopOrdersByPaymentIds,
+  upsertShopOrderFromStripeIntent,
+  type ShopDownloadStatus,
+} from "./shop-orders.server";
+import { isDatabaseConfigured } from "./db.server";
 
 function formatPurchaseDate(iso: string): string {
   return new Intl.DateTimeFormat("da-DK", {
@@ -8,6 +16,21 @@ function formatPurchaseDate(iso: string): string {
     timeStyle: "short",
     timeZone: "Europe/Copenhagen",
   }).format(new Date(iso));
+}
+
+function downloadStatusLabel(status: ShopDownloadStatus | "unknown"): string {
+  switch (status) {
+    case "downloaded":
+      return "Downloaded (link active)";
+    case "pending":
+      return "Not downloaded yet";
+    case "expired_not_downloaded":
+      return "Expired — not downloaded";
+    case "expired_downloaded":
+      return "Downloaded (link expired)";
+    default:
+      return "—";
+  }
 }
 
 export type ShopAdminPurchase = {
@@ -24,6 +47,11 @@ export type ShopAdminPurchase = {
   imageCount: number;
   locale: string | null;
   stripeDashboardUrl: string;
+  downloadStatus: ShopDownloadStatus | "unknown";
+  downloadStatusLabel: string;
+  downloadExpiresAtLabel: string | null;
+  firstDownloadedAtLabel: string | null;
+  canResendDownloadLink: boolean;
 };
 
 export type ShopAdminSummary = {
@@ -72,6 +100,11 @@ function mapPaymentIntent(intent: Stripe.PaymentIntent): ShopAdminPurchase | nul
     imageCount,
     locale: meta.locale?.trim() || null,
     stripeDashboardUrl: stripeDashboardPaymentUrl(intent.id),
+    downloadStatus: "unknown",
+    downloadStatusLabel: downloadStatusLabel("unknown"),
+    downloadExpiresAtLabel: null,
+    firstDownloadedAtLabel: null,
+    canResendDownloadLink: false,
   };
 }
 
@@ -96,6 +129,15 @@ export async function fetchShopAdminPurchases(): Promise<
       });
 
       for (const intent of page.data) {
+        if (isDatabaseConfigured()) {
+          void upsertShopOrderFromStripeIntent({
+            id: intent.id,
+            amount: intent.amount,
+            created: intent.created,
+            metadata: intent.metadata as Record<string, string>,
+          });
+        }
+
         const row = mapPaymentIntent(intent);
         if (row) purchases.push(row);
       }
@@ -106,6 +148,23 @@ export async function fetchShopAdminPurchases(): Promise<
     }
 
     purchases.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+    if (isDatabaseConfigured()) {
+      const orderMap = await getShopOrdersByPaymentIds(purchases.map((p) => p.id));
+      for (const purchase of purchases) {
+        const order = orderMap.get(purchase.id);
+        if (!order) continue;
+
+        const status = getDownloadStatus(order);
+        purchase.downloadStatus = status;
+        purchase.downloadStatusLabel = downloadStatusLabel(status);
+        purchase.downloadExpiresAtLabel = formatPurchaseDate(order.downloadExpiresAt);
+        purchase.firstDownloadedAtLabel = order.firstDownloadedAt
+          ? formatPurchaseDate(order.firstDownloadedAt)
+          : null;
+        purchase.canResendDownloadLink = canResendDownloadLink(order);
+      }
+    }
 
     const totalOre = purchases.reduce((sum, row) => sum + row.amountOre, 0);
 

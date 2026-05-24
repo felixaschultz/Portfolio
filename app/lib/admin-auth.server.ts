@@ -120,6 +120,7 @@ export async function loginAdminWithPassword(
   if (!db) return { error: "Database is not configured." };
 
   const normalized = email.trim().toLowerCase();
+  const plainPassword = password.trim();
   const rows = await db<(AdminUser & { passwordHash: string })[]>`
     SELECT id, email, display_name AS "displayName", password_hash AS "passwordHash"
     FROM admin_users
@@ -127,7 +128,8 @@ export async function loginAdminWithPassword(
     LIMIT 1
   `;
   const row = rows[0];
-  if (!row || !verifyAdminPassword(password, row.passwordHash)) {
+  const storedHash = row?.passwordHash;
+  if (!row || !storedHash || !verifyAdminPassword(plainPassword, storedHash)) {
     return { error: "Invalid email or password." };
   }
 

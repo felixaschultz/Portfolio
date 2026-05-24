@@ -18,7 +18,8 @@
     "studio:register": "npm run register --prefix studio",
     "seed:projects": "tsx scripts/seed-projects.ts",
     "migrate:gallery-tags": "tsx scripts/migrate-gallery-tags.ts",
-    "bootstrap:admin": "tsx scripts/bootstrap-admin.ts"
+    "bootstrap:admin": "tsx scripts/bootstrap-admin.ts",
+    "reset:admin-password": "tsx scripts/reset-admin-password.ts"
   },
   "dependencies": {
     "@mjackson/node-fetch-server": "^0.2.0",

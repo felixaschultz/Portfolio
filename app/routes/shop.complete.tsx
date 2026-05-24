@@ -1,6 +1,7 @@
-import { Form, useNavigation } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
 import type { Route } from "./+types/shop.complete";
 import {
+  getCheckoutRetryPath,
   isShopEmailConfigured,
   resolvePaidPurchase,
   sendPurchaseDownloadEmail,
@@ -18,6 +19,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const purchase = await resolvePaidPurchase(paymentIntentId);
   if (!purchase) {
+    const retryPath = await getCheckoutRetryPath(paymentIntentId);
+    if (retryPath) {
+      throw redirect(retryPath);
+    }
     return { ok: false as const, reason: "invalid_payment" as const };
   }
 

@@ -1,21 +1,29 @@
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router";
 
 type ShopCheckoutPaymentProps = {
   paymentIntentId: string;
   returnUrl: string;
   totalLabel: string;
+  initialError?: string | null;
 };
 
 export function ShopCheckoutPayment({
   paymentIntentId,
   returnUrl,
   totalLabel,
+  initialError = null,
 }: ShopCheckoutPaymentProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(initialError);
   const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    if (initialError) setError(initialError);
+  }, [initialError]);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -24,7 +32,7 @@ export function ShopCheckoutPayment({
     setPaying(true);
     setError(null);
 
-    const { error: submitError } = await stripe.confirmPayment({
+    const { error: submitError, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: returnUrl,
@@ -35,8 +43,25 @@ export function ShopCheckoutPayment({
     if (submitError) {
       setError(submitError.message ?? "Payment could not be completed.");
       setPaying(false);
+      return;
     }
-    // On success Stripe redirects to return_url with payment_intent param.
+
+    if (paymentIntent?.status === "succeeded") {
+      void navigate(
+        `/shop/complete?payment_intent=${encodeURIComponent(paymentIntent.id)}`,
+      );
+      return;
+    }
+
+    if (paymentIntent?.status === "processing") {
+      setError(
+        "Your payment is still processing. If it does not complete, try again or use another payment method.",
+      );
+      setPaying(false);
+      return;
+    }
+
+    setPaying(false);
   };
 
   return (

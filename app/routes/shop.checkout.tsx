@@ -7,6 +7,7 @@ import { ShopCheckoutPayment } from "../components/ShopCheckoutPayment";
 import { formatShopMoney } from "../lib/shop-licenses";
 import {
   createShopPaymentIntent,
+  getCheckoutReturnMessage,
   loadShopCheckout,
 } from "../lib/shop.server";
 
@@ -57,9 +58,19 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const paymentIntentId = new URL(request.url).searchParams.get("pi")?.trim();
+  const url = new URL(request.url);
+  const paymentIntentId =
+    url.searchParams.get("pi")?.trim() ||
+    url.searchParams.get("payment_intent")?.trim();
   if (!paymentIntentId) {
     return { mode: "missing" as const };
+  }
+
+  const redirectStatus = url.searchParams.get("redirect_status");
+  if (redirectStatus === "succeeded") {
+    throw redirect(
+      `/shop/complete?payment_intent=${encodeURIComponent(paymentIntentId)}`,
+    );
   }
 
   const checkout = await loadShopCheckout(paymentIntentId);
@@ -67,14 +78,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  const siteUrl = new URL(request.url).origin;
-  const returnUrl = `${siteUrl}/shop/complete`;
+  const siteUrl = url.origin;
+  const returnUrl = `${siteUrl}/shop/checkout?pi=${encodeURIComponent(checkout.paymentIntentId)}`;
+  const paymentMessage = getCheckoutReturnMessage(redirectStatus);
 
   return {
     mode: "pay" as const,
     checkout,
     returnUrl,
     totalLabel: formatShopMoney(checkout.totalOre),
+    paymentMessage,
   };
 }
 
@@ -85,6 +98,16 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (loaderData.mode !== "pay" || !loaderData.paymentMessage) return;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("redirect_status")) return;
+    url.searchParams.delete("redirect_status");
+    url.searchParams.delete("payment_intent_client_secret");
+    url.searchParams.delete("payment_intent");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+  }, [loaderData]);
 
   if (loaderData.mode === "missing") {
     return (
@@ -101,7 +124,7 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
     );
   }
 
-  const { checkout, returnUrl, totalLabel } = loaderData;
+  const { checkout, returnUrl, totalLabel, paymentMessage } = loaderData;
   const stripePromise = useMemo(
     () => loadStripe(checkout.publishableKey),
     [checkout.publishableKey],
@@ -149,6 +172,7 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
             paymentIntentId={checkout.paymentIntentId}
             returnUrl={returnUrl}
             totalLabel={totalLabel}
+            initialError={paymentMessage}
           />
         </Elements>
       ) : (

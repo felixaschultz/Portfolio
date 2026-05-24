@@ -115,6 +115,48 @@ export function getStripePublishableKey(): string | null {
   return key || null;
 }
 
+/** User-facing copy after Stripe redirects back to checkout (MobilePay, etc.). */
+export function getCheckoutReturnMessage(
+  redirectStatus: string | null | undefined,
+): string | null {
+  switch (redirectStatus?.trim()) {
+    case "failed":
+      return "Your payment could not be completed. Check your card details or try another payment method, then pay again.";
+    case "canceled":
+      return "Payment was cancelled. You can try again when you are ready.";
+    case "processing":
+      return "Your payment is still processing. If it does not complete, try again or use another payment method.";
+    default:
+      return null;
+  }
+}
+
+/** Send unpaid intents back to checkout so the customer can retry. */
+export async function getCheckoutRetryPath(
+  paymentIntentId: string,
+): Promise<string | null> {
+  const stripe = getStripe();
+  if (!stripe || !paymentIntentId.trim()) return null;
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId.trim());
+    if (intent.status === "succeeded" || intent.status === "canceled") return null;
+
+    const redirectStatus =
+      intent.status === "processing"
+        ? "processing"
+        : intent.status === "requires_payment_method" ||
+            intent.status === "requires_confirmation" ||
+            intent.status === "requires_action"
+          ? "failed"
+          : "failed";
+
+    return `/shop/checkout?pi=${encodeURIComponent(intent.id)}&redirect_status=${redirectStatus}`;
+  } catch {
+    return null;
+  }
+}
+
 function parseImageKeys(raw: string | undefined): string[] | null {
   if (!raw) return null;
   try {

@@ -10,12 +10,12 @@ import { getDeliveryContactEmail } from "../lib/shop.server";
 export async function loader({ params }: Route.LoaderArgs) {
   const token = params.token?.trim();
   if (!token) {
-    return new Response("Not found", { status: 404 });
+    throw new Response("Not found", { status: 404 });
   }
 
   const bundle = await fetchBundleForDownload(token);
   if (!bundle) {
-    return new Response("Not found", { status: 404 });
+    throw new Response("Not found", { status: 404 });
   }
 
   const totalImages = countBundleImages(bundle);

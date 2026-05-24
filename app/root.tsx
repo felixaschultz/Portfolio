@@ -1,17 +1,11 @@
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { Route } from "./+types/root";
 import {
   GoogleTagManagerHead,
   GoogleTagManagerNoScript,
   GoogleTagManagerRouteTracker,
 } from "./components/GoogleTagManager";
+import { RouteErrorBoundary } from "./components/RouteErrorBoundary";
 import { getGtmId } from "./lib/gtm";
 import "./app.css";
 
@@ -61,30 +55,5 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
-
-  return (
-    <main className="mx-auto max-w-lg px-4 py-20">
-      <h1 className="font-display text-4xl font-bold">{message}</h1>
-      <p className="mt-4 text-[var(--color-muted)]">{details}</p>
-      {stack && (
-        <pre className="mt-6 overflow-x-auto rounded-lg bg-black/30 p-4 text-xs">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
-  );
+  return <RouteErrorBoundary error={error} showBrand className="error-page--standalone" />;
 }

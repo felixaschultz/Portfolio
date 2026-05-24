@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Outlet, redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale";
+import { RouteErrorBoundary } from "../components/RouteErrorBoundary";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { ContactModal } from "../components/ContactModal";
@@ -22,6 +23,16 @@ export async function loader({ params }: Route.LoaderArgs) {
     console.error("search index failed", error);
     return { locale: lng, searchIndex: [] };
   }
+}
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  return (
+    <RouteErrorBoundary
+      error={error}
+      context="site"
+      className="error-page--in-layout"
+    />
+  );
 }
 
 export default function LocaleLayout() {

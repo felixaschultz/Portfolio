@@ -2671,6 +2671,21 @@ body {
   margin-top: 1.25rem;
 }
 
+.shop-admin__login-form--pending {
+  pointer-events: none;
+}
+
+.shop-admin__input--placeholder {
+  min-height: 2.75rem;
+  opacity: 0.35;
+}
+
+.shop-admin__button-placeholder {
+  min-height: 2.75rem;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 .shop-admin__label {
   display: flex;
   flex-direction: column;

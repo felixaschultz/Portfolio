@@ -1,5 +1,6 @@
 import { Form, Link, data, redirect } from "react-router";
 import type { Route } from "./+types/shop.admin";
+import { ShopAdminLogin } from "../components/ShopAdminLogin";
 import {
   adminSessionClearCookieHeader,
   adminSessionSetCookieHeader,
@@ -72,14 +73,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("da-DK", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(iso));
-}
-
-export default function ShopAdminPage({ loaderData, actionData }: Route.ComponentProps) {
+export default function ShopAdminPage({ loaderData }: Route.ComponentProps) {
   if (loaderData.mode === "unconfigured") {
     return (
       <div className="shop-admin">
@@ -97,27 +91,7 @@ export default function ShopAdminPage({ loaderData, actionData }: Route.Componen
       <div className="shop-admin shop-admin--login">
         <h1 className="customer-portal__title">Shop admin</h1>
         <p className="customer-portal__muted">Sign in to view photo shop orders and revenue.</p>
-        <Form method="post" className="shop-admin__login-form">
-          <input type="hidden" name="intent" value="login" />
-          <label className="shop-admin__label">
-            <span className="customer-portal__muted">Password</span>
-            <input
-              type="password"
-              name="password"
-              required
-              autoComplete="current-password"
-              className="shop-admin__input"
-            />
-          </label>
-          {actionData?.loginError ? (
-            <p className="customer-portal__error" role="alert">
-              {actionData.loginError}
-            </p>
-          ) : null}
-          <button type="submit" className="customer-portal__button">
-            Sign in
-          </button>
-        </Form>
+        <ShopAdminLogin />
       </div>
     );
   }
@@ -175,7 +149,7 @@ export default function ShopAdminPage({ loaderData, actionData }: Route.Componen
             <tbody>
               {purchases.map((row) => (
                 <tr key={row.id}>
-                  <td>{formatDate(row.createdAt)}</td>
+                  <td>{row.createdAtLabel}</td>
                   <td>
                     <span className="shop-admin__customer-name">
                       {row.customerName ?? "—"}

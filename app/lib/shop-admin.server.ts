@@ -2,9 +2,18 @@ import Stripe from "stripe";
 import { formatShopMoney } from "./shop-licenses";
 import { parseImageKeysFromMetadata } from "./shop-stripe-metadata";
 
+function formatPurchaseDate(iso: string): string {
+  return new Intl.DateTimeFormat("da-DK", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/Copenhagen",
+  }).format(new Date(iso));
+}
+
 export type ShopAdminPurchase = {
   id: string;
   createdAt: string;
+  createdAtLabel: string;
   amountOre: number;
   amountLabel: string;
   customerName: string | null;
@@ -44,9 +53,12 @@ function mapPaymentIntent(intent: Stripe.PaymentIntent): ShopAdminPurchase | nul
   const imageKeys = parseImageKeysFromMetadata(meta);
   const imageCount = imageKeys?.length ?? 0;
 
+  const createdAt = new Date(intent.created * 1000).toISOString();
+
   return {
     id: intent.id,
-    createdAt: new Date(intent.created * 1000).toISOString(),
+    createdAt,
+    createdAtLabel: formatPurchaseDate(createdAt),
     amountOre: intent.amount,
     amountLabel: formatShopMoney(intent.amount, "da"),
     customerName: meta.customerName?.trim() || null,

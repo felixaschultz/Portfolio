@@ -14,3 +14,9 @@ It must be served at:
 Files in `public/.well-known/` are deployed automatically with the site.
 
 Google Pay uses the Payment Element and does not need a domain file (Safari/Chrome + supported card).
+
+## MobilePay
+
+1. Enable **MobilePay** under [Stripe → Payment methods](https://dashboard.stripe.com/settings/payment_methods).
+2. Currency must be **DKK** (already set for the shop).
+3. MobilePay is **redirect-based** — it usually does **not** appear on `http://localhost:5173`. Test on your deployed HTTPS domain (or Stripe test mode on staging).

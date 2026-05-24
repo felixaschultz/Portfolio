@@ -29,6 +29,7 @@ export function ShopCheckoutPayment({
       confirmParams: {
         return_url: returnUrl,
       },
+      redirect: "if_required",
     });
 
     if (submitError) {
@@ -72,8 +73,8 @@ export function ShopCheckoutPayment({
       </button>
 
       <p className="customer-portal__hint">
-        Apple Pay and Google Pay appear when your browser and device support them. Card payment is
-        always available below.
+        MobilePay, Apple Pay, and Google Pay appear when enabled in Stripe and supported in your
+        browser. Card stays on this page; MobilePay opens the app via redirect.
       </p>
       <p className="customer-portal__hint">
         Reference: {paymentIntentId.slice(-8)} · Secured by Stripe

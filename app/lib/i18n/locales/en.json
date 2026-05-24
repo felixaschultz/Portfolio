@@ -194,7 +194,8 @@
     "sendDownloadLink": "Send download link",
     "sending": "Sending…",
     "completeHint": "Link expires after 7 days. Keep this page or your email for later access.",
-    "merchantNotice": "Your bank statement and Apple Pay will show <merchantLink>Intastellar Solutions</merchantLink> as the merchant (e.g. “Pay Intastellar Solutions”), not Felix Schultz. You are buying photo licenses from Felix Schultz.",
+    "merchantNoticeBefore": "Your bank statement and Apple Pay will show",
+    "merchantNoticeAfter": "as the merchant (e.g. “Pay Intastellar Solutions”), not Felix Schultz. You are buying photo licenses from Felix Schultz.",
     "licenses": {
       "personal": {
         "label": "Personal download",

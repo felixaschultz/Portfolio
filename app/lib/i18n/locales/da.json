@@ -194,7 +194,8 @@
     "sendDownloadLink": "Send downloadlink",
     "sending": "Sender…",
     "completeHint": "Linket udløber efter 7 dage. Gem denne side eller din e-mail til senere adgang.",
-    "merchantNotice": "På dit kontoudtog og Apple Pay vises <merchantLink>Intastellar Solutions</merchantLink> som forhandler (fx «Betal Intastellar Solutions»), ikke Felix Schultz. Du køber fotolicenser fra Felix Schultz.",
+    "merchantNoticeBefore": "På dit kontoudtog og Apple Pay vises",
+    "merchantNoticeAfter": "som forhandler (fx «Betal Intastellar Solutions»), ikke Felix Schultz. Du køber fotolicenser fra Felix Schultz.",
     "licenses": {
       "personal": {
         "label": "Privat download",

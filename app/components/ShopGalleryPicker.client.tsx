@@ -14,13 +14,7 @@ import {
   getNextVolumeDiscountHintClient,
 } from "../lib/shop-volume";
 import { ShopPaymentMerchantNotice } from "./ShopPaymentMerchantNotice";
-
-type ShopGalleryPickerProps = {
-  shopToken: string;
-  gallery: ShopGalleryView;
-  shopReady: boolean;
-  stripePublishableKey?: string | null;
-};
+import type { ShopGalleryPickerProps } from "./shop-gallery-picker.types";
 
 export function ShopGalleryPicker({
   shopToken,

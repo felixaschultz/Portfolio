@@ -102,7 +102,7 @@ export function ShopCheckoutPayment({
         browser. Card stays on this page; MobilePay opens the app via redirect.
       </p>
       <p className="customer-portal__hint">
-        Reference: {paymentIntentId.slice(-8)} · Secured by Stripe
+        Reference: {paymentIntentId.slice(-8)} · Card data handled by Stripe
       </p>
     </form>
   );

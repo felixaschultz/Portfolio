@@ -8,6 +8,7 @@ import {
   formatShopMoney,
   getNextVolumeDiscountHint,
 } from "../lib/shop-licenses";
+import { ShopPaymentMerchantNotice } from "./ShopPaymentMerchantNotice";
 
 type ShopGalleryPickerProps = {
   shopToken: string;
@@ -192,6 +193,8 @@ export function ShopGalleryPicker({ shopToken, gallery, shopReady }: ShopGallery
               <p className="shop-cart__hint">{nextDiscountHint}</p>
             ) : null}
           </div>
+
+          <ShopPaymentMerchantNotice className="shop-cart__merchant" />
 
           <Form method="post" action="/shop/checkout" className="shop-cart__checkout">
             <input type="hidden" name="shopToken" value={shopToken} />

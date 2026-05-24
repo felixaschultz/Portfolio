@@ -2090,29 +2090,48 @@ body {
 }
 
 @media (min-width: 1024px) {
-  .shop-gallery-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 17.5rem;
-    gap: 2rem;
-    align-items: start;
+  .shop-gallery-layout__main {
+    padding-right: calc(17.5rem + 2rem);
   }
 
   .shop-cart {
-    position: sticky;
-    top: 1.25rem;
-    align-self: start;
+    position: fixed;
+    top: 5.25rem;
+    width: 17.5rem;
+    right: max(1rem, calc((100vw - min(76rem, 100vw - 2rem)) / 2));
   }
 
   .shop-cart__panel {
-    max-height: calc(100dvh - 2.5rem);
+    max-height: calc(100dvh - 6rem);
     overflow: hidden;
   }
 
   .shop-cart__items {
-    max-height: min(36vh, 14rem);
+    max-height: min(32vh, 12rem);
     flex: 1 1 auto;
     min-height: 0;
   }
+}
+
+.shop-payment-notice {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
+.shop-payment-notice a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.shop-payment-notice a:hover {
+  color: var(--color-text);
+}
+
+.shop-cart__merchant {
+  margin-top: 0.15rem;
 }
 
 .customer-portal__header {

@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Link, redirect, useActionData } from "react-router";
 import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutPayment } from "../components/ShopCheckoutPayment";
+import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { formatShopMoney } from "../lib/shop-licenses";
 import {
   createShopPaymentIntent,
@@ -158,6 +159,7 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
             <> · {totalLabel}</>
           )}
         </p>
+        <ShopPaymentMerchantNotice />
       </header>
 
       {actionData?.error ? (

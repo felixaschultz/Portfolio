@@ -1,0 +1,27 @@
+{
+    "primary": "https://www.intastellarsolutions.com",
+    "associatedSites": [
+        "https://www.intastellaraccounts.com",
+        "https://www.intastellarconsents.com",
+        "https://www.parkinpeace.eu",
+        "https://www.intastellar.com",
+        "https://www.felix-schultz.net",
+        "https://www.felix-schultz.dk"
+    ],
+    "serviceSites": [
+        "https://www.intastellaraccounts.com"
+    ],
+    "ccTLDS": {
+        "https://www.intastellar.com": [
+            "https://www.intastellar.eu",
+            "https://www.intastellar.dk"
+        ],
+        "https://www.felix-schultz.net": [
+            "https://www.felix-schultz.dk"
+        ],
+        "https://www.felix-schultz.dk": [
+            "https://www.felix-schultz.net"
+        ]
+    }
+
+}

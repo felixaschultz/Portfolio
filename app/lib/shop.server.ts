@@ -20,6 +20,10 @@ import {
   resolveLicenseTiers,
   type ShopLicenseTier,
 } from "./shop-licenses";
+import {
+  buildImageKeysMetadata,
+  parseImageKeysFromMetadata,
+} from "./shop-stripe-metadata";
 
 export { SHOP_CURRENCY, formatShopMoney };
 
@@ -161,17 +165,6 @@ export async function getCheckoutRetryPath(
   }
 }
 
-function parseImageKeys(raw: string | undefined): string[] | null {
-  if (!raw) return null;
-  try {
-    const keys = JSON.parse(raw) as unknown;
-    if (!Array.isArray(keys) || !keys.every((k) => typeof k === "string")) return null;
-    return keys;
-  } catch {
-    return null;
-  }
-}
-
 export async function fetchShopGallery(token: string): Promise<ShopGalleryView | null> {
   const client = getSanityDownloadClient();
   if (!client || !token.trim()) return null;
@@ -283,7 +276,7 @@ export async function createShopPaymentIntent(options: {
         gallerySlug: gallery.slug,
         licenseId: tier.id,
         licenseLabel: tier.label,
-        imageKeys: JSON.stringify(imageKeys),
+        ...buildImageKeysMetadata(imageKeys),
         subtotalOre: String(pricing.subtotalOre),
         discountOre: String(pricing.discountOre),
         discountPercent: String(pricing.percentOff),
@@ -314,7 +307,7 @@ export async function loadShopCheckout(
 
     const gallerySlug = intent.metadata?.gallerySlug;
     const shopToken = intent.metadata?.shopToken;
-    const imageKeys = parseImageKeys(intent.metadata?.imageKeys);
+    const imageKeys = parseImageKeysFromMetadata(intent.metadata ?? undefined);
     if (!gallerySlug || !shopToken || !imageKeys?.length) return null;
 
     const gallery = await fetchShopGallery(shopToken);
@@ -373,7 +366,7 @@ export async function resolvePaidPurchase(
     if (intent.status !== "succeeded") return null;
 
     const gallerySlug = intent.metadata?.gallerySlug;
-    const imageKeys = parseImageKeys(intent.metadata?.imageKeys);
+    const imageKeys = parseImageKeysFromMetadata(intent.metadata ?? undefined);
     if (!gallerySlug || !imageKeys?.length) return null;
 
     const client = getSanityDownloadClient();

@@ -734,6 +734,7 @@ body {
 }
 
 .gallery-album__hero-toolbar {
+  --gallery-toolbar-control-height: 2.75rem;
   position: fixed;
   top: var(--site-header-height);
   left: 0;
@@ -768,18 +769,27 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   max-width: 100%;
-  padding: 0.45rem 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 1rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1.2;
+  letter-spacing: 0.01em;
   text-decoration: none;
   white-space: nowrap;
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease,
     color 0.15s ease;
+}
+
+.gallery-album__shop-link__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
 }
 
 .gallery-album__shop-link--hero {
@@ -809,6 +819,7 @@ body {
 @media (min-width: 640px) {
   .gallery-album__hero-toolbar,
   .gallery-album__intro-toolbar {
+    --gallery-toolbar-control-height: 2.5rem;
     gap: 1rem;
   }
 
@@ -817,12 +828,27 @@ body {
   }
 
   .gallery-album__shop-link {
+    min-height: 0;
     padding: 0.5rem 0.875rem;
     font-size: 0.8125rem;
+    gap: 0.4rem;
+  }
+
+  .gallery-album__hero-toolbar .gallery-album__back--on-cover,
+  .gallery-album__hero-toolbar .gallery-album__shop-link--hero,
+  .gallery-album__intro-toolbar .gallery-album__back--plain,
+  .gallery-album__intro-toolbar .gallery-album__shop-link--plain {
+    padding-block: 0;
+  }
+
+  .gallery-album__shop-link__icon {
+    width: 1.0625rem;
+    height: 1.0625rem;
   }
 }
 
 .gallery-album__intro-toolbar {
+  --gallery-toolbar-control-height: 2.75rem;
   @apply relative z-auto mb-2;
 }
 
@@ -837,6 +863,28 @@ body {
 
 .gallery-album__intro-toolbar .gallery-share__trigger {
   @apply border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
+}
+
+/* Same height for back, buy, and share in album toolbars */
+.gallery-album__hero-toolbar .gallery-album__back--on-cover,
+.gallery-album__hero-toolbar .gallery-album__shop-link--hero,
+.gallery-album__intro-toolbar .gallery-album__back--plain,
+.gallery-album__intro-toolbar .gallery-album__shop-link--plain {
+  box-sizing: border-box;
+  height: var(--gallery-toolbar-control-height);
+  min-height: var(--gallery-toolbar-control-height);
+  padding-block: 0;
+}
+
+.gallery-album__hero-toolbar .gallery-share__trigger,
+.gallery-album__intro-toolbar .gallery-share__trigger {
+  box-sizing: border-box;
+  height: var(--gallery-toolbar-control-height);
+  width: var(--gallery-toolbar-control-height);
+  min-height: var(--gallery-toolbar-control-height);
+  min-width: var(--gallery-toolbar-control-height);
+  flex-shrink: 0;
+  padding: 0;
 }
 
 .gallery-share__menu {

@@ -1,4 +1,5 @@
 import { getSiteUrl } from "./seo";
+import { normalizeShopEmail } from "./shop-email";
 
 export function isShopEmailConfigured(): boolean {
   return Boolean(
@@ -19,8 +20,8 @@ export async function sendShopDownloadEmail(options: {
     return { error: "Email is not configured." };
   }
 
-  const to = options.to.trim().toLowerCase();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+  const to = normalizeShopEmail(options.to);
+  if (!to) {
     return { error: "Please enter a valid email address." };
   }
 

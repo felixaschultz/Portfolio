@@ -2249,6 +2249,60 @@ body {
   color: var(--color-accent, #15b0ab);
 }
 
+.shop-cart__email {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.shop-cart__email-input,
+.shop-checkout__email-input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.shop-cart__email-hint {
+  margin-bottom: 0.75rem;
+}
+
+.shop-checkout__email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+}
+
+.shop-checkout__email-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.shop-checkout__email-hint {
+  font-size: 0.875rem;
+}
+
+.shop-checkout__email-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shop-checkout__email-confirmed {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 .shop-cart__checkout {
   margin: 0;
   padding-top: 0.25rem;

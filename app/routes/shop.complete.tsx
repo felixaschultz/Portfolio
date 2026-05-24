@@ -117,7 +117,11 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
           </p>
         ) : (
           <>
-            <p className="customer-portal__muted">{t("shop.emailPrompt")}</p>
+            <p className="customer-portal__muted">
+              {purchase.customerEmail
+                ? t("shop.emailPromptWithAddress", { email: purchase.customerEmail })
+                : t("shop.emailPrompt")}
+            </p>
             <Form method="post" className="shop-complete__email-form">
               <input type="hidden" name="paymentIntentId" value={purchase.paymentIntentId} />
               <label className="shop-complete__label">
@@ -127,6 +131,7 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
                   name="email"
                   required
                   autoComplete="email"
+                  defaultValue={purchase.customerEmail ?? ""}
                   className="shop-complete__input"
                   placeholder={t("shop.emailPlaceholder")}
                 />

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
+import { normalizeShopEmail } from "./shop-email";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
 import { isValidLocale, localizedField, type Locale } from "./i18n";
@@ -222,13 +223,59 @@ function validatedImageKeys(gallery: ShopGalleryView, imageKeys: string[]): stri
   return [...new Set(imageKeys.filter((k) => validKeys.has(k)))];
 }
 
+export async function updateShopPaymentIntentEmail(
+  paymentIntentId: string,
+  email: string,
+  locale: Locale,
+): Promise<{ ok: true } | { error: string }> {
+  const stripe = getStripe();
+  if (!stripe || !paymentIntentId.trim()) {
+    return { error: shopT(locale, "errors.notConfigured") };
+  }
+
+  const normalized = normalizeShopEmail(email);
+  if (!normalized) {
+    return { error: shopT(locale, "errors.invalidEmail") };
+  }
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId.trim());
+    if (
+      intent.status !== "requires_payment_method" &&
+      intent.status !== "requires_confirmation" &&
+      intent.status !== "requires_action"
+    ) {
+      return { error: shopT(locale, "errors.checkoutEmailLocked") };
+    }
+
+    await stripe.paymentIntents.update(intent.id, {
+      receipt_email: normalized,
+      metadata: {
+        ...intent.metadata,
+        customerEmail: normalized,
+        downloadEmail: normalized,
+      },
+    });
+
+    return { ok: true };
+  } catch (err) {
+    console.error("[shop] update payment intent email failed:", err);
+    return { error: shopT(locale, "errors.checkoutFailed") };
+  }
+}
+
 export async function createShopPaymentIntent(options: {
   shopToken: string;
   imageKeys: string[];
   licenseId: string;
   locale: Locale;
+  email: string;
 }): Promise<{ paymentIntentId: string } | { error: string }> {
   const { locale } = options;
+  const customerEmail = normalizeShopEmail(options.email);
+  if (!customerEmail) {
+    return { error: shopT(locale, "errors.invalidEmail") };
+  }
   const stripe = getStripe();
   const publishableKey = getStripePublishableKey();
   if (!stripe || !publishableKey) {
@@ -257,6 +304,7 @@ export async function createShopPaymentIntent(options: {
     const intent = await stripe.paymentIntents.create({
       amount: pricing.totalOre,
       currency: SHOP_CURRENCY,
+      receipt_email: customerEmail,
       // MobilePay and similar methods need redirects; cards/wallets stay on-page via
       // confirmPayment({ redirect: "if_required" }) on the client.
       automatic_payment_methods: { enabled: true },
@@ -266,6 +314,8 @@ export async function createShopPaymentIntent(options: {
         licenseId: tier.id,
         licenseLabel: tier.label,
         locale,
+        customerEmail,
+        downloadEmail: customerEmail,
         ...buildImageKeysMetadata(imageKeys),
         subtotalOre: String(pricing.subtotalOre),
         discountOre: String(pricing.discountOre),
@@ -343,6 +393,10 @@ export async function loadShopCheckout(
     const unitAmountOre = tierForPricing?.unitAmountOre ?? 0;
 
     const totalOre = intent.amount;
+    const customerEmail =
+      intent.metadata?.customerEmail?.trim().toLowerCase() ||
+      intent.metadata?.downloadEmail?.trim().toLowerCase() ||
+      null;
 
     return {
       paymentIntentId: intent.id,
@@ -368,6 +422,7 @@ export async function loadShopCheckout(
         discount: discountOre > 0 ? formatShopMoney(discountOre, locale) : null,
       },
       displayLocale: locale,
+      customerEmail,
     };
   } catch (err) {
     console.error("[shop] load checkout failed:", err);
@@ -420,7 +475,10 @@ export async function resolvePaidPurchase(
       downloadJwt,
       downloadPath,
       emailSent: intent.metadata?.downloadEmailSent === "true",
-      customerEmail: intent.metadata?.downloadEmail?.trim() || null,
+      customerEmail:
+        intent.metadata?.customerEmail?.trim().toLowerCase() ||
+        intent.metadata?.downloadEmail?.trim().toLowerCase() ||
+        null,
     };
   } catch (err) {
     console.error("[shop] resolve purchase failed:", err);

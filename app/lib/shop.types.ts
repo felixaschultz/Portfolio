@@ -52,6 +52,8 @@ export type ShopCheckoutView = {
   displayPrices: ShopCheckoutDisplayPrices;
   /** Locale used when building labels and displayPrices (revalidate if URL lang differs). */
   displayLocale: Locale;
+  /** Buyer email (required before payment). */
+  customerEmail: string | null;
 };
 
 export type ShopPurchaseSummary = {

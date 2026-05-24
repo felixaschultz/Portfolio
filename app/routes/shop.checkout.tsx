@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, redirect } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.checkout";
+import { ShopCheckoutEmailForm } from "../components/ShopCheckoutEmailForm";
 import { ShopCheckoutStripe } from "../components/ShopCheckoutStripe";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
@@ -12,7 +13,7 @@ import de from "../lib/i18n/locales/de.json";
 import en from "../lib/i18n/locales/en.json";
 import type { Locale } from "../lib/i18n";
 import { resolveShopLocale } from "../lib/shop-locale";
-import { loadShopCheckout } from "../lib/shop.server";
+import { loadShopCheckout, updateShopPaymentIntentEmail } from "../lib/shop.server";
 
 export const handle = { shopWide: true };
 
@@ -21,6 +22,34 @@ export function links() {
     { rel: "preconnect", href: "https://js.stripe.com" },
     { rel: "preconnect", href: "https://m.stripe.network" },
   ];
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const locale = resolveShopLocale(request);
+  const { shopT } = await import("../lib/shop-i18n.server");
+
+  if (request.method !== "POST") {
+    return Response.json({ error: shopT(locale, "errors.methodNotAllowed") }, { status: 405 });
+  }
+
+  const form = await request.formData();
+  if (form.get("intent") !== "saveEmail") {
+    return Response.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  const paymentIntentId = String(form.get("paymentIntentId") ?? "").trim();
+  const email = String(form.get("email") ?? "");
+
+  if (!paymentIntentId) {
+    return { emailError: shopT(locale, "errors.missingOrderRef") };
+  }
+
+  const result = await updateShopPaymentIntentEmail(paymentIntentId, email, locale);
+  if ("error" in result) {
+    return { emailError: result.error };
+  }
+
+  return { emailSaved: true as const };
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -108,15 +137,25 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
           <h2 className="shop-checkout__payment-title">{t("shop.paymentSection")}</h2>
           <ShopPaymentMerchantNotice />
 
-          <ShopCheckoutStripe
-            locale={locale}
-            publishableKey={checkout.publishableKey}
-            clientSecret={checkout.clientSecret}
-            paymentIntentId={checkout.paymentIntentId}
-            returnUrl={returnUrl}
-            totalLabel={totalLabel}
-            initialError={paymentMessage}
-          />
+          {checkout.customerEmail ? (
+            <p className="shop-checkout__email-confirmed customer-portal__muted">
+              {t("shop.purchaseEmailConfirmed", { email: checkout.customerEmail })}
+            </p>
+          ) : (
+            <ShopCheckoutEmailForm paymentIntentId={checkout.paymentIntentId} />
+          )}
+
+          {checkout.customerEmail ? (
+            <ShopCheckoutStripe
+              locale={locale}
+              publishableKey={checkout.publishableKey}
+              clientSecret={checkout.clientSecret}
+              paymentIntentId={checkout.paymentIntentId}
+              returnUrl={returnUrl}
+              totalLabel={totalLabel}
+              initialError={paymentMessage}
+            />
+          ) : null}
         </section>
       </div>
     </div>

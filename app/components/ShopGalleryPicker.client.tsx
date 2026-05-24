@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { preloadStripe } from "../lib/stripe-client";
 import type { ShopGalleryView } from "../lib/shop.types";
 import type { ShopLicenseId } from "../lib/shop-licenses";
+import { isValidShopEmail } from "../lib/shop-email";
 import {
   calculateShopOrderPricing,
   formatShopMoney,
@@ -26,6 +27,8 @@ export function ShopGalleryPicker({
 
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");
+  const [email, setEmail] = useState("");
+  const emailValid = isValidShopEmail(email);
 
   useEffect(() => {
     if (!shopReady || selected.size === 0 || !stripePublishableKey) return;
@@ -200,10 +203,24 @@ export function ShopGalleryPicker({
             <input type="hidden" name="shopToken" value={shopToken} />
             <input type="hidden" name="licenseId" value={licenseId} />
             <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />
+            <label className="shop-cart__email">
+              <span className="customer-portal__muted">{t("shop.emailLabel")}</span>
+              <input
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="shop-cart__email-input"
+                placeholder={t("shop.emailPlaceholder")}
+              />
+            </label>
+            <p className="shop-cart__email-hint customer-portal__hint">{t("shop.purchaseEmailHint")}</p>
             <button
               type="submit"
               className="customer-portal__button shop-cart__pay"
-              disabled={!shopReady || selected.size === 0}
+              disabled={!shopReady || selected.size === 0 || !emailValid}
             >
               {selected.size === 0
                 ? t("shop.continueCheckout")

@@ -29,6 +29,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const form = await request.formData();
+  const email = String(form.get("email") ?? "");
   const licenseId = String(form.get("licenseId") ?? "");
   let imageKeys: string[] = [];
   const raw = form.get("imageKeys");
@@ -45,6 +46,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     imageKeys,
     licenseId,
     locale,
+    email,
   });
 
   if ("error" in result) {

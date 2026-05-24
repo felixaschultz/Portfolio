@@ -9,6 +9,11 @@ export default [
   route("sitemap.xml", "routes/sitemap[.]xml.ts"),
   route("robots.txt", "routes/robots[.]txt.ts"),
   route("download/gallery/:token", "routes/download.gallery.$token.tsx"),
+  route("download/bundle/:token", "routes/download.bundle.$token.tsx"),
+  route("shop/gallery/:token", "routes/shop.gallery.$token.tsx"),
+  route("shop/success", "routes/shop.success.tsx"),
+  route("shop/download", "routes/shop.download.tsx"),
+  route("api/shop/checkout", "routes/api.shop.checkout.ts"),
   route("fotografi", "routes/fotografi.tsx"),
   route("projects/*", "routes/projects.$.tsx"),
   route(":locale", "routes/$locale.tsx", [

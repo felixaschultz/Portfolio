@@ -5,6 +5,7 @@ export function loader({}: Route.LoaderArgs) {
   const body = `User-agent: *
 Allow: /
 Disallow: /download/
+Disallow: /shop/
 
 Sitemap: ${getSiteUrl()}/sitemap.xml
 `;

@@ -13,6 +13,10 @@ export const structure: StructureResolver = (S) =>
         .schemaType("gallery")
         .child(S.documentTypeList("gallery").title("Galleries")),
       S.listItem()
+        .title("Gallery bundles")
+        .schemaType("galleryBundle")
+        .child(S.documentTypeList("galleryBundle").title("Gallery bundles")),
+      S.listItem()
         .title("Gallery categories")
         .schemaType("galleryCategory")
         .child(S.documentTypeList("galleryCategory").title("Gallery categories")),

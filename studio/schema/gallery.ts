@@ -1,6 +1,7 @@
 import { defineArrayMember, defineField, defineType, type PreviewValue } from "sanity";
 import { CoverImageInput } from "../components/CoverImageInput";
 import { GalleryDownloadLinkInput } from "../components/GalleryDownloadLinkInput";
+import { GalleryShopLinkInput } from "../components/GalleryShopLinkInput";
 import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
@@ -98,6 +99,25 @@ export const gallery = defineType({
       readOnly: true,
       components: {
         input: GalleryDownloadLinkInput,
+      },
+    }),
+    defineField({
+      name: "shopPricePerImage",
+      title: "Shop price per photo (cents)",
+      type: "number",
+      description: "EUR cents per digital download, e.g. 500 = €5.00. Used for the private shop link below.",
+      initialValue: 500,
+      validation: (rule) => rule.min(100).max(500_000),
+    }),
+    defineField({
+      name: "shopToken",
+      title: "Customer shop link",
+      type: "string",
+      description:
+        "Stripe checkout for selected photos. Works before publish; only managed here — not on the public site.",
+      readOnly: true,
+      components: {
+        input: GalleryShopLinkInput,
       },
     }),
   ],

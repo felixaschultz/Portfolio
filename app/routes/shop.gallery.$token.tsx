@@ -1,4 +1,5 @@
-import { redirect, useActionData, useTranslation } from "react-router";
+import { redirect, useActionData } from "react-router";
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.gallery.$token";
 import { ShopGalleryPicker } from "../components/ShopGalleryPicker";
 import { ShopStripePreload } from "../components/ShopStripePreload";

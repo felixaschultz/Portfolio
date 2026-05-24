@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Link, redirect, useTranslation } from "react-router";
+import { Link, redirect } from "react-router";
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutStripe } from "../components/ShopCheckoutStripe";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";

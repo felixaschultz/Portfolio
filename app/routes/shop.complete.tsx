@@ -1,4 +1,5 @@
-import { Form, redirect, useNavigation, useTranslation } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.complete";
 import { shopT } from "../lib/shop-i18n.server";
 import { resolveShopLocale } from "../lib/shop-locale";

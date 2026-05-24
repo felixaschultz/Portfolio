@@ -92,8 +92,8 @@ Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 
 ### Shop admin dashboard
 
-1. Provision Postgres and set `DATABASE_URL` in `.env.local` and Vercel.
-2. Set `ADMIN_BOOTSTRAP_EMAIL` and `ADMIN_BOOTSTRAP_PASSWORD`, then run `npx tsx scripts/bootstrap-admin.ts` or open `/shop/admin` once (auto-bootstrap on first load).
+1. Provision Postgres and set `DATABASE_URL` in `.env.local` and Vercel (hosted Neon/Vercel Postgres URL, not `localhost:5432` unless you run Postgres locally).
+2. Set `ADMIN_BOOTSTRAP_EMAIL` and `ADMIN_BOOTSTRAP_PASSWORD`, then run `npm run bootstrap:admin` or open `/shop/admin` once (auto-bootstrap on first load).
 3. Sign in with **email + password**, or register a **passkey** after signing in.
 4. View paid orders, **download status** (downloaded before 7-day expiry or not), and **send download link** for orders that never downloaded or expired without download.
 5. Add more admin users from the dashboard (email + password; they can add passkeys after login).

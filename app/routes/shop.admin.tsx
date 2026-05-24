@@ -12,6 +12,7 @@ import {
   listAdminUsers,
   loginAdminWithPassword,
 } from "../lib/admin-auth.server";
+import { getLastDatabaseError, isDatabaseConfigured } from "../lib/db.server";
 import { adminResendShopDownloadEmail } from "../lib/shop.server";
 import { fetchShopAdminPurchases } from "../lib/shop-admin.server";
 
@@ -81,11 +82,24 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await bootstrapAdminUserFromEnv();
+  if (!isDatabaseConfigured()) {
+    return {
+      mode: "unconfigured" as const,
+    };
+  }
 
   if (!isAdminAuthConfigured()) {
     return {
       mode: "unconfigured" as const,
+    };
+  }
+
+  await bootstrapAdminUserFromEnv();
+
+  if (getLastDatabaseError()) {
+    return {
+      mode: "db-error" as const,
+      dbError: getLastDatabaseError()!,
     };
   }
 
@@ -135,6 +149,25 @@ export default function ShopAdminPage({ loaderData, actionData }: Route.Componen
           <code>ADMIN_SESSION_SECRET</code> or <code>PURCHASE_JWT_SECRET</code>, at least 16
           characters). Optionally set <code>ADMIN_BOOTSTRAP_EMAIL</code> and{" "}
           <code>ADMIN_BOOTSTRAP_PASSWORD</code> to create the first admin on first load.
+        </p>
+      </div>
+    );
+  }
+
+  if (loaderData.mode === "db-error") {
+    return (
+      <div className="shop-admin">
+        <h1 className="customer-portal__title">Shop admin</h1>
+        <p className="customer-portal__error" role="alert">
+          {loaderData.dbError}
+        </p>
+        <p className="customer-portal__muted">
+          <code>DATABASE_URL</code> is set but Postgres could not be reached. Use a connection
+          string from{" "}
+          <a href="https://neon.tech" target="_blank" rel="noopener noreferrer">
+            Neon
+          </a>{" "}
+          or Vercel Storage, or start local Postgres on port 5432.
         </p>
       </div>
     );

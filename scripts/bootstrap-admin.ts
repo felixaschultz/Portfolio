@@ -4,9 +4,20 @@
  * Usage:
  *   ADMIN_BOOTSTRAP_EMAIL=you@example.com ADMIN_BOOTSTRAP_PASSWORD='…' npx tsx scripts/bootstrap-admin.ts
  */
-import "dotenv/config";
+import { config } from "dotenv";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
-import { ensureDatabaseReady, getSql, isDatabaseConfigured } from "../app/lib/db.server";
+import {
+  ensureDatabaseReady,
+  getLastDatabaseError,
+  getSql,
+  isDatabaseConfigured,
+} from "../app/lib/db.server";
+
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+config({ path: resolve(rootDir, ".env") });
+config({ path: resolve(rootDir, ".env.local"), override: true });
 import { hashAdminPassword } from "../app/lib/admin-password.server";
 
 async function main() {
@@ -16,7 +27,7 @@ async function main() {
   }
 
   if (!(await ensureDatabaseReady())) {
-    console.error("Could not run migrations.");
+    console.error(getLastDatabaseError() ?? "Could not run migrations.");
     process.exit(1);
   }
 

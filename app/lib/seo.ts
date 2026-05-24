@@ -10,6 +10,15 @@ export function getSiteUrl(): string {
   return url.replace(/\/$/, "");
 }
 
+/** Request origin for shop links (localhost in dev, production host when deployed). */
+export function resolveSiteUrl(request: Request): string {
+  return new URL(request.url).origin.replace(/\/$/, "");
+}
+
+export function shopGalleryPath(shopToken: string): string {
+  return `/shop/gallery/${encodeURIComponent(shopToken)}`;
+}
+
 export function pageUrl(locale: Locale, path = ""): string {
   const normalized = path.startsWith("/") ? path : path ? `/${path}` : "";
   return `${getSiteUrl()}/${locale}${normalized}`;

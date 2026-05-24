@@ -3,7 +3,7 @@ import { createImageUrlBuilder } from "@sanity/image-url";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
 import { localizedField } from "./i18n";
-import { getSiteUrl } from "./seo";
+import { getSiteUrl, shopGalleryPath } from "./seo";
 import { signShopPurchase } from "./purchase-token.server";
 import {
   buildZipResponse,
@@ -78,6 +78,12 @@ export type ShopGalleryView = {
   images: ShopGalleryImage[];
 };
 
+export type ShopCheckoutLineItem = {
+  key: string;
+  thumbUrl: string;
+  alt?: string;
+};
+
 export type ShopCheckoutView = {
   paymentIntentId: string;
   clientSecret: string;
@@ -85,13 +91,17 @@ export type ShopCheckoutView = {
   shopToken: string;
   galleryTitle: string;
   imageCount: number;
+  lineItems: ShopCheckoutLineItem[];
+  unitAmountOre: number;
   totalOre: number;
   subtotalOre: number;
   discountOre: number;
   discountPercent: number;
   licenseLabel: string;
+  licenseId: string;
   currency: typeof SHOP_CURRENCY;
-  cancelUrl: string;
+  /** Relative path — use with React Router `Link` so dev/staging hosts stay correct. */
+  backToGalleryPath: string;
 };
 
 export type ShopPurchaseSummary = {
@@ -313,8 +323,6 @@ export async function loadShopCheckout(
     const gallery = await fetchShopGallery(shopToken);
     if (!gallery || gallery.slug !== gallerySlug) return null;
 
-    const siteUrl = getSiteUrl();
-
     const licenseLabel =
       intent.metadata?.licenseLabel ||
       getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId)?.label ||
@@ -334,6 +342,18 @@ export async function loadShopCheckout(
     const discountPercent =
       Number(intent.metadata?.discountPercent) || repriced?.percentOff || 0;
 
+    const imageByKey = new Map(gallery.images.map((image) => [image.key, image]));
+    const lineItems: ShopCheckoutLineItem[] = imageKeys
+      .map((key) => imageByKey.get(key))
+      .filter((image): image is ShopGalleryImage => Boolean(image))
+      .map((image) => ({
+        key: image.key,
+        thumbUrl: image.thumbUrl,
+        alt: image.alt,
+      }));
+
+    const unitAmountOre = tierForPricing?.unitAmountOre ?? 0;
+
     return {
       paymentIntentId: intent.id,
       clientSecret: intent.client_secret,
@@ -341,13 +361,16 @@ export async function loadShopCheckout(
       shopToken,
       galleryTitle: gallery.title,
       imageCount: imageKeys.length,
+      lineItems,
+      unitAmountOre,
       totalOre: intent.amount,
       subtotalOre,
       discountOre,
       discountPercent,
       licenseLabel,
+      licenseId: intent.metadata?.licenseId ?? tierForPricing?.id ?? "personal",
       currency: SHOP_CURRENCY,
-      cancelUrl: `${siteUrl}/shop/gallery/${shopToken}`,
+      backToGalleryPath: shopGalleryPath(shopToken),
     };
   } catch (err) {
     console.error("[shop] load checkout failed:", err);

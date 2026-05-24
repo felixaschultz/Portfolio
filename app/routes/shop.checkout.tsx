@@ -4,13 +4,17 @@ import { useMemo, useState, useEffect } from "react";
 import { Link, redirect, useActionData } from "react-router";
 import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutPayment } from "../components/ShopCheckoutPayment";
+import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { formatShopMoney } from "../lib/shop-licenses";
+import { resolveSiteUrl } from "../lib/seo";
 import {
   createShopPaymentIntent,
   getCheckoutReturnMessage,
   loadShopCheckout,
 } from "../lib/shop.server";
+
+export const handle = { shopWide: true };
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -79,7 +83,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  const siteUrl = url.origin;
+  const siteUrl = resolveSiteUrl(request);
   const returnUrl = `${siteUrl}/shop/checkout?pi=${encodeURIComponent(checkout.paymentIntentId)}`;
   const paymentMessage = getCheckoutReturnMessage(redirectStatus);
 
@@ -133,33 +137,16 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="shop-checkout">
-      <header className="customer-portal__header">
+      <header className="customer-portal__header shop-checkout__header">
         <p className="customer-portal__muted">
-          <Link to={checkout.cancelUrl} className="customer-portal__link-btn">
-            ← Back to selection
+          <Link to={checkout.backToGalleryPath} className="customer-portal__link-btn">
+            ← Back to gallery
           </Link>
         </p>
         <h1 className="customer-portal__title">Checkout</h1>
-        <p className="customer-portal__muted">
-          {checkout.galleryTitle} · {checkout.imageCount} photo
-          {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel}
-          {checkout.discountOre > 0 ? (
-            <>
-              {" · "}
-              <span className="shop-checkout__was">
-                {formatShopMoney(checkout.subtotalOre)}
-              </span>{" "}
-              {totalLabel}
-              <span className="shop-checkout__discount">
-                {" "}
-                (−{checkout.discountPercent}% volume)
-              </span>
-            </>
-          ) : (
-            <> · {totalLabel}</>
-          )}
+        <p className="customer-portal__muted shop-checkout__intro">
+          Review your order, then pay below.
         </p>
-        <ShopPaymentMerchantNotice />
       </header>
 
       {actionData?.error ? (
@@ -168,33 +155,42 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
         </p>
       ) : null}
 
-      {mounted ? (
-        <Elements
-          stripe={stripePromise}
-          options={{
-            clientSecret: checkout.clientSecret,
-            appearance: {
-              theme: "night",
-              variables: {
-                colorPrimary: "#15b0ab",
-                colorBackground: "#0f1615",
-                colorText: "#e8f0ef",
-                colorDanger: "#f87171",
-                borderRadius: "6px",
-              },
-            },
-          }}
-        >
-          <ShopCheckoutPayment
-            paymentIntentId={checkout.paymentIntentId}
-            returnUrl={returnUrl}
-            totalLabel={totalLabel}
-            initialError={paymentMessage}
-          />
-        </Elements>
-      ) : (
-        <p className="customer-portal__muted">Loading payment form…</p>
-      )}
+      <div className="shop-checkout__layout">
+        <ShopCheckoutSummary checkout={checkout} totalLabel={totalLabel} />
+
+        <section className="shop-checkout__payment" aria-label="Payment">
+          <h2 className="shop-checkout__payment-title">Payment</h2>
+          <ShopPaymentMerchantNotice />
+
+          {mounted ? (
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret: checkout.clientSecret,
+                appearance: {
+                  theme: "night",
+                  variables: {
+                    colorPrimary: "#15b0ab",
+                    colorBackground: "#0f1615",
+                    colorText: "#e8f0ef",
+                    colorDanger: "#f87171",
+                    borderRadius: "6px",
+                  },
+                },
+              }}
+            >
+              <ShopCheckoutPayment
+                paymentIntentId={checkout.paymentIntentId}
+                returnUrl={returnUrl}
+                totalLabel={totalLabel}
+                initialError={paymentMessage}
+              />
+            </Elements>
+          ) : (
+            <p className="customer-portal__muted">Loading payment form…</p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

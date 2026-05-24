@@ -190,7 +190,7 @@ export function ShopCheckoutPayment({
 
       <button
         type="submit"
-        className="customer-portal__button"
+        className="customer-portal__button shop-checkout__pay"
         disabled={!stripe || !elements || paying}
       >
         {paying ? "Processing…" : `Pay ${totalLabel}`}

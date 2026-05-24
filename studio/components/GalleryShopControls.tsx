@@ -2,7 +2,7 @@ import { CreditCardIcon, DownloadIcon } from "@sanity/icons";
 import { Card, Flex, Label, Stack, Switch, Text, TextInput, useToast } from "@sanity/ui";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useClient, useCurrentUser } from "sanity";
-import { resolveStudioPatchId } from "../lib/document-patch-id";
+import { commitStudioPatch, resolveStudioPatchId } from "../lib/document-patch-id";
 import { SecretLinkCard } from "./SecretLinkCard";
 
 type GalleryShopDoc = {
@@ -77,37 +77,39 @@ export function GalleryShopControls({ document }: GalleryShopControlsProps) {
         return false;
       }
       try {
-        let patch = client.patch(patchId);
+        await commitStudioPatch(client, document, (id) => {
+          let patch = client.patch(id);
 
-        if (fields.shopPublicEnabled !== undefined) {
-          patch = patch.set({ shopPublicEnabled: fields.shopPublicEnabled });
-        }
+          if (fields.shopPublicEnabled !== undefined) {
+            patch = patch.set({ shopPublicEnabled: fields.shopPublicEnabled });
+          }
 
-        if (fields.shopToken === null) {
-          patch = patch.unset(["shopToken"]);
-        } else if (fields.shopToken !== undefined) {
-          patch = patch.set({ shopToken: fields.shopToken });
-        }
+          if (fields.shopToken === null) {
+            patch = patch.unset(["shopToken"]);
+          } else if (fields.shopToken !== undefined) {
+            patch = patch.set({ shopToken: fields.shopToken });
+          }
 
-        if (fields.shopPricePersonalDkk === null) {
-          patch = patch.unset(["shopPricePersonalDkk"]);
-        } else if (fields.shopPricePersonalDkk !== undefined) {
-          patch = patch.set({ shopPricePersonalDkk: fields.shopPricePersonalDkk });
-        }
+          if (fields.shopPricePersonalDkk === null) {
+            patch = patch.unset(["shopPricePersonalDkk"]);
+          } else if (fields.shopPricePersonalDkk !== undefined) {
+            patch = patch.set({ shopPricePersonalDkk: fields.shopPricePersonalDkk });
+          }
 
-        if (fields.shopPriceCommercialDkk === null) {
-          patch = patch.unset(["shopPriceCommercialDkk"]);
-        } else if (fields.shopPriceCommercialDkk !== undefined) {
-          patch = patch.set({ shopPriceCommercialDkk: fields.shopPriceCommercialDkk });
-        }
+          if (fields.shopPriceCommercialDkk === null) {
+            patch = patch.unset(["shopPriceCommercialDkk"]);
+          } else if (fields.shopPriceCommercialDkk !== undefined) {
+            patch = patch.set({ shopPriceCommercialDkk: fields.shopPriceCommercialDkk });
+          }
 
-        if (fields.downloadToken === null) {
-          patch = patch.unset(["downloadToken"]);
-        } else if (fields.downloadToken !== undefined) {
-          patch = patch.set({ downloadToken: fields.downloadToken });
-        }
+          if (fields.downloadToken === null) {
+            patch = patch.unset(["downloadToken"]);
+          } else if (fields.downloadToken !== undefined) {
+            patch = patch.set({ downloadToken: fields.downloadToken });
+          }
 
-        await patch.commit();
+          return patch;
+        });
         return true;
       } catch (err) {
         console.error("[studio] gallery shop patch failed:", err);
@@ -115,7 +117,7 @@ export function GalleryShopControls({ document }: GalleryShopControlsProps) {
         return false;
       }
     },
-    [client, patchId, toast],
+    [client, document, patchId, toast],
   );
 
   const savePrice = useCallback(

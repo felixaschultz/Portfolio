@@ -68,7 +68,6 @@ async function main() {
         "slug": slug.current,
         "title": coalesce(title.en, title.da, title.de),
         shopToken,
-        shopPricePerImage,
         "imageCount": count(images)
       }`;
 
@@ -77,7 +76,6 @@ async function main() {
     slug: string;
     title?: string;
     shopToken?: string;
-    shopPricePerImage?: number;
     imageCount: number;
   } | null>(query, slugArg ? { slug: slugArg } : {});
 
@@ -94,16 +92,14 @@ async function main() {
   }
 
   const shopUrl = `${DEV_SITE_URL}/shop/gallery/${shopToken}`;
-  const price =
-    typeof gallery.shopPricePerImage === "number" && gallery.shopPricePerImage >= 100
-      ? gallery.shopPricePerImage
-      : 500;
 
   console.log("");
   console.log("Dev shop link (run `npm run dev` in another terminal):");
   console.log(shopUrl);
   console.log("");
-  console.log(`Gallery: ${gallery.title ?? gallery.slug} (${gallery.imageCount} photos, ${(price / 100).toFixed(2)} EUR each)`);
+  console.log(
+    `Gallery: ${gallery.title ?? gallery.slug} (${gallery.imageCount} photos · 149 / 799 DKK per photo)`,
+  );
   console.log("");
   const missing: string[] = [];
   if (!process.env.STRIPE_SECRET_KEY?.startsWith("sk_")) missing.push("STRIPE_SECRET_KEY");

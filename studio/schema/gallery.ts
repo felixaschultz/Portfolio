@@ -102,12 +102,18 @@ export const gallery = defineType({
       },
     }),
     defineField({
-      name: "shopPricePerImage",
-      title: "Shop price per photo (cents)",
+      name: "shopPricePersonalDkk",
+      title: "Shop: personal price (DKK)",
       type: "number",
-      description: "EUR cents per digital download, e.g. 500 = €5.00. Used for the private shop link below.",
-      initialValue: 500,
-      validation: (rule) => rule.min(100).max(500_000),
+      description: "Override per-photo personal download price. Leave empty for default 149 DKK.",
+      validation: (rule) => rule.min(1).max(100_000),
+    }),
+    defineField({
+      name: "shopPriceCommercialDkk",
+      title: "Shop: commercial price (DKK)",
+      type: "number",
+      description: "Override per-photo commercial license price. Leave empty for default 799 DKK.",
+      validation: (rule) => rule.min(1).max(100_000),
     }),
     defineField({
       name: "shopToken",

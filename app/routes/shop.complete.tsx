@@ -79,7 +79,8 @@ export default function ShopCompletePage({ loaderData, actionData }: Route.Compo
         <h1 className="customer-portal__title">Thank you</h1>
         <p className="customer-portal__muted">
           Payment received for <strong>{purchase.imageCount}</strong> photo
-          {purchase.imageCount === 1 ? "" : "s"} from <em>{purchase.galleryTitle}</em>.
+          {purchase.imageCount === 1 ? "" : "s"} from <em>{purchase.galleryTitle}</em> (
+          {purchase.licenseLabel}).
         </p>
 
         <a className="customer-portal__button" href={purchase.downloadPath}>

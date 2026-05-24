@@ -4,16 +4,11 @@ import { useMemo, useState, useEffect } from "react";
 import { Link, redirect, useActionData } from "react-router";
 import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutPayment } from "../components/ShopCheckoutPayment";
+import { formatShopMoney } from "../lib/shop-licenses";
 import {
   createShopPaymentIntent,
   loadShopCheckout,
 } from "../lib/shop.server";
-
-function formatEur(cents: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    cents / 100,
-  );
-}
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -22,15 +17,22 @@ export async function action({ request }: Route.ActionArgs) {
 
   let shopToken: string | undefined;
   let imageKeys: string[] = [];
+  let licenseId = "";
 
   const contentType = request.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
-    const body = (await request.json()) as { shopToken?: string; imageKeys?: string[] };
+    const body = (await request.json()) as {
+      shopToken?: string;
+      imageKeys?: string[];
+      licenseId?: string;
+    };
     shopToken = body.shopToken;
     imageKeys = Array.isArray(body.imageKeys) ? body.imageKeys : [];
+    licenseId = body.licenseId ?? "";
   } else {
     const form = await request.formData();
     shopToken = String(form.get("shopToken") ?? "");
+    licenseId = String(form.get("licenseId") ?? "");
     const raw = form.get("imageKeys");
     if (typeof raw === "string" && raw) {
       try {
@@ -44,6 +46,7 @@ export async function action({ request }: Route.ActionArgs) {
   const result = await createShopPaymentIntent({
     shopToken: shopToken?.trim() ?? "",
     imageKeys,
+    licenseId,
   });
 
   if ("error" in result) {
@@ -71,7 +74,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     mode: "pay" as const,
     checkout,
     returnUrl,
-    totalLabel: formatEur(checkout.totalCents),
+    totalLabel: formatShopMoney(checkout.totalOre),
   };
 }
 
@@ -118,7 +121,7 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
           <h1 className="customer-portal__title">Checkout</h1>
           <p className="customer-portal__muted">
             {checkout.galleryTitle} · {checkout.imageCount} photo
-            {checkout.imageCount === 1 ? "" : "s"} · {totalLabel}
+            {checkout.imageCount === 1 ? "" : "s"} · {checkout.licenseLabel} · {totalLabel}
           </p>
         </header>
 

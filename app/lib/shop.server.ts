@@ -12,9 +12,15 @@ import {
   type ZipEntry,
 } from "./zip-download.server";
 import type { ShopPurchasePayload } from "./purchase-token.server";
+import {
+  SHOP_CURRENCY,
+  formatShopMoney,
+  getLicenseTier,
+  resolveLicenseTiers,
+  type ShopLicenseTier,
+} from "./shop-licenses";
 
-export const DEFAULT_SHOP_PRICE_CENTS = 500;
-export const SHOP_CURRENCY = "eur";
+export { SHOP_CURRENCY, formatShopMoney };
 
 const SHOP_GALLERY_BY_TOKEN_QUERY = `*[
   _type == "gallery"
@@ -23,7 +29,8 @@ const SHOP_GALLERY_BY_TOKEN_QUERY = `*[
 ][0] {
   "slug": slug.current,
   title,
-  shopPricePerImage,
+  shopPricePersonalDkk,
+  shopPriceCommercialDkk,
   images[] {
     _key,
     alt,
@@ -61,8 +68,8 @@ export type ShopGalleryImage = {
 export type ShopGalleryView = {
   slug: string;
   title: string;
-  priceCents: number;
   currency: typeof SHOP_CURRENCY;
+  licenseTiers: ShopLicenseTier[];
   images: ShopGalleryImage[];
 };
 
@@ -73,7 +80,8 @@ export type ShopCheckoutView = {
   shopToken: string;
   galleryTitle: string;
   imageCount: number;
-  totalCents: number;
+  totalOre: number;
+  licenseLabel: string;
   currency: typeof SHOP_CURRENCY;
   cancelUrl: string;
 };
@@ -83,6 +91,7 @@ export type ShopPurchaseSummary = {
   gallerySlug: string;
   galleryTitle: string;
   imageCount: number;
+  licenseLabel: string;
   downloadJwt: string;
   downloadPath: string;
   emailSent: boolean;
@@ -125,7 +134,8 @@ export async function fetchShopGallery(token: string): Promise<ShopGalleryView |
     const doc = await client.fetch<{
       slug?: string;
       title?: { da?: string; de?: string; en?: string };
-      shopPricePerImage?: number;
+      shopPricePersonalDkk?: number;
+      shopPriceCommercialDkk?: number;
       images?: {
         _key?: string;
         alt?: string;
@@ -165,16 +175,16 @@ export async function fetchShopGallery(token: string): Promise<ShopGalleryView |
 
     if (images.length === 0) return null;
 
-    const priceCents =
-      typeof doc.shopPricePerImage === "number" && doc.shopPricePerImage >= 100
-        ? Math.round(doc.shopPricePerImage)
-        : DEFAULT_SHOP_PRICE_CENTS;
+    const licenseTiers = resolveLicenseTiers({
+      shopPricePersonalDkk: doc.shopPricePersonalDkk,
+      shopPriceCommercialDkk: doc.shopPriceCommercialDkk,
+    });
 
     return {
       slug: doc.slug,
       title: localizedField(doc.title, "en") || doc.slug,
-      priceCents,
       currency: SHOP_CURRENCY,
+      licenseTiers,
       images,
     };
   } catch (err) {
@@ -191,6 +201,7 @@ function validatedImageKeys(gallery: ShopGalleryView, imageKeys: string[]): stri
 export async function createShopPaymentIntent(options: {
   shopToken: string;
   imageKeys: string[];
+  licenseId: string;
 }): Promise<{ paymentIntentId: string } | { error: string }> {
   const stripe = getStripe();
   const publishableKey = getStripePublishableKey();
@@ -202,7 +213,10 @@ export async function createShopPaymentIntent(options: {
   const imageKeys = validatedImageKeys(gallery, options.imageKeys);
   if (imageKeys.length === 0) return { error: "Select at least one photo." };
 
-  const amount = gallery.priceCents * imageKeys.length;
+  const tier = getLicenseTier(gallery.licenseTiers, options.licenseId);
+  if (!tier) return { error: "Choose a license type." };
+
+  const amount = tier.unitAmountOre * imageKeys.length;
 
   try {
     const intent = await stripe.paymentIntents.create({
@@ -212,6 +226,8 @@ export async function createShopPaymentIntent(options: {
       metadata: {
         shopToken: options.shopToken,
         gallerySlug: gallery.slug,
+        licenseId: tier.id,
+        licenseLabel: tier.label,
         imageKeys: JSON.stringify(imageKeys),
       },
     });
@@ -248,6 +264,11 @@ export async function loadShopCheckout(
 
     const siteUrl = getSiteUrl();
 
+    const licenseLabel =
+      intent.metadata?.licenseLabel ||
+      getLicenseTier(gallery.licenseTiers, intent.metadata?.licenseId)?.label ||
+      "License";
+
     return {
       paymentIntentId: intent.id,
       clientSecret: intent.client_secret,
@@ -255,7 +276,8 @@ export async function loadShopCheckout(
       shopToken,
       galleryTitle: gallery.title,
       imageCount: imageKeys.length,
-      totalCents: intent.amount,
+      totalOre: intent.amount,
+      licenseLabel,
       currency: SHOP_CURRENCY,
       cancelUrl: `${siteUrl}/shop/gallery/${shopToken}`,
     };
@@ -303,6 +325,7 @@ export async function resolvePaidPurchase(
       gallerySlug,
       galleryTitle,
       imageCount: imageKeys.length,
+      licenseLabel: intent.metadata?.licenseLabel || "License",
       downloadJwt,
       downloadPath,
       emailSent: intent.metadata?.downloadEmailSent === "true",

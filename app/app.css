@@ -1875,6 +1875,10 @@ body {
   max-width: 56rem;
 }
 
+.shop-gallery {
+  padding-bottom: 6rem;
+}
+
 .customer-portal__header {
   margin-bottom: 1.5rem;
 }
@@ -1924,6 +1928,7 @@ body {
 .customer-portal__footer {
   position: sticky;
   bottom: 0;
+  z-index: 2;
   padding: 1rem 0;
   margin-top: 1.5rem;
   background: linear-gradient(transparent, var(--color-bg) 24%);
@@ -1973,6 +1978,69 @@ body {
   }
 }
 
+.shop-licenses {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: none;
+}
+
+.shop-licenses__legend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+.shop-licenses__options {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .shop-licenses__options {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.shop-licenses__option {
+  position: relative;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.shop-licenses__option--active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent-soft);
+}
+
+.shop-licenses__radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shop-licenses__option-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.shop-licenses__option-price {
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.shop-licenses__option-desc {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
 .shop-grid__item {
   position: relative;
   display: block;
@@ -1985,6 +2053,14 @@ body {
   background: var(--color-surface);
 }
 
+.shop-grid__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
 .shop-grid__item--selected {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 1px var(--color-accent-soft);
@@ -1995,6 +2071,9 @@ body {
   width: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .shop-grid__check {

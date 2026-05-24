@@ -2439,6 +2439,60 @@ body {
   gap: 1.25rem;
 }
 
+.shop-checkout__express {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shop-checkout__express--visible {
+  display: flex;
+}
+
+.shop-checkout__express-label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, var(--color-muted));
+}
+
+.shop-checkout__express-mount {
+  min-height: 3.25rem;
+  padding: 0.25rem 0;
+}
+
+.shop-checkout__express-mount--loading {
+  min-height: 2.5rem;
+}
+
+.shop-checkout__express-hint {
+  margin: 0;
+}
+
+.shop-checkout__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-text-muted, var(--color-muted));
+  font-size: 0.8125rem;
+}
+
+.shop-checkout__divider::before,
+.shop-checkout__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.shop-checkout__divider span {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .shop-checkout__element {
   padding: 1rem;
   border-radius: 0.5rem;

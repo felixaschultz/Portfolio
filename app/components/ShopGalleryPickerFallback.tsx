@@ -3,7 +3,7 @@ import { useRouteLoaderData } from "react-router";
 import type { Locale } from "../lib/i18n";
 import type { ShopGalleryView } from "../lib/shop.types";
 import { formatShopMoney } from "../lib/shop-licenses";
-import { describeVolumeDiscountOfferClient } from "../lib/shop-volume.client";
+import { describeVolumeDiscountOfferClient } from "../lib/shop-volume";
 
 type ShopGalleryPickerFallbackProps = {
   gallery: ShopGalleryView;

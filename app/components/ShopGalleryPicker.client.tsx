@@ -12,7 +12,7 @@ import {
 import {
   describeVolumeDiscountOfferClient,
   getNextVolumeDiscountHintClient,
-} from "../lib/shop-volume.client";
+} from "../lib/shop-volume";
 import { ShopPaymentMerchantNotice } from "./ShopPaymentMerchantNotice";
 
 type ShopGalleryPickerProps = {

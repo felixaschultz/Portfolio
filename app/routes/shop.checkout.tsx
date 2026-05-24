@@ -2,20 +2,27 @@ import { useEffect } from "react";
 import { Link, redirect } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/shop.checkout";
-import { ShopCheckoutEmailForm } from "../components/ShopCheckoutEmailForm";
+import { ShopCheckoutBuyerForm } from "../components/ShopCheckoutBuyerForm";
 import { ShopCheckoutStripe } from "../components/ShopCheckoutStripe";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
 import { shopShowsEurPrices } from "../lib/shop-licenses";
+import type { ShopCheckoutView } from "../lib/shop.types";
 import { resolveSiteUrl } from "../lib/seo";
 import da from "../lib/i18n/locales/da.json";
 import de from "../lib/i18n/locales/de.json";
 import en from "../lib/i18n/locales/en.json";
 import type { Locale } from "../lib/i18n";
 import { resolveShopLocale } from "../lib/shop-locale";
-import { loadShopCheckout, updateShopPaymentIntentEmail } from "../lib/shop.server";
+import { loadShopCheckout } from "../lib/shop.server";
 
 export const handle = { shopWide: true };
+
+function isCheckoutBuyerComplete(
+  checkout: Pick<ShopCheckoutView, "customerEmail" | "customerName">,
+): boolean {
+  return Boolean(checkout.customerEmail && checkout.customerName);
+}
 
 export function links() {
   return [
@@ -27,29 +34,35 @@ export function links() {
 export async function action({ request }: Route.ActionArgs) {
   const locale = resolveShopLocale(request);
   const { shopT } = await import("../lib/shop-i18n.server");
+  const { updateShopPaymentIntentBuyer } = await import("../lib/shop.server");
 
   if (request.method !== "POST") {
     return Response.json({ error: shopT(locale, "errors.methodNotAllowed") }, { status: 405 });
   }
 
   const form = await request.formData();
-  if (form.get("intent") !== "saveEmail") {
+  if (form.get("intent") !== "saveBuyer") {
     return Response.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const paymentIntentId = String(form.get("paymentIntentId") ?? "").trim();
   const email = String(form.get("email") ?? "");
+  const name = String(form.get("name") ?? "");
 
   if (!paymentIntentId) {
-    return { emailError: shopT(locale, "errors.missingOrderRef") };
+    return { buyerError: shopT(locale, "errors.missingOrderRef") };
   }
 
-  const result = await updateShopPaymentIntentEmail(paymentIntentId, email, locale);
+  const result = await updateShopPaymentIntentBuyer(
+    paymentIntentId,
+    { email, name },
+    locale,
+  );
   if ("error" in result) {
-    return { emailError: result.error };
+    return { buyerError: result.error };
   }
 
-  return { emailSaved: true as const };
+  return { buyerSaved: true as const };
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -114,6 +127,7 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   const { checkout, returnUrl, paymentMessage } = loaderData;
   const locale = checkout.displayLocale;
   const totalLabel = checkout.displayPrices.total;
+  const buyerComplete = isCheckoutBuyerComplete(checkout);
 
   return (
     <div className="shop-checkout">
@@ -137,15 +151,25 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
           <h2 className="shop-checkout__payment-title">{t("shop.paymentSection")}</h2>
           <ShopPaymentMerchantNotice />
 
-          {checkout.customerEmail ? (
-            <p className="shop-checkout__email-confirmed customer-portal__muted">
-              {t("shop.purchaseEmailConfirmed", { email: checkout.customerEmail })}
-            </p>
+          {buyerComplete ? (
+            <div className="shop-checkout__buyer-confirmed">
+              <p className="customer-portal__muted">
+                {t("shop.purchaseNameConfirmed", { name: checkout.customerName! })}
+              </p>
+              <p className="customer-portal__muted">
+                {t("shop.purchaseEmailConfirmed", { email: checkout.customerEmail! })}
+              </p>
+            </div>
           ) : (
-            <ShopCheckoutEmailForm paymentIntentId={checkout.paymentIntentId} />
+            <ShopCheckoutBuyerForm
+              paymentIntentId={checkout.paymentIntentId}
+              initialEmail={checkout.customerEmail}
+              initialName={checkout.customerName}
+              emailLocked={Boolean(checkout.customerEmail)}
+            />
           )}
 
-          {checkout.customerEmail ? (
+          {buyerComplete ? (
             <ShopCheckoutStripe
               locale={locale}
               publishableKey={checkout.publishableKey}

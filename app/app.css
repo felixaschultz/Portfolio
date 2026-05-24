@@ -2271,6 +2271,7 @@ body {
   margin-bottom: 0.75rem;
 }
 
+.shop-checkout__buyer-form,
 .shop-checkout__email-form {
   display: flex;
   flex-direction: column;
@@ -2282,25 +2283,49 @@ body {
   background: var(--color-surface-elevated);
 }
 
+.shop-checkout__buyer-title,
 .shop-checkout__email-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text);
 }
 
+.shop-checkout__buyer-hint,
 .shop-checkout__email-hint {
   font-size: 0.875rem;
 }
 
+.shop-checkout__buyer-label,
 .shop-checkout__email-label {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
+.shop-checkout__buyer-input,
+.shop-checkout__email-input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.shop-checkout__buyer-input--readonly {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.shop-checkout__buyer-confirmed,
 .shop-checkout__email-confirmed {
   margin-bottom: 1rem;
   font-size: 0.9rem;
+}
+
+.shop-checkout__buyer-confirmed p + p {
+  margin-top: 0.25rem;
 }
 
 .shop-cart__checkout {

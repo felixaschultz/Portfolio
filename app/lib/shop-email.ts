@@ -8,3 +8,13 @@ export function normalizeShopEmail(value: string): string | null {
 export function isValidShopEmail(value: string): boolean {
   return normalizeShopEmail(value) !== null;
 }
+
+export function normalizeShopCustomerName(value: string): string | null {
+  const name = value.trim().replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 120) return null;
+  return name;
+}
+
+export function isValidShopCustomerName(value: string): boolean {
+  return normalizeShopCustomerName(value) !== null;
+}

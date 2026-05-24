@@ -54,6 +54,8 @@ export type ShopCheckoutView = {
   displayLocale: Locale;
   /** Buyer email (required before payment). */
   customerEmail: string | null;
+  /** Buyer name (required on checkout before payment). */
+  customerName: string | null;
 };
 
 export type ShopPurchaseSummary = {
@@ -66,4 +68,5 @@ export type ShopPurchaseSummary = {
   downloadPath: string;
   emailSent: boolean;
   customerEmail: string | null;
+  customerName: string | null;
 };

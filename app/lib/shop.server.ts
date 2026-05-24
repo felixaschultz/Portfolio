@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import { normalizeShopEmail } from "./shop-email";
+import { normalizeShopCustomerName, normalizeShopEmail } from "./shop-email";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
 import { isValidLocale, localizedField, type Locale } from "./i18n";
@@ -223,9 +223,9 @@ function validatedImageKeys(gallery: ShopGalleryView, imageKeys: string[]): stri
   return [...new Set(imageKeys.filter((k) => validKeys.has(k)))];
 }
 
-export async function updateShopPaymentIntentEmail(
+export async function updateShopPaymentIntentBuyer(
   paymentIntentId: string,
-  email: string,
+  options: { email: string; name: string },
   locale: Locale,
 ): Promise<{ ok: true } | { error: string }> {
   const stripe = getStripe();
@@ -233,9 +233,14 @@ export async function updateShopPaymentIntentEmail(
     return { error: shopT(locale, "errors.notConfigured") };
   }
 
-  const normalized = normalizeShopEmail(email);
-  if (!normalized) {
+  const customerEmail = normalizeShopEmail(options.email);
+  if (!customerEmail) {
     return { error: shopT(locale, "errors.invalidEmail") };
+  }
+
+  const customerName = normalizeShopCustomerName(options.name);
+  if (!customerName) {
+    return { error: shopT(locale, "errors.invalidName") };
   }
 
   try {
@@ -249,17 +254,18 @@ export async function updateShopPaymentIntentEmail(
     }
 
     await stripe.paymentIntents.update(intent.id, {
-      receipt_email: normalized,
+      receipt_email: customerEmail,
       metadata: {
         ...intent.metadata,
-        customerEmail: normalized,
-        downloadEmail: normalized,
+        customerEmail,
+        downloadEmail: customerEmail,
+        customerName,
       },
     });
 
     return { ok: true };
   } catch (err) {
-    console.error("[shop] update payment intent email failed:", err);
+    console.error("[shop] update payment intent buyer failed:", err);
     return { error: shopT(locale, "errors.checkoutFailed") };
   }
 }
@@ -397,6 +403,7 @@ export async function loadShopCheckout(
       intent.metadata?.customerEmail?.trim().toLowerCase() ||
       intent.metadata?.downloadEmail?.trim().toLowerCase() ||
       null;
+    const customerName = intent.metadata?.customerName?.trim() || null;
 
     return {
       paymentIntentId: intent.id,
@@ -423,6 +430,7 @@ export async function loadShopCheckout(
       },
       displayLocale: locale,
       customerEmail,
+      customerName,
     };
   } catch (err) {
     console.error("[shop] load checkout failed:", err);
@@ -479,6 +487,7 @@ export async function resolvePaidPurchase(
         intent.metadata?.customerEmail?.trim().toLowerCase() ||
         intent.metadata?.downloadEmail?.trim().toLowerCase() ||
         null,
+      customerName: intent.metadata?.customerName?.trim() || null,
     };
   } catch (err) {
     console.error("[shop] resolve purchase failed:", err);

@@ -2664,6 +2664,10 @@ body {
   margin: 0;
 }
 
+.shop-admin__login-loading {
+  margin-top: 1.25rem;
+}
+
 .shop-admin__login-form {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function PasskeyRegisterForm() {
   const [deviceName, setDeviceName] = useState("");
@@ -92,26 +92,7 @@ function PasskeyRegisterForm() {
   );
 }
 
-function PasskeySectionPending() {
-  return (
-    <section className="shop-admin__section" aria-busy="true">
-      <h2 className="shop-admin__section-title">Passkeys</h2>
-      <p className="customer-portal__muted">Loading…</p>
-    </section>
-  );
-}
-
-export function ShopAdminPasskeySection() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <PasskeySectionPending />;
-  }
-
+export function ShopAdminPasskeyPanel() {
   return (
     <section className="shop-admin__section" aria-labelledby="shop-admin-passkeys">
       <h2 id="shop-admin-passkeys" className="shop-admin__section-title">

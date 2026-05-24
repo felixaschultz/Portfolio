@@ -1,8 +1,4 @@
 import { useEffect, useState } from "react";
-import {
-  startRegistration,
-  type PublicKeyCredentialCreationOptionsJSON,
-} from "@simplewebauthn/browser";
 
 function PasskeyRegisterForm() {
   const [deviceName, setDeviceName] = useState("");
@@ -32,8 +28,9 @@ function PasskeyRegisterForm() {
         return;
       }
 
+      const { startRegistration } = await import("@simplewebauthn/browser");
       const attestation = await startRegistration({
-        optionsJSON: optionsJson as PublicKeyCredentialCreationOptionsJSON,
+        optionsJSON: optionsJson as import("@simplewebauthn/browser").PublicKeyCredentialCreationOptionsJSON,
       });
 
       const verifyRes = await fetch("/shop/admin/api/passkey-register-verify", {

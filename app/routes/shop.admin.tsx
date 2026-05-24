@@ -1,6 +1,6 @@
 import { Form, Link, data, redirect } from "react-router";
 import type { Route } from "./+types/shop.admin";
-import { ShopAdminLogin } from "../components/ShopAdminLogin";
+import { ShopAdminLogin } from "../components/ShopAdminLogin.client";
 import { ShopAdminPasskeySection } from "../components/ShopAdminPasskeySection.client";
 import {
   adminSessionClearCookieHeader,

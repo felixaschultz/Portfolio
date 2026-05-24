@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Form, useActionData } from "react-router";
-import { startAuthentication, type PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/browser";
 
 type LoginActionData = { loginError?: string } | undefined;
 
-/** Client-only — loaded from ShopAdminLogin after mount (avoids password-manager hydration issues). */
-export function ShopAdminLoginForm() {
+export function ShopAdminLogin() {
   const actionData = useActionData() as LoginActionData;
   const [email, setEmail] = useState("");
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
@@ -21,6 +19,8 @@ export function ShopAdminLoginForm() {
 
     setPasskeyBusy(true);
     try {
+      const { startAuthentication } = await import("@simplewebauthn/browser");
+
       const optionsRes = await fetch("/shop/admin/api/passkey-login-options", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,7 +40,7 @@ export function ShopAdminLoginForm() {
       }
 
       const assertion = await startAuthentication({
-        optionsJSON: optionsJson as PublicKeyCredentialRequestOptionsJSON,
+        optionsJSON: optionsJson as import("@simplewebauthn/browser").PublicKeyCredentialRequestOptionsJSON,
       });
 
       const verifyRes = await fetch("/shop/admin/api/passkey-login-verify", {
@@ -66,7 +66,12 @@ export function ShopAdminLoginForm() {
 
   return (
     <div className="shop-admin__login-stack">
-      <Form method="post" className="shop-admin__login-form" reloadDocument>
+      <Form
+        method="post"
+        className="shop-admin__login-form"
+        reloadDocument
+        suppressHydrationWarning
+      >
         <input type="hidden" name="intent" value="login" />
         <label className="shop-admin__label">
           <span className="customer-portal__muted">Email</span>

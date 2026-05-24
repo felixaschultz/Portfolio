@@ -10,6 +10,7 @@ import { GalleryAlbumNav } from "./GalleryAlbumNav";
 import { GalleryImage } from "./GalleryImage";
 import { GalleryLightbox, useGalleryLightbox } from "./GalleryLightbox";
 import { Reveal } from "./Reveal";
+import { GalleryPublicShopLink } from "./GalleryPublicShopLink";
 import { GalleryShare } from "./GalleryShare";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { shouldDisableReveal } from "../lib/gallery-performance";
@@ -210,7 +211,10 @@ export function GalleryView({
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
               ← {t("photography.back")}
             </Link>
-            <GalleryShare payload={sharePayload} />
+            <div className="gallery-album__toolbar-actions">
+              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
+              <GalleryShare payload={sharePayload} />
+            </div>
           </div>
 
           <div className="gallery-album__hero-copy">
@@ -228,7 +232,10 @@ export function GalleryView({
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
               ← {t("photography.back")}
             </Link>
-            <GalleryShare payload={sharePayload} />
+            <div className="gallery-album__toolbar-actions">
+              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
+              <GalleryShare payload={sharePayload} />
+            </div>
           </div>
           <h1 className="gallery-album__title mt-10">{title}</h1>
           {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}

@@ -1,5 +1,11 @@
 import { createClient, type SanityClient } from "@sanity/client";
-import type { GalleryDetail, GalleryImageItem, GalleryListItem, PortfolioPhotoItem } from "./galleries";
+import {
+  resolvePublicGalleryShopUrl,
+  type GalleryDetail,
+  type GalleryImageItem,
+  type GalleryListItem,
+  type PortfolioPhotoItem,
+} from "./galleries";
 import { resolveGalleryCoverImage } from "./gallery-cover";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
@@ -114,6 +120,8 @@ export type GalleryDocument = {
   featured?: boolean;
   sortOrder?: number;
   coverImageKey?: string;
+  shopPublicEnabled?: boolean;
+  shopToken?: string;
   images: GalleryImageDocument[];
 };
 
@@ -157,13 +165,43 @@ const galleryProjection = `{
   }
 }`;
 
+const galleryShopFields = `
+  shopPublicEnabled,
+  shopToken`;
+
+const galleryDetailProjection = `{
+  _id,
+  "slug": slug.current,
+  title,
+  description,
+  takenAt,
+  location,
+  "tags": array::unique(array::compact(tags[]->name)),
+  "categories": categories[]->{
+    "slug": slug.current,
+    title
+  },
+  featured,
+  sortOrder,
+  coverImageKey,${galleryShopFields},
+  images[] {
+    _key,
+    alt,
+    caption,
+    image {
+      ...,
+      "dimensions": asset->metadata.dimensions
+    }
+  }
+}`;
+
 const publishedGalleryFilter = `_type == "gallery" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
 export const GALLERIES_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(sortOrder, 999) asc, takenAt desc) ${galleryProjection}`;
 
 export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
 
-export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryProjection}`;
+export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryDetailProjection}`;
 
 const publishedCategoryFilter = `_type == "galleryCategory" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
@@ -241,7 +279,9 @@ async function mapGalleryToDetail(
     }
   }
 
-  return { ...list, images };
+  const shopUrl = resolvePublicGalleryShopUrl(gallery);
+
+  return { ...list, images, ...(shopUrl ? { shopUrl } : {}) };
 }
 
 export async function fetchGalleries(): Promise<GalleryDocument[]> {

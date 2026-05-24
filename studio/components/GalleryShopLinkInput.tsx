@@ -6,7 +6,7 @@ export function GalleryShopLinkInput(props: StringInputProps) {
     <SecretLinkInput
       {...props}
       urlPath="shop/gallery"
-      intro="Private shop link: customers select photos and pay via Stripe for digital downloads. Works before publish. Not listed on the public site."
+      intro="Shop link for Stripe checkout (select photos, pay, download). Use “Show buy button on public gallery” to expose it on the published album; otherwise share this URL only."
       emptyHint="No shop link yet. Set a price per photo below, then generate a link."
       generateLabel="Generate shop link"
     />

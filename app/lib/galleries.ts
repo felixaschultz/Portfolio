@@ -45,7 +45,19 @@ export type GalleryListItem = {
 
 export type GalleryDetail = GalleryListItem & {
   images: GalleryImageItem[];
+  /** Set when public shop is enabled and a shop token exists. */
+  shopUrl?: string;
 };
+
+export function resolvePublicGalleryShopUrl(gallery: {
+  shopPublicEnabled?: boolean;
+  shopToken?: string;
+}): string | undefined {
+  if (!gallery.shopPublicEnabled) return undefined;
+  const token = gallery.shopToken?.trim();
+  if (!token) return undefined;
+  return `/shop/gallery/${encodeURIComponent(token)}`;
+}
 
 /** Single image in the cross-gallery “all photos” index. */
 export type PortfolioPhotoItem = GalleryImageItem & {

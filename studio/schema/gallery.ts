@@ -116,11 +116,19 @@ export const gallery = defineType({
       validation: (rule) => rule.min(1).max(100_000),
     }),
     defineField({
+      name: "shopPublicEnabled",
+      title: "Show buy button on public gallery",
+      type: "boolean",
+      initialValue: false,
+      description:
+        "When enabled (and a shop link exists), visitors on the published photography album see “Buy & license photos”. The private shop link still works when this is off.",
+    }),
+    defineField({
       name: "shopToken",
       title: "Customer shop link",
       type: "string",
       description:
-        "Stripe checkout for selected photos. Works before publish; only managed here — not on the public site.",
+        "Stripe checkout for selected photos. Generate a link below. Works before publish; can also be shared directly when the public buy button is off.",
       readOnly: true,
       components: {
         input: GalleryShopLinkInput,

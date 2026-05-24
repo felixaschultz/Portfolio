@@ -4,15 +4,29 @@ import { ShopGalleryPickerFallback } from "./ShopGalleryPickerFallback";
 
 export type { ShopGalleryPickerProps } from "./shop-gallery-picker.types";
 
+function loadClientPicker(): Promise<ComponentType<ShopGalleryPickerProps>> {
+  return import("./ShopGalleryPicker.client").then((mod) => mod.ShopGalleryPicker);
+}
+
 export function ShopGalleryPicker(props: ShopGalleryPickerProps) {
   const [ClientPicker, setClientPicker] = useState<ComponentType<ShopGalleryPickerProps> | null>(
     null,
   );
 
   useEffect(() => {
-    void import("./ShopGalleryPicker.client").then((mod) => {
-      setClientPicker(() => mod.ShopGalleryPicker);
-    });
+    const run = () => {
+      void loadClientPicker().then((Picker) => {
+        setClientPicker(() => Picker);
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(run, { timeout: 400 });
+      return () => window.cancelIdleCallback(id);
+    }
+
+    const id = window.setTimeout(run, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   if (!ClientPicker) {
@@ -20,4 +34,9 @@ export function ShopGalleryPicker(props: ShopGalleryPickerProps) {
   }
 
   return <ClientPicker {...props} />;
+}
+
+/** Preload the interactive picker chunk (call from route `links`). */
+export function preloadShopGalleryPicker(): void {
+  void loadClientPicker();
 }

@@ -12,6 +12,10 @@ import {
   resolveShopLocale,
 } from "../lib/shop-locale";
 import { readPaymentIntentLocale } from "../lib/shop.server";
+
+export function links() {
+  return [{ rel: "preconnect", href: "https://cdn.sanity.io" }];
+}
 import { useShopLocale } from "../lib/use-shop-locale";
 
 type ShopRouteHandle = {
@@ -25,7 +29,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     url.searchParams.get("payment_intent")?.trim();
 
   let locale = resolveShopLocale(request);
-  if (!readLangFromSearchParams(url.searchParams) && paymentIntentId) {
+  const needsIntentLocale =
+    !readLangFromSearchParams(url.searchParams) &&
+    paymentIntentId &&
+    (url.pathname.includes("/checkout") || url.pathname.includes("/complete"));
+  if (needsIntentLocale) {
     const fromIntent = await readPaymentIntentLocale(paymentIntentId);
     if (fromIntent) locale = fromIntent;
   }

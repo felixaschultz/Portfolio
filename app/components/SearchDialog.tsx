@@ -2,21 +2,57 @@ import { matchSorter } from "match-sorter";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import type { Locale } from "../lib/i18n";
 import type { SearchIndexItem } from "../lib/search";
 import { Modal } from "./Modal";
 
 type SearchDialogProps = {
+  locale: Locale;
   open: boolean;
   onClose: () => void;
-  items: SearchIndexItem[];
 };
 
-export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
+export function SearchDialog({ locale, open, onClose }: SearchDialogProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [items, setItems] = useState<SearchIndexItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    setItems([]);
+    setLoadError(false);
+  }, [locale]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setLoadError(false);
+
+    void fetch(`/api/search/${locale}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("search index failed");
+        return res.json() as Promise<SearchIndexItem[]>;
+      })
+      .then((data) => {
+        if (!cancelled) setItems(data);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, locale]);
 
   const results = useMemo(() => {
     const list = items ?? [];
@@ -103,7 +139,15 @@ export function SearchDialog({ open, onClose, items }: SearchDialogProps) {
       </div>
 
       <ul className="max-h-[min(50vh,400px)] overflow-y-auto p-2">
-        {results.length === 0 ? (
+        {loading ? (
+          <li className="px-3 py-6 text-center text-sm text-[var(--color-muted)]">
+            {t("search.loading")}
+          </li>
+        ) : loadError ? (
+          <li className="px-3 py-6 text-center text-sm text-[var(--color-muted)]">
+            {t("search.loadError")}
+          </li>
+        ) : results.length === 0 ? (
           <li className="px-3 py-6 text-center text-sm text-[var(--color-muted)]">
             {t("search.noResults")}
           </li>

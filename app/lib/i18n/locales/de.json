@@ -4,6 +4,8 @@
     "placeholder": "Projekte, Galerien suchen…",
     "close": "Schließen",
     "noResults": "Keine Ergebnisse",
+    "loading": "Suche wird geladen…",
+    "loadError": "Suche ist vorübergehend nicht verfügbar.",
     "open": "Suche",
     "shortcut": "⌘K",
     "types": {

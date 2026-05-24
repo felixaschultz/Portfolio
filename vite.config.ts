@@ -18,6 +18,9 @@ export default defineConfig({
           if (id.includes("node_modules/stripe")) {
             return "stripe-server";
           }
+          if (id.includes("node_modules/match-sorter")) {
+            return "search";
+          }
         },
       },
     },

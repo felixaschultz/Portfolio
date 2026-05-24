@@ -4,6 +4,8 @@
     "placeholder": "Søg projekter, gallerier…",
     "close": "Luk",
     "noResults": "Ingen resultater",
+    "loading": "Indlæser søgning…",
+    "loadError": "Søgning er midlertidigt utilgængelig.",
     "open": "Søg",
     "shortcut": "⌘K",
     "types": {

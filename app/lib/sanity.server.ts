@@ -4,6 +4,7 @@ import {
   type GalleryDetail,
   type GalleryImageItem,
   type GalleryListItem,
+  type GalleryNavItem,
   type PortfolioPhotoItem,
 } from "./galleries";
 import { resolveGalleryCoverImage } from "./gallery-cover";
@@ -203,6 +204,20 @@ export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured
 
 export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryDetailProjection}`;
 
+const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(sortOrder, 999) asc, takenAt desc) {
+  _id,
+  "slug": slug.current,
+  title,
+  coverImageKey,
+  images[] {
+    _key,
+    image {
+      asset->{ _id },
+      "dimensions": asset->metadata.dimensions
+    }
+  }
+}`;
+
 const publishedCategoryFilter = `_type == "galleryCategory" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
 export const GALLERY_CATEGORIES_QUERY = `*[${publishedCategoryFilter}] | order(coalesce(title.en, title.da, title.de) asc) {
@@ -322,6 +337,43 @@ export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
     galleries.map((g) => mapGalleryToListItem(g, [800, 1200, 1600, 2400])),
   );
   return items.filter((g): g is GalleryListItem => g !== null);
+}
+
+/** Lightweight prev/next nav — one cover URL per gallery, no full image grids. */
+export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
+  const client = getSanityClient();
+  if (!client) return [];
+
+  try {
+    const galleries: GalleryDocument[] = await client.fetch(GALLERY_NAV_QUERY);
+    const published = dedupeGalleriesBySlug(galleries);
+    const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import(
+      "./image.server"
+    );
+
+    const items: GalleryNavItem[] = [];
+    for (const gallery of published) {
+      if (!gallery.slug) continue;
+      const cover = resolveGalleryCoverImage(gallery);
+      if (!cover) continue;
+
+      const source = toSanityImageSource(cover);
+      const { src } = photoSrcSet(source, [320], { crop16x9: true });
+      if (!src) continue;
+
+      items.push({
+        slug: gallery.slug,
+        title: gallery.title,
+        coverUrl: src,
+        coverBlurUrl: photoBlurPlaceholder(source),
+      });
+    }
+
+    return items;
+  } catch (err) {
+    console.error("[sanity] fetchGalleryNavList failed:", err);
+    return [];
+  }
 }
 
 export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {

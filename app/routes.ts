@@ -8,6 +8,7 @@ export default [
   index("routes/_index.tsx"),
   route("sitemap.xml", "routes/sitemap[.]xml.ts"),
   route("robots.txt", "routes/robots[.]txt.ts"),
+  route("api/search/:locale", "routes/api.search.$locale.ts"),
   route("download/gallery/:token", "routes/download.gallery.$token.tsx"),
   route("download/bundle/:token", "routes/download.bundle.$token.tsx"),
   route("shop", "routes/shop.tsx", [

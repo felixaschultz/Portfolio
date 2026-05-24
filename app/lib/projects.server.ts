@@ -8,10 +8,14 @@ export { getLocalizedText } from "./projects";
 /** Static fallback when Sanity is empty or unavailable */
 export const projects: Project[] = projectsSource as Project[];
 
+let projectsCache: Project[] | null = null;
+
 async function loadProjects(): Promise<Project[]> {
+  if (projectsCache) return projectsCache;
   if (!isSanityConfigured()) return projects;
   const fromSanity = await fetchProjectsFromSanity();
-  return fromSanity.length > 0 ? fromSanity : projects;
+  projectsCache = fromSanity.length > 0 ? fromSanity : projects;
+  return projectsCache;
 }
 
 export async function getProjects(): Promise<Project[]> {

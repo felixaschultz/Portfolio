@@ -38,14 +38,14 @@ export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPicker
         </fieldset>
 
         <ul className="shop-grid">
-          {gallery.images.map((image) => (
+          {gallery.images.map((image, index) => (
             <li key={image.key}>
               <div className="shop-grid__item">
                 <img
                   src={image.thumbUrl}
                   alt={image.alt ?? ""}
-                  loading="eager"
-                  fetchPriority="high"
+                  loading={index < 8 ? "eager" : "lazy"}
+                  fetchPriority={index < 4 ? "high" : undefined}
                   decoding="async"
                   draggable={false}
                 />

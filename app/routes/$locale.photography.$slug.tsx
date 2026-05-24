@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography.$slug";
 import { GalleryView } from "../components/GalleryView";
 import type { GalleryNavItem } from "../lib/galleries";
-import { fetchGalleryDetailBySlug, fetchGalleriesForList } from "../lib/sanity.server";
+import { fetchGalleryDetailBySlug, fetchGalleryNavList } from "../lib/sanity.server";
 import { createI18n, defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildGalleryAlbumMetaLine } from "../lib/gallery-meta";
 import { buildGalleryPageMeta } from "../lib/gallery-seo";
@@ -11,23 +11,16 @@ import { seoCopy } from "../lib/seo-copy";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
-  const [gallery, allGalleries] = await Promise.all([
+  const [gallery, navGalleries] = await Promise.all([
     fetchGalleryDetailBySlug(params.slug!, locale),
-    fetchGalleriesForList(),
+    fetchGalleryNavList(),
   ]);
   if (!gallery) {
     throw new Response("Not Found", { status: 404 });
   }
-  const index = allGalleries.findIndex((g) => g.slug === gallery.slug);
-  const toNav = (item: (typeof allGalleries)[number] | undefined): GalleryNavItem | null =>
-    item
-      ? {
-          slug: item.slug,
-          title: item.title,
-          coverUrl: item.coverUrl,
-          coverBlurUrl: item.coverBlurUrl,
-        }
-      : null;
+  const index = navGalleries.findIndex((g) => g.slug === gallery.slug);
+  const toNav = (item: (typeof navGalleries)[number] | undefined): GalleryNavItem | null =>
+    item ?? null;
 
   const i18n = createI18n(locale);
   const metaLine = buildGalleryAlbumMetaLine(gallery, locale, i18n.t.bind(i18n));

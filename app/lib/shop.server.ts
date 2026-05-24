@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { normalizeShopCustomerName, normalizeShopEmail } from "./shop-email";
 import { isShopEmailConfigured } from "./shop-email.server";
-import { getSanityDownloadClient } from "./sanity.server";
+import { getSanityClient, getSanityDownloadClient } from "./sanity.server";
 import { isValidLocale, localizedField, type Locale } from "./i18n";
 import { appendShopLang } from "./shop-locale";
 import { shopLicenseLabel, shopT, translateLicenseTiers } from "./shop-i18n.server";
@@ -146,7 +146,7 @@ export async function fetchShopGallery(
   options?: { onlyKeys?: string[]; locale?: Locale },
 ): Promise<ShopGalleryView | null> {
   const locale = options?.locale ?? "da";
-  const client = getSanityDownloadClient();
+  const client = getSanityClient() ?? getSanityDownloadClient();
   if (!client || !token.trim()) return null;
 
   const onlyKeys = options?.onlyKeys?.length ? new Set(options.onlyKeys) : null;

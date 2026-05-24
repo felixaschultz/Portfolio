@@ -16,6 +16,10 @@ import { useShopLocale } from "../lib/use-shop-locale";
 
 export const handle = { shopWide: true };
 
+export function links() {
+  return [{ rel: "preconnect", href: "https://cdn.sanity.io" }];
+}
+
 export async function action({ request, params }: Route.ActionArgs) {
   const locale = resolveShopLocale(request);
   const token = params.token?.trim();

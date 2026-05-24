@@ -27,10 +27,28 @@ function pageItem(
   };
 }
 
+let searchIndexCache: { locale: Locale; items: SearchIndexItem[]; builtAt: number } | null =
+  null;
+const SEARCH_INDEX_TTL_MS = 5 * 60 * 1000;
+
 export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[]> {
+  const now = Date.now();
+  if (
+    searchIndexCache &&
+    searchIndexCache.locale === locale &&
+    now - searchIndexCache.builtAt < SEARCH_INDEX_TTL_MS
+  ) {
+    return searchIndexCache.items;
+  }
+
+  const items = await buildSearchIndexUncached(locale);
+  searchIndexCache = { locale, items, builtAt: now };
+  return items;
+}
+
+async function buildSearchIndexUncached(locale: Locale): Promise<SearchIndexItem[]> {
   const items: SearchIndexItem[] = [];
-  const projects = await getProjects();
-  const galleries = await fetchGalleries();
+  const [projects, galleries] = await Promise.all([getProjects(), fetchGalleries()]);
 
   items.push(
     pageItem(locale, "home", "Home", "Portfolio home", "", "home portfolio"),

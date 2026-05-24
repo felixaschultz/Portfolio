@@ -7,6 +7,7 @@ import { photographyTagPath, tagToParam } from "../lib/gallery-tags";
 import { localizedField, type Locale } from "../lib/i18n";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { GalleryImage } from "./GalleryImage";
+import { GalleryOverviewShopBadge } from "./GalleryOverviewShopBadge";
 import { Reveal } from "./Reveal";
 
 type GalleryCardProps = {
@@ -32,6 +33,7 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
     t("photography.photoCount", { count: gallery.imageCount }),
   ].filter(Boolean);
   const isFeatured = index === 0;
+  const shopUrl = gallery.shopUrl;
 
   return (
     <Reveal
@@ -44,26 +46,29 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
       <span className="gallery-overview__item-index" aria-hidden>
         {indexLabel} / {totalLabel}
       </span>
-      <Link
-        to={`${base}/photography/${gallery.slug}`}
-        className="gallery-overview__item-visual"
-        aria-label={title}
-      >
-        <GalleryImage
-          src={gallery.coverUrl}
-          srcSet={gallery.coverSrcSet}
-          sizes={
-            isFeatured
-              ? "(max-width: 1023px) 100vw, min(72rem, 100vw)"
-              : "(max-width: 1023px) 100vw, (max-width: 1279px) 50vw, 36rem"
-          }
-          alt=""
-          blurSrc={gallery.coverBlurUrl}
-          className="gallery-overview__item-img"
-          loading={index < 2 ? "eager" : "lazy"}
-          fetchPriority={index === 0 ? "high" : undefined}
-        />
-      </Link>
+      <div className="gallery-overview__item-visual">
+        <Link
+          to={`${base}/photography/${gallery.slug}`}
+          className="gallery-overview__item-visual-link"
+          aria-label={title}
+        >
+          <GalleryImage
+            src={gallery.coverUrl}
+            srcSet={gallery.coverSrcSet}
+            sizes={
+              isFeatured
+                ? "(max-width: 1023px) 100vw, min(72rem, 100vw)"
+                : "(max-width: 1023px) 100vw, (max-width: 1279px) 50vw, 36rem"
+            }
+            alt=""
+            blurSrc={gallery.coverBlurUrl}
+            className="gallery-overview__item-img"
+            loading={index < 2 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : undefined}
+          />
+        </Link>
+        {shopUrl ? <GalleryOverviewShopBadge shopUrl={shopUrl} locale={lng} /> : null}
+      </div>
       <div className="gallery-overview__item-body">
         <Link to={`${base}/photography/${gallery.slug}`} className="gallery-overview__item-body-link">
           <h2 className="gallery-overview__item-title">{title}</h2>

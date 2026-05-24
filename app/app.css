@@ -1623,6 +1623,61 @@ body {
   background: #000;
 }
 
+.gallery-overview__item-visual-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gallery-overview__shop-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 15, 14, 0.72);
+  color: var(--color-text);
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.gallery-overview__shop-badge:hover {
+  background: rgba(21, 176, 171, 0.92);
+  border-color: rgba(21, 176, 171, 0.55);
+  color: #0a0f0e;
+  transform: translateY(-1px);
+}
+
+.gallery-overview__shop-badge:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.gallery-overview__shop-badge__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.gallery-overview__shop-badge__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 @media (min-width: 1024px) {
   .gallery-overview__list {
     grid-template-columns: repeat(2, 1fr);

@@ -155,6 +155,8 @@ const galleryProjection = `{
   featured,
   sortOrder,
   coverImageKey,
+  shopPublicEnabled,
+  shopToken,
   images[] {
     _key,
     alt,
@@ -251,6 +253,7 @@ async function mapGalleryToListItem(
     coverSrcSet: srcSet,
     coverBlurUrl: photoBlurPlaceholder(coverSource),
     coverImageKey: gallery.coverImageKey,
+    shopUrl: resolvePublicGalleryShopUrl(gallery),
   };
 }
 

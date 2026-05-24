@@ -41,6 +41,8 @@ export type GalleryListItem = {
   coverSrcSet: string;
   coverBlurUrl?: string;
   coverImageKey?: string;
+  /** Present when prints/downloads can be purchased from the public shop. */
+  shopUrl?: string;
 };
 
 export type GalleryDetail = GalleryListItem & {

@@ -63,12 +63,7 @@ export function ShopGalleryPicker({
   const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
   const clearAll = () => setSelected(new Set());
 
-  const submitLabel =
-    selected.size === 0
-      ? t("shop.selectPhotosToContinue")
-      : t("shop.continueCheckoutTotal", {
-          amount: formatShopMoney(pricing.totalOre, locale),
-        });
+  const formattedTotal = formatShopMoney(pricing.totalOre, locale);
 
   return (
     <div className="shop-gallery-layout">
@@ -276,7 +271,18 @@ export function ShopGalleryPicker({
               className="customer-portal__button shop-cart__pay"
               disabled={!shopReady || selected.size === 0 || !emailValid}
             >
-              {submitLabel}
+              {selected.size === 0 ? (
+                t("shop.selectPhotosToContinue")
+              ) : (
+                <>
+                  <span className="shop-cart__pay-text shop-cart__pay-text--desktop">
+                    {t("shop.continueCheckout")}
+                  </span>
+                  <span className="shop-cart__pay-text shop-cart__pay-text--mobile">
+                    {t("shop.continueCheckoutTotal", { amount: formattedTotal })}
+                  </span>
+                </>
+              )}
             </button>
           </div>
         </Form>

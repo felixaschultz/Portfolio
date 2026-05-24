@@ -56,6 +56,8 @@ export type ShopCheckoutView = {
   customerEmail: string | null;
   /** Buyer name (required on checkout before payment). */
   customerName: string | null;
+  /** Optional; only for commercial license purchases. */
+  companyName: string | null;
 };
 
 export type ShopPurchaseSummary = {
@@ -69,4 +71,5 @@ export type ShopPurchaseSummary = {
   emailSent: boolean;
   customerEmail: string | null;
   customerName: string | null;
+  companyName: string | null;
 };

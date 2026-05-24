@@ -1,6 +1,10 @@
 import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import { normalizeShopCustomerName, normalizeShopEmail } from "./shop-email";
+import {
+  normalizeShopCompanyName,
+  normalizeShopCustomerName,
+  normalizeShopEmail,
+} from "./shop-email";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityClient, getSanityDownloadClient } from "./sanity.server";
 import { isValidLocale, localizedField, type Locale } from "./i18n";
@@ -223,9 +227,27 @@ function validatedImageKeys(gallery: ShopGalleryView, imageKeys: string[]): stri
   return [...new Set(imageKeys.filter((k) => validKeys.has(k)))];
 }
 
+function commercialCompanyMetadataForCreate(
+  licenseId: string,
+  companyNameInput: string | undefined,
+): Record<string, string> {
+  if (licenseId !== "commercial") return {};
+  const companyName = normalizeShopCompanyName(companyNameInput ?? "");
+  return companyName ? { companyName } : {};
+}
+
+function commercialCompanyMetadataForUpdate(
+  licenseId: string | undefined,
+  companyNameInput: string | undefined,
+): { companyName: string } {
+  if (licenseId !== "commercial") return { companyName: "" };
+  const companyName = normalizeShopCompanyName(companyNameInput ?? "");
+  return { companyName: companyName ?? "" };
+}
+
 export async function updateShopPaymentIntentBuyer(
   paymentIntentId: string,
-  options: { email: string; name: string },
+  options: { email: string; name: string; companyName?: string },
   locale: Locale,
 ): Promise<{ ok: true } | { error: string }> {
   const stripe = getStripe();
@@ -260,6 +282,7 @@ export async function updateShopPaymentIntentBuyer(
         customerEmail,
         downloadEmail: customerEmail,
         customerName,
+        ...commercialCompanyMetadataForUpdate(intent.metadata?.licenseId, options.companyName),
       },
     });
 
@@ -276,6 +299,7 @@ export async function createShopPaymentIntent(options: {
   licenseId: string;
   locale: Locale;
   email: string;
+  companyName?: string;
 }): Promise<{ paymentIntentId: string } | { error: string }> {
   const { locale } = options;
   const customerEmail = normalizeShopEmail(options.email);
@@ -306,6 +330,8 @@ export async function createShopPaymentIntent(options: {
     return { error: shopT(locale, "errors.totalTooLow") };
   }
 
+  const companyMeta = commercialCompanyMetadataForCreate(tier.id, options.companyName);
+
   try {
     const intent = await stripe.paymentIntents.create({
       amount: pricing.totalOre,
@@ -322,6 +348,7 @@ export async function createShopPaymentIntent(options: {
         locale,
         customerEmail,
         downloadEmail: customerEmail,
+        ...companyMeta,
         ...buildImageKeysMetadata(imageKeys),
         subtotalOre: String(pricing.subtotalOre),
         discountOre: String(pricing.discountOre),
@@ -404,6 +431,7 @@ export async function loadShopCheckout(
       intent.metadata?.downloadEmail?.trim().toLowerCase() ||
       null;
     const customerName = intent.metadata?.customerName?.trim() || null;
+    const companyName = intent.metadata?.companyName?.trim() || null;
 
     return {
       paymentIntentId: intent.id,
@@ -431,6 +459,7 @@ export async function loadShopCheckout(
       displayLocale: locale,
       customerEmail,
       customerName,
+      companyName,
     };
   } catch (err) {
     console.error("[shop] load checkout failed:", err);
@@ -488,6 +517,7 @@ export async function resolvePaidPurchase(
         intent.metadata?.downloadEmail?.trim().toLowerCase() ||
         null,
       customerName: intent.metadata?.customerName?.trim() || null,
+      companyName: intent.metadata?.companyName?.trim() || null,
     };
   } catch (err) {
     console.error("[shop] resolve purchase failed:", err);

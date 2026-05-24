@@ -27,6 +27,7 @@ export function ShopGalleryPicker({
 
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const emailValid = isValidShopEmail(email);
 
@@ -80,7 +81,10 @@ export function ShopGalleryPicker({
                     name="license"
                     value={item.id}
                     checked={active}
-                    onChange={() => setLicenseId(item.id)}
+                    onChange={() => {
+                      setLicenseId(item.id);
+                      if (item.id !== "commercial") setCompanyName("");
+                    }}
                     className="shop-licenses__radio"
                   />
                   <span className="shop-licenses__option-title">{item.label}</span>
@@ -203,6 +207,20 @@ export function ShopGalleryPicker({
             <input type="hidden" name="shopToken" value={shopToken} />
             <input type="hidden" name="licenseId" value={licenseId} />
             <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />
+            {licenseId === "commercial" ? (
+              <label className="shop-cart__email">
+                <span className="customer-portal__muted">{t("shop.companyLabel")}</span>
+                <input
+                  type="text"
+                  name="companyName"
+                  autoComplete="organization"
+                  value={companyName}
+                  onChange={(event) => setCompanyName(event.currentTarget.value)}
+                  className="shop-cart__email-input"
+                  placeholder={t("shop.companyPlaceholder")}
+                />
+              </label>
+            ) : null}
             <label className="shop-cart__email">
               <span className="customer-portal__muted">{t("shop.emailLabel")}</span>
               <input

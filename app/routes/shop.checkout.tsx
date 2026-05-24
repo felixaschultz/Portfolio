@@ -48,6 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
   const paymentIntentId = String(form.get("paymentIntentId") ?? "").trim();
   const email = String(form.get("email") ?? "");
   const name = String(form.get("name") ?? "");
+  const companyName = String(form.get("companyName") ?? "");
 
   if (!paymentIntentId) {
     return { buyerError: shopT(locale, "errors.missingOrderRef") };
@@ -55,7 +56,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   const result = await updateShopPaymentIntentBuyer(
     paymentIntentId,
-    { email, name },
+    { email, name, companyName },
     locale,
   );
   if ("error" in result) {
@@ -159,12 +160,19 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
               <p className="customer-portal__muted">
                 {t("shop.purchaseEmailConfirmed", { email: checkout.customerEmail! })}
               </p>
+              {checkout.companyName ? (
+                <p className="customer-portal__muted">
+                  {t("shop.purchaseCompanyConfirmed", { company: checkout.companyName })}
+                </p>
+              ) : null}
             </div>
           ) : (
             <ShopCheckoutBuyerForm
               paymentIntentId={checkout.paymentIntentId}
               initialEmail={checkout.customerEmail}
               initialName={checkout.customerName}
+              initialCompanyName={checkout.companyName}
+              isCommercialLicense={checkout.licenseId === "commercial"}
               emailLocked={Boolean(checkout.customerEmail)}
             />
           )}

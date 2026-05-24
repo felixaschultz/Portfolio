@@ -45,12 +45,16 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
   }
 
+  const companyName =
+    licenseId === "commercial" ? String(form.get("companyName") ?? "") : undefined;
+
   const result = await createShopPaymentIntent({
     shopToken: token,
     imageKeys,
     licenseId,
     locale,
     email,
+    companyName,
   });
 
   if ("error" in result) {

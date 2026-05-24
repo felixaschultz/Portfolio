@@ -5,6 +5,8 @@ type ShopCheckoutBuyerFormProps = {
   paymentIntentId: string;
   initialEmail?: string | null;
   initialName?: string | null;
+  initialCompanyName?: string | null;
+  isCommercialLicense?: boolean;
   /** When email was collected on the gallery, show it read-only. */
   emailLocked?: boolean;
 };
@@ -13,6 +15,8 @@ export function ShopCheckoutBuyerForm({
   paymentIntentId,
   initialEmail = "",
   initialName = "",
+  initialCompanyName = "",
+  isCommercialLicense = false,
   emailLocked = false,
 }: ShopCheckoutBuyerFormProps) {
   const { t } = useTranslation();
@@ -39,6 +43,20 @@ export function ShopCheckoutBuyerForm({
           placeholder={t("shop.namePlaceholder")}
         />
       </label>
+
+      {isCommercialLicense ? (
+        <label className="shop-checkout__buyer-label">
+          <span className="customer-portal__muted">{t("shop.companyLabel")}</span>
+          <input
+            type="text"
+            name="companyName"
+            autoComplete="organization"
+            defaultValue={initialCompanyName ?? ""}
+            className="shop-checkout__buyer-input"
+            placeholder={t("shop.companyPlaceholder")}
+          />
+        </label>
+      ) : null}
 
       <label className="shop-checkout__buyer-label">
         <span className="customer-portal__muted">{t("shop.emailLabel")}</span>

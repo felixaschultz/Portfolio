@@ -18,3 +18,11 @@ export function normalizeShopCustomerName(value: string): string | null {
 export function isValidShopCustomerName(value: string): boolean {
   return normalizeShopCustomerName(value) !== null;
 }
+
+/** Optional company name for commercial licenses; empty input is allowed. */
+export function normalizeShopCompanyName(value: string): string | null {
+  const company = value.trim().replace(/\s+/g, " ");
+  if (!company) return null;
+  if (company.length < 2 || company.length > 160) return null;
+  return company;
+}

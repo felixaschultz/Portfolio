@@ -49,7 +49,7 @@ export function shouldRevalidate({
   ) {
     return true;
   }
-  return defaultShouldRevalidate();
+  return defaultShouldRevalidate;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

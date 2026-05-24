@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import { GalleryResponsiveLabel } from "./GalleryResponsiveLabel";
 import type { GalleryListItem, PortfolioPhotoItem } from "../lib/galleries";
 import {
   collectGalleryTags,
@@ -44,7 +45,11 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
       <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
         <p className="mb-6">
           <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
-            ← {t("photography.back")}
+            ←{" "}
+            <GalleryResponsiveLabel
+              short={t("photography.backShort")}
+              long={t("photography.back")}
+            />
           </Link>
         </p>
         <h1 className="gallery-overview__title">{t("photography.allPhotosPageTitle")}</h1>

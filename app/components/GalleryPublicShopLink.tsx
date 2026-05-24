@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { GalleryResponsiveLabel } from "./GalleryResponsiveLabel";
 
 type GalleryPublicShopLinkProps = {
   shopUrl?: string;
@@ -16,7 +17,10 @@ export function GalleryPublicShopLink({ shopUrl, variant }: GalleryPublicShopLin
       to={shopUrl}
       className={`gallery-album__shop-link gallery-album__shop-link--${variant}`}
     >
-      {t("photography.buyPhotos")}
+      <GalleryResponsiveLabel
+        short={t("photography.buyPhotosShort")}
+        long={t("photography.buyPhotos")}
+      />
     </Link>
   );
 }

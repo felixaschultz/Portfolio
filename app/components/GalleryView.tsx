@@ -11,6 +11,7 @@ import { GalleryImage } from "./GalleryImage";
 import { GalleryLightbox, useGalleryLightbox } from "./GalleryLightbox";
 import { Reveal } from "./Reveal";
 import { GalleryPublicShopLink } from "./GalleryPublicShopLink";
+import { GalleryResponsiveLabel } from "./GalleryResponsiveLabel";
 import { GalleryShare } from "./GalleryShare";
 import { revealStagger } from "../lib/use-reveal-on-scroll";
 import { shouldDisableReveal } from "../lib/gallery-performance";
@@ -209,7 +210,11 @@ export function GalleryView({
 
           <div className="gallery-album__hero-toolbar">
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
-              ← {t("photography.back")}
+              ←{" "}
+              <GalleryResponsiveLabel
+                short={t("photography.backShort")}
+                long={t("photography.back")}
+              />
             </Link>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
@@ -230,7 +235,11 @@ export function GalleryView({
         <header className="gallery-album__masthead">
           <div className="gallery-album__intro-toolbar">
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
-              ← {t("photography.back")}
+              ←{" "}
+              <GalleryResponsiveLabel
+                short={t("photography.backShort")}
+                long={t("photography.back")}
+              />
             </Link>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />

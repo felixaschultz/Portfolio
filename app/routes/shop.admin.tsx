@@ -38,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
     return { loginError: "Admin is not configured (SHOP_ADMIN_SECRET)." };
   }
 
-  throw redirect("/shop/admin", {
+  return redirect("/shop/admin", {
     headers: { "Set-Cookie": cookie },
   });
 }
@@ -105,7 +105,7 @@ export default function ShopAdminPage({ loaderData }: Route.ComponentProps) {
           <h1 className="customer-portal__title">Shop admin</h1>
           <p className="customer-portal__muted">Paid orders from Stripe (photo shop only).</p>
         </div>
-        <Form method="post" className="shop-admin__logout">
+        <Form method="post" className="shop-admin__logout" reloadDocument>
           <input type="hidden" name="intent" value="logout" />
           <button type="submit" className="customer-portal__link-btn">
             Sign out

@@ -7,7 +7,7 @@ export function ShopAdminLoginForm() {
   const actionData = useActionData() as LoginActionData;
 
   return (
-    <Form method="post" className="shop-admin__login-form">
+    <Form method="post" className="shop-admin__login-form" reloadDocument>
       <input type="hidden" name="intent" value="login" />
       <label className="shop-admin__label">
         <span className="customer-portal__muted">Password</span>

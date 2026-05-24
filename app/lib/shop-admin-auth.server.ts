@@ -60,10 +60,10 @@ export function adminSessionSetCookieHeader(): string | null {
 
   const token = sessionToken(secret);
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return `${COOKIE_NAME}=${token}; Path=/shop/admin; HttpOnly; SameSite=Lax; Max-Age=1209600${secure}`;
+  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=1209600${secure}`;
 }
 
 export function adminSessionClearCookieHeader(): string {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return `${COOKIE_NAME}=; Path=/shop/admin; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
+  return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
 }

@@ -1,19 +1,14 @@
-import { Link, useRouteLoaderData } from "react-router";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Locale } from "../lib/i18n";
 import type { ShopCheckoutView } from "../lib/shop.types";
-import { appendShopLang } from "../lib/shop-locale";
-import { formatShopMoney } from "../lib/shop-licenses";
 
 type ShopCheckoutSummaryProps = {
   checkout: ShopCheckoutView;
-  totalLabel: string;
 };
 
-export function ShopCheckoutSummary({ checkout, totalLabel }: ShopCheckoutSummaryProps) {
+export function ShopCheckoutSummary({ checkout }: ShopCheckoutSummaryProps) {
   const { t } = useTranslation();
-  const layoutData = useRouteLoaderData("routes/shop") as { locale: Locale } | undefined;
-  const locale = layoutData?.locale ?? "da";
+  const { displayPrices } = checkout;
 
   return (
     <aside className="shop-checkout__summary" aria-label={t("shop.orderSummary")}>
@@ -50,27 +45,24 @@ export function ShopCheckoutSummary({ checkout, totalLabel }: ShopCheckoutSummar
         <div className="shop-cart__totals">
           <div className="shop-cart__row">
             <span>
-              {checkout.imageCount} × {formatShopMoney(checkout.unitAmountOre, locale)}
+              {checkout.imageCount} × {displayPrices.unitPrice}
             </span>
-            <span>{formatShopMoney(checkout.subtotalOre, locale)}</span>
+            <span>{displayPrices.subtotal}</span>
           </div>
-          {checkout.discountOre > 0 ? (
+          {displayPrices.discount ? (
             <div className="shop-cart__row shop-cart__row--discount">
               <span>{t("shop.volumeDiscount", { percent: checkout.discountPercent })}</span>
-              <span>−{formatShopMoney(checkout.discountOre, locale)}</span>
+              <span>−{displayPrices.discount}</span>
             </div>
           ) : null}
           <div className="shop-cart__row shop-cart__row--total">
             <span>{t("shop.total")}</span>
-            <span>{totalLabel}</span>
+            <span>{displayPrices.total}</span>
           </div>
         </div>
 
         <p className="shop-checkout__change-selection">
-          <Link
-            to={appendShopLang(checkout.backToGalleryPath, locale)}
-            className="customer-portal__link-btn"
-          >
+          <Link to={checkout.backToGalleryPath} className="customer-portal__link-btn">
             {t("shop.changeSelection")}
           </Link>
         </p>

@@ -5,10 +5,11 @@ import type { Route } from "./+types/shop.checkout";
 import { ShopCheckoutStripe } from "../components/ShopCheckoutStripe";
 import { ShopCheckoutSummary } from "../components/ShopCheckoutSummary";
 import { ShopPaymentMerchantNotice } from "../components/ShopPaymentMerchantNotice";
-import { formatShopMoney } from "../lib/shop-licenses";
+import { shopShowsEurPrices } from "../lib/shop-licenses";
 import { resolveSiteUrl } from "../lib/seo";
-import { getCheckoutReturnMessage } from "../lib/shop-i18n.server";
-import { appendShopLang, resolveShopLocale } from "../lib/shop-locale";
+import { getCheckoutReturnMessage, shopT } from "../lib/shop-i18n.server";
+import type { Locale } from "../lib/i18n";
+import { resolveShopLocale } from "../lib/shop-locale";
 import { loadShopCheckout } from "../lib/shop.server";
 
 export const handle = { shopWide: true };
@@ -27,7 +28,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     url.searchParams.get("pi")?.trim() ||
     url.searchParams.get("payment_intent")?.trim();
   if (!paymentIntentId) {
-    return { mode: "missing" as const, locale };
+    return { mode: "missing" as const };
   }
 
   const redirectStatus = url.searchParams.get("redirect_status");
@@ -50,10 +51,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return {
     mode: "pay" as const,
-    locale,
     checkout,
     returnUrl,
-    totalLabel: formatShopMoney(checkout.totalOre, locale),
     paymentMessage,
   };
 }
@@ -80,31 +79,34 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
     );
   }
 
-  const { checkout, returnUrl, totalLabel, paymentMessage } = loaderData;
+  const { checkout, returnUrl, paymentMessage } = loaderData;
+  const locale = checkout.displayLocale;
+  const totalLabel = checkout.displayPrices.total;
 
   return (
     <div className="shop-checkout">
       <header className="customer-portal__header shop-checkout__header">
         <p className="customer-portal__muted">
-          <Link
-            to={appendShopLang(checkout.backToGalleryPath, loaderData.locale)}
-            className="customer-portal__link-btn"
-          >
+          <Link to={checkout.backToGalleryPath} className="customer-portal__link-btn">
             {t("shop.backToGallery")}
           </Link>
         </p>
         <h1 className="customer-portal__title">{t("shop.checkoutTitle")}</h1>
         <p className="customer-portal__muted shop-checkout__intro">{t("shop.checkoutIntro")}</p>
+        {shopShowsEurPrices(locale) ? (
+          <p className="customer-portal__hint">{t("shop.pricesEurNote")}</p>
+        ) : null}
       </header>
 
       <div className="shop-checkout__layout">
-        <ShopCheckoutSummary checkout={checkout} totalLabel={totalLabel} />
+        <ShopCheckoutSummary checkout={checkout} />
 
         <section className="shop-checkout__payment" aria-label={t("shop.paymentSection")}>
           <h2 className="shop-checkout__payment-title">{t("shop.paymentSection")}</h2>
           <ShopPaymentMerchantNotice />
 
           <ShopCheckoutStripe
+            locale={locale}
             publishableKey={checkout.publishableKey}
             clientSecret={checkout.clientSecret}
             paymentIntentId={checkout.paymentIntentId}
@@ -118,6 +120,8 @@ export default function ShopCheckoutPage({ loaderData }: Route.ComponentProps) {
   );
 }
 
-export function meta() {
-  return [{ title: "Checkout" }, { name: "robots", content: "noindex" }];
+export function meta({ matches }: Route.MetaArgs) {
+  const shop = matches.find((m) => m.id === "routes/shop")?.data as { locale?: Locale } | undefined;
+  const title = shop?.locale ? shopT(shop.locale, "metaCheckout") : "Checkout";
+  return [{ title }, { name: "robots", content: "noindex" }];
 }

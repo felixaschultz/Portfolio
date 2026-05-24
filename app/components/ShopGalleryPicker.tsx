@@ -16,7 +16,7 @@ export function ShopGalleryPicker(props: ShopGalleryPickerProps) {
   }, []);
 
   if (!ClientPicker) {
-    return <ShopGalleryPickerFallback gallery={props.gallery} />;
+    return <ShopGalleryPickerFallback gallery={props.gallery} locale={props.locale} />;
   }
 
   return <ClientPicker {...props} />;

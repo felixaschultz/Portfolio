@@ -2,7 +2,8 @@ import Stripe from "stripe";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { isShopEmailConfigured } from "./shop-email.server";
 import { getSanityDownloadClient } from "./sanity.server";
-import { localizedField, type Locale } from "./i18n";
+import { isValidLocale, localizedField, type Locale } from "./i18n";
+import { appendShopLang } from "./shop-locale";
 import { shopLicenseLabel, shopT, translateLicenseTiers } from "./shop-i18n.server";
 import { getSiteUrl, shopGalleryPath } from "./seo";
 import { signShopPurchase } from "./purchase-token.server";
@@ -97,6 +98,21 @@ export function getStripePublishableKey(): string | null {
 }
 
 /** Send unpaid intents back to checkout so the customer can retry. */
+export async function readPaymentIntentLocale(
+  paymentIntentId: string,
+): Promise<Locale | null> {
+  const stripe = getStripe();
+  if (!stripe || !paymentIntentId.trim()) return null;
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId.trim());
+    const raw = intent.metadata?.locale?.trim().toLowerCase();
+    return raw && isValidLocale(raw) ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getCheckoutRetryPath(
   paymentIntentId: string,
 ): Promise<string | null> {
@@ -326,6 +342,8 @@ export async function loadShopCheckout(
 
     const unitAmountOre = tierForPricing?.unitAmountOre ?? 0;
 
+    const totalOre = intent.amount;
+
     return {
       paymentIntentId: intent.id,
       clientSecret: intent.client_secret,
@@ -335,14 +353,21 @@ export async function loadShopCheckout(
       imageCount: imageKeys.length,
       lineItems,
       unitAmountOre,
-      totalOre: intent.amount,
+      totalOre,
       subtotalOre,
       discountOre,
       discountPercent,
       licenseLabel,
       licenseId: intent.metadata?.licenseId ?? tierForPricing?.id ?? "personal",
       currency: SHOP_CURRENCY,
-      backToGalleryPath: shopGalleryPath(shopToken),
+      backToGalleryPath: appendShopLang(shopGalleryPath(shopToken), locale),
+      displayPrices: {
+        unitPrice: formatShopMoney(unitAmountOre, locale),
+        subtotal: formatShopMoney(subtotalOre, locale),
+        total: formatShopMoney(totalOre, locale),
+        discount: discountOre > 0 ? formatShopMoney(discountOre, locale) : null,
+      },
+      displayLocale: locale,
     };
   } catch (err) {
     console.error("[shop] load checkout failed:", err);

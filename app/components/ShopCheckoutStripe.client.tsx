@@ -1,10 +1,18 @@
 import { Elements } from "@stripe/react-stripe-js";
+import type { StripeElementLocale } from "@stripe/stripe-js";
 import { useEffect, useMemo } from "react";
 import { getStripePromise, preloadStripe } from "../lib/stripe-client";
 import { ShopCheckoutPayment } from "./ShopCheckoutPayment";
 import type { ShopCheckoutStripeProps } from "./shop-checkout-stripe.types";
 
+function stripeElementsLocale(locale: ShopCheckoutStripeProps["locale"]): StripeElementLocale {
+  if (locale === "de") return "de";
+  if (locale === "en") return "en";
+  return "da";
+}
+
 export function ShopCheckoutStripe({
+  locale,
   publishableKey,
   clientSecret,
   paymentIntentId,
@@ -26,6 +34,7 @@ export function ShopCheckoutStripe({
       stripe={stripePromise}
       options={{
         clientSecret,
+        locale: stripeElementsLocale(locale),
         appearance: {
           theme: "night",
           variables: {
@@ -39,6 +48,7 @@ export function ShopCheckoutStripe({
       }}
     >
       <ShopCheckoutPayment
+        locale={locale}
         paymentIntentId={paymentIntentId}
         returnUrl={returnUrl}
         totalLabel={totalLabel}

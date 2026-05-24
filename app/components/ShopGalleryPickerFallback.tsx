@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { useRouteLoaderData } from "react-router";
 import type { Locale } from "../lib/i18n";
 import type { ShopGalleryView } from "../lib/shop.types";
 import { formatShopMoney } from "../lib/shop-licenses";
@@ -7,13 +6,12 @@ import { describeVolumeDiscountOfferClient } from "../lib/shop-volume";
 
 type ShopGalleryPickerFallbackProps = {
   gallery: ShopGalleryView;
+  locale: Locale;
 };
 
 /** SSR / Suspense fallback — same layout as the interactive picker, no client hooks. */
-export function ShopGalleryPickerFallback({ gallery }: ShopGalleryPickerFallbackProps) {
+export function ShopGalleryPickerFallback({ gallery, locale }: ShopGalleryPickerFallbackProps) {
   const { t } = useTranslation();
-  const layoutData = useRouteLoaderData("routes/shop") as { locale: Locale } | undefined;
-  const locale = layoutData?.locale ?? "da";
   const tier = gallery.licenseTiers[0];
   const volumeOffer = describeVolumeDiscountOfferClient(t);
 

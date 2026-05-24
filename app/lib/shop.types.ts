@@ -1,3 +1,4 @@
+import type { Locale } from "./i18n";
 import type { ShopLicenseTier } from "./shop-licenses";
 
 export type ShopGalleryImage = {
@@ -22,6 +23,13 @@ export type ShopCheckoutLineItem = {
   alt?: string;
 };
 
+export type ShopCheckoutDisplayPrices = {
+  unitPrice: string;
+  subtotal: string;
+  total: string;
+  discount: string | null;
+};
+
 export type ShopCheckoutView = {
   paymentIntentId: string;
   clientSecret: string;
@@ -40,6 +48,10 @@ export type ShopCheckoutView = {
   currency: "dkk";
   /** Relative path — use with React Router `Link` so dev/staging hosts stay correct. */
   backToGalleryPath: string;
+  /** Pre-formatted for the active shop locale (SSR + client match). */
+  displayPrices: ShopCheckoutDisplayPrices;
+  /** Locale used when building labels and displayPrices (revalidate if URL lang differs). */
+  displayLocale: Locale;
 };
 
 export type ShopPurchaseSummary = {

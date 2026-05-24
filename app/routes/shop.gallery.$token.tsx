@@ -10,8 +10,9 @@ import {
   isShopConfigured,
 } from "../lib/shop.server";
 import { describeVolumeDiscountOffer, shopT } from "../lib/shop-i18n.server";
-import { formatShopMoney } from "../lib/shop-licenses";
+import { formatShopMoney, shopShowsEurPrices } from "../lib/shop-licenses";
 import { resolveShopLocale } from "../lib/shop-locale";
+import { useShopLocale } from "../lib/use-shop-locale";
 
 export const handle = { shopWide: true };
 
@@ -69,20 +70,26 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
+  const personalOre = gallery.licenseTiers[0]?.unitAmountOre ?? 14_900;
+  const commercialOre = gallery.licenseTiers[1]?.unitAmountOre ?? 79_900;
+
   return {
-    locale,
     shopToken: token,
     gallery,
     shopReady: isShopConfigured(),
     stripePublishableKey: getStripePublishableKey(),
     volumeOffer: describeVolumeDiscountOffer(locale),
-    personalPrice: formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900, locale),
-    commercialPrice: formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900, locale),
+    displayLocale: locale,
+    listPrices: {
+      personal: formatShopMoney(personalOre, locale),
+      commercial: formatShopMoney(commercialOre, locale),
+    },
   };
 }
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
+  const locale = useShopLocale();
   const actionData = useActionData<{ checkoutError?: string }>();
   const {
     gallery,
@@ -90,9 +97,16 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
     shopReady,
     stripePublishableKey,
     volumeOffer,
-    personalPrice,
-    commercialPrice,
+    listPrices,
+    displayLocale,
   } = loaderData;
+
+  const personalPrice =
+    displayLocale === locale ? listPrices.personal : formatShopMoney(gallery.licenseTiers[0]?.unitAmountOre ?? 14_900, locale);
+  const commercialPrice =
+    displayLocale === locale
+      ? listPrices.commercial
+      : formatShopMoney(gallery.licenseTiers[1]?.unitAmountOre ?? 79_900, locale);
 
   return (
     <>
@@ -103,6 +117,9 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
           {t("shop.galleryIntro", { personalPrice, commercialPrice })}
           {volumeOffer ? <> {volumeOffer}.</> : null}
         </p>
+        {shopShowsEurPrices(locale) ? (
+          <p className="customer-portal__hint shop-gallery__eur-note">{t("shop.pricesEurNote")}</p>
+        ) : null}
       </header>
 
       {!shopReady ? (
@@ -116,6 +133,7 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
       ) : null}
 
       <ShopGalleryPicker
+        locale={locale}
         shopToken={shopToken}
         gallery={gallery}
         shopReady={shopReady}

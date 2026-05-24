@@ -1,11 +1,23 @@
+import { redirect } from "react-router";
 import { defaultLocale, isValidLocale, type Locale } from "./i18n";
 
 export const LOCALE_COOKIE = "portfolio_locale";
 
-export function resolveShopLocale(request: Request): Locale {
+export function readLangFromSearchParams(searchParams: URLSearchParams): Locale | null {
+  const fromQuery = searchParams.get("lang")?.trim().toLowerCase();
+  return fromQuery && isValidLocale(fromQuery) ? fromQuery : null;
+}
+
+export function resolveShopLocale(
+  request: Request,
+  options?: { metadataLocale?: string | null },
+): Locale {
   const url = new URL(request.url);
-  const fromQuery = url.searchParams.get("lang")?.trim().toLowerCase();
-  if (fromQuery && isValidLocale(fromQuery)) return fromQuery;
+  const fromUrl = readLangFromSearchParams(url.searchParams);
+  if (fromUrl) return fromUrl;
+
+  const meta = options?.metadataLocale?.trim().toLowerCase();
+  if (meta && isValidLocale(meta)) return meta;
 
   const cookie = readLocaleCookie(request.headers.get("Cookie"));
   if (cookie) return cookie;
@@ -30,6 +42,13 @@ export function resolveShopLocale(request: Request): Locale {
   }
 
   return defaultLocale;
+}
+
+/** Redirect so `?lang=` is always present — keeps switcher, i18n, and prices in sync. */
+export function redirectIfShopLangMissing(request: Request, locale: Locale): void {
+  const url = new URL(request.url);
+  if (readLangFromSearchParams(url.searchParams)) return;
+  throw redirect(appendShopLang(`${url.pathname}${url.search}`, locale));
 }
 
 export function readLocaleCookie(cookieHeader: string | null): Locale | null {

@@ -9,12 +9,17 @@ type LocaleProviderProps = {
 };
 
 export function LocaleProvider({ locale, children }: LocaleProviderProps) {
-  const i18n = useMemo(() => createI18n(locale), [locale]);
+  const i18n = useMemo(() => createI18n(locale), []);
 
   useEffect(() => {
+    void i18n.changeLanguage(locale);
     document.documentElement.lang = locale;
     document.cookie = localeCookieHeader(locale);
-  }, [locale]);
+  }, [locale, i18n]);
 
-  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+  return (
+    <I18nextProvider key={locale} i18n={i18n}>
+      {children}
+    </I18nextProvider>
+  );
 }

@@ -8,8 +8,11 @@ import type { StripeExpressCheckoutElementConfirmEvent } from "@stripe/stripe-js
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import type { Locale } from "../lib/i18n";
+import { appendShopLang } from "../lib/shop-locale";
 
 type ShopCheckoutPaymentProps = {
+  locale: Locale;
   paymentIntentId: string;
   returnUrl: string;
   totalLabel: string;
@@ -46,6 +49,7 @@ function hasWalletQuickPay(
 }
 
 export function ShopCheckoutPayment({
+  locale,
   paymentIntentId,
   returnUrl,
   totalLabel,
@@ -74,7 +78,10 @@ export function ShopCheckoutPayment({
 
   const showExpressSection = !expressReady || expressWallets;
 
-  const completePath = `/shop/complete?payment_intent=${encodeURIComponent(paymentIntentId)}`;
+  const completePath = appendShopLang(
+    `/shop/complete?payment_intent=${encodeURIComponent(paymentIntentId)}`,
+    locale,
+  );
 
   const runPaymentConfirmation = useCallback(async () => {
     if (!stripe || !elements) {

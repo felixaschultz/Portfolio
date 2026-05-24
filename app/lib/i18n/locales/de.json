@@ -138,6 +138,7 @@
     "metaCheckout": "Kasse",
     "metaComplete": "Bestellung abgeschlossen",
     "galleryIntro": "Fotos auswählen, Lizenz wählen und zur Kasse gehen. Ab {{personalPrice}} (privat) oder {{commercialPrice}} (gewerblich) pro Bild.",
+    "pricesEurNote": "Preise in EUR zur Orientierung — die Zahlung erfolgt in dänischen Kronen (DKK).",
     "galleryNotConfigured": "Online-Checkout ist derzeit nicht verfügbar.",
     "licensesLegend": "Lizenztyp (pro Foto)",
     "perPhoto": "pro Foto",

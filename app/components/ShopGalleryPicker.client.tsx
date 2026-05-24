@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Form, useRouteLoaderData } from "react-router";
+import { Form } from "react-router";
 import { useTranslation } from "react-i18next";
 import { preloadStripe } from "../lib/stripe-client";
-import type { Locale } from "../lib/i18n";
 import type { ShopGalleryView } from "../lib/shop.types";
 import type { ShopLicenseId } from "../lib/shop-licenses";
 import {
@@ -17,14 +16,13 @@ import { ShopPaymentMerchantNotice } from "./ShopPaymentMerchantNotice";
 import type { ShopGalleryPickerProps } from "./shop-gallery-picker.types";
 
 export function ShopGalleryPicker({
+  locale,
   shopToken,
   gallery,
   shopReady,
   stripePublishableKey = null,
 }: ShopGalleryPickerProps) {
   const { t } = useTranslation();
-  const layoutData = useRouteLoaderData("routes/shop") as { locale: Locale } | undefined;
-  const locale = layoutData?.locale ?? "da";
 
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [licenseId, setLicenseId] = useState<ShopLicenseId>("personal");

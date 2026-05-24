@@ -16,7 +16,7 @@ import type { Locale } from "../lib/i18n";
 import { resolveShopLocale } from "../lib/shop-locale";
 import { loadShopCheckout } from "../lib/shop.server";
 
-export const handle = { shopWide: true };
+export const handle = { shopWide: true, shopMainClass: "shop-checkout-page" };
 
 function isCheckoutBuyerComplete(
   checkout: Pick<ShopCheckoutView, "customerEmail" | "customerName">,

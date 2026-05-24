@@ -63,6 +63,13 @@ export function ShopGalleryPicker({
   const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
   const clearAll = () => setSelected(new Set());
 
+  const payLabel =
+    selected.size === 0
+      ? t("shop.continueCheckout")
+      : t("shop.payAmount", {
+          amount: formatShopMoney(pricing.totalOre, locale),
+        });
+
   return (
     <div className="shop-gallery-layout">
       <div className="shop-gallery-layout__main">
@@ -99,111 +106,140 @@ export function ShopGalleryPicker({
           {volumeOffer ? <p className="shop-licenses__volume-offer">{volumeOffer}</p> : null}
         </fieldset>
 
-        <div className="customer-portal__toolbar">
-          <button type="button" className="customer-portal__link-btn" onClick={selectAll}>
-            {t("shop.selectAll")}
-          </button>
-          <button type="button" className="customer-portal__link-btn" onClick={clearAll}>
-            {t("shop.clear")}
-          </button>
-        </div>
+        <section className="shop-gallery__photos">
+          <div className="customer-portal__toolbar">
+            <button type="button" className="customer-portal__link-btn" onClick={selectAll}>
+              {t("shop.selectAll")}
+            </button>
+            <button type="button" className="customer-portal__link-btn" onClick={clearAll}>
+              {t("shop.clear")}
+            </button>
+          </div>
 
-        <ul className="shop-grid">
-          {gallery.images.map((image) => {
-            const isOn = selected.has(image.key);
-            return (
-              <li key={image.key}>
-                <label
-                  className={`shop-grid__item${isOn ? " shop-grid__item--selected" : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    className="shop-grid__checkbox"
-                    checked={isOn}
-                    onChange={() => toggle(image.key)}
-                  />
-                  <img src={image.thumbUrl} alt={image.alt ?? ""} loading="lazy" draggable={false} />
-                  <span className="shop-grid__check" aria-hidden>
-                    {isOn ? "✓" : ""}
-                  </span>
-                </label>
-              </li>
-            );
-          })}
-        </ul>
+          <ul className="shop-grid">
+            {gallery.images.map((image) => {
+              const isOn = selected.has(image.key);
+              return (
+                <li key={image.key}>
+                  <label
+                    className={`shop-grid__item${isOn ? " shop-grid__item--selected" : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="shop-grid__checkbox"
+                      checked={isOn}
+                      onChange={() => toggle(image.key)}
+                    />
+                    <img
+                      src={image.thumbUrl}
+                      alt={image.alt ?? ""}
+                      loading="lazy"
+                      draggable={false}
+                    />
+                    <span className="shop-grid__check" aria-hidden>
+                      {isOn ? "✓" : ""}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       </div>
 
       <aside className="shop-cart" aria-label={t("shop.cartLabel")}>
-        <div className="shop-cart__panel">
-          <header className="shop-cart__header">
-            <h2 className="shop-cart__title">{t("shop.cartLabel")}</h2>
-            <span className="shop-cart__count">
-              {t(selected.size === 1 ? "shop.photoCount_one" : "shop.photoCount_other", {
-                count: selected.size,
-              })}
-            </span>
-          </header>
+        <Form method="post" className="shop-cart__panel">
+          <div className="shop-cart__scroll">
+            <header className="shop-cart__header">
+              <h2 className="shop-cart__title">{t("shop.cartLabel")}</h2>
+              <span className="shop-cart__count">
+                {t(selected.size === 1 ? "shop.photoCount_one" : "shop.photoCount_other", {
+                  count: selected.size,
+                })}
+              </span>
+            </header>
 
-          <p className="shop-cart__license">{tier.label}</p>
+            <p className="shop-cart__license">{tier.label}</p>
 
-          <ul className="shop-cart__items" aria-live="polite">
-            {selectedImages.length === 0 ? (
-              <li className="shop-cart__empty">{t("shop.cartEmpty")}</li>
-            ) : (
-              selectedImages.map((image) => (
-                <li key={image.key} className="shop-cart__item">
-                  <img
-                    className="shop-cart__thumb"
-                    src={image.thumbUrl}
-                    alt={image.alt ?? ""}
-                    loading="lazy"
-                  />
-                  <button
-                    type="button"
-                    className="shop-cart__remove"
-                    onClick={() => toggle(image.key)}
-                    aria-label={t("shop.removeFromCart")}
-                  >
-                    {t("shop.remove")}
-                  </button>
-                </li>
-              ))
-            )}
-          </ul>
+            <ul className="shop-cart__items" aria-live="polite">
+              {selectedImages.length === 0 ? (
+                <li className="shop-cart__empty">{t("shop.cartEmpty")}</li>
+              ) : (
+                selectedImages.map((image) => (
+                  <li key={image.key} className="shop-cart__item">
+                    <img
+                      className="shop-cart__thumb"
+                      src={image.thumbUrl}
+                      alt={image.alt ?? ""}
+                      loading="lazy"
+                    />
+                    <button
+                      type="button"
+                      className="shop-cart__remove"
+                      onClick={() => toggle(image.key)}
+                      aria-label={t("shop.removeFromCart")}
+                    >
+                      {t("shop.remove")}
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
 
-          <div className="shop-cart__totals">
-            {selected.size > 0 ? (
-              <>
-                <div className="shop-cart__row">
-                  <span>
-                    {selected.size} × {formatShopMoney(tier.unitAmountOre, locale)}
-                  </span>
-                  <span>{formatShopMoney(pricing.subtotalOre, locale)}</span>
-                </div>
-                {pricing.discountOre > 0 ? (
-                  <div className="shop-cart__row shop-cart__row--discount">
+            <div className="shop-cart__totals">
+              {selected.size > 0 ? (
+                <>
+                  <div className="shop-cart__row">
                     <span>
-                      {t("shop.volumeDiscount", { percent: pricing.percentOff })}
+                      {selected.size} × {formatShopMoney(tier.unitAmountOre, locale)}
                     </span>
-                    <span>−{formatShopMoney(pricing.discountOre, locale)}</span>
+                    <span>{formatShopMoney(pricing.subtotalOre, locale)}</span>
                   </div>
-                ) : null}
-                <div className="shop-cart__row shop-cart__row--total">
-                  <span>{t("shop.total")}</span>
-                  <span>{formatShopMoney(pricing.totalOre, locale)}</span>
-                </div>
-              </>
-            ) : (
-              <p className="shop-cart__empty-total customer-portal__muted">
-                {t("shop.cartTotalEmpty")}
-              </p>
-            )}
-            {nextDiscountHint ? <p className="shop-cart__hint">{nextDiscountHint}</p> : null}
+                  {pricing.discountOre > 0 ? (
+                    <div className="shop-cart__row shop-cart__row--discount">
+                      <span>
+                        {t("shop.volumeDiscount", { percent: pricing.percentOff })}
+                      </span>
+                      <span>−{formatShopMoney(pricing.discountOre, locale)}</span>
+                    </div>
+                  ) : null}
+                  <div className="shop-cart__row shop-cart__row--total">
+                    <span>{t("shop.total")}</span>
+                    <span>{formatShopMoney(pricing.totalOre, locale)}</span>
+                  </div>
+                </>
+              ) : (
+                <p className="shop-cart__empty-total customer-portal__muted">
+                  {t("shop.cartTotalEmpty")}
+                </p>
+              )}
+              {nextDiscountHint ? (
+                <p className="shop-cart__hint shop-cart__hint--scroll">{nextDiscountHint}</p>
+              ) : null}
+            </div>
+
+            <ShopPaymentMerchantNotice className="shop-cart__merchant" />
           </div>
 
-          <ShopPaymentMerchantNotice className="shop-cart__merchant" />
+          <div className="shop-cart__dock">
+            <p className="shop-cart__dock-summary" aria-live="polite">
+              {selected.size > 0 ? (
+                <>
+                  <span>
+                    {t(selected.size === 1 ? "shop.photoCount_one" : "shop.photoCount_other", {
+                      count: selected.size,
+                    })}
+                  </span>
+                  <strong>{formatShopMoney(pricing.totalOre, locale)}</strong>
+                </>
+              ) : (
+                <span className="customer-portal__muted">{t("shop.cartTotalEmpty")}</span>
+              )}
+            </p>
+            {nextDiscountHint ? (
+              <p className="shop-cart__dock-hint">{nextDiscountHint}</p>
+            ) : null}
 
-          <Form method="post" className="shop-cart__checkout">
             <input type="hidden" name="shopToken" value={shopToken} />
             <input type="hidden" name="licenseId" value={licenseId} />
             <input type="hidden" name="imageKeys" value={JSON.stringify([...selected])} />
@@ -240,14 +276,10 @@ export function ShopGalleryPicker({
               className="customer-portal__button shop-cart__pay"
               disabled={!shopReady || selected.size === 0 || !emailValid}
             >
-              {selected.size === 0
-                ? t("shop.continueCheckout")
-                : t("shop.payAmount", {
-                    amount: formatShopMoney(pricing.totalOre, locale),
-                  })}
+              {payLabel}
             </button>
-          </Form>
-        </div>
+          </div>
+        </Form>
       </aside>
     </div>
   );

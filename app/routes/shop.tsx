@@ -20,6 +20,8 @@ import { useShopLocale } from "../lib/use-shop-locale";
 
 type ShopRouteHandle = {
   shopWide?: boolean;
+  /** Extra class on `<main>` (e.g. `shop-gallery`, `shop-checkout-page`). */
+  shopMainClass?: string;
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -67,13 +69,23 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export default function ShopLayoutRoute() {
   const locale = useShopLocale();
   const matches = useMatches();
-  const shopWide = matches.some((m) => (m.handle as ShopRouteHandle | undefined)?.shopWide);
+  const shopHandles = matches
+    .map((m) => m.handle as ShopRouteHandle | undefined)
+    .filter(Boolean);
+  const shopWide = shopHandles.some((h) => h.shopWide);
+  const shopMainClass = shopHandles.map((h) => h.shopMainClass).filter(Boolean).at(-1) ?? "";
+  const mainClassName = [
+    shopWide ? "customer-portal__main--wide" : "",
+    shopMainClass,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <LocaleProvider locale={locale}>
       <ShopPortalShell
         locale={locale}
-        mainClassName={shopWide ? "customer-portal__main--wide shop-gallery" : ""}
+        mainClassName={mainClassName}
       >
         <Outlet context={{ locale }} />
       </ShopPortalShell>

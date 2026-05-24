@@ -14,7 +14,7 @@ import { formatShopMoney, shopShowsEurPrices } from "../lib/shop-licenses";
 import { resolveShopLocale } from "../lib/shop-locale";
 import { useShopLocale } from "../lib/use-shop-locale";
 
-export const handle = { shopWide: true };
+export const handle = { shopWide: true, shopMainClass: "shop-gallery" };
 
 export function links() {
   return [{ rel: "preconnect", href: "https://cdn.sanity.io" }];

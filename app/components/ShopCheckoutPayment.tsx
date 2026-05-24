@@ -35,6 +35,9 @@ const expressCheckoutOptions = {
   paymentMethodOrder: ["apple_pay", "google_pay"],
 };
 
+/** Defer Payment Element so Express Checkout can initialize first. */
+const PAYMENT_ELEMENT_DEFER_MS = 180;
+
 function hasWalletQuickPay(
   methods: { applePay?: boolean; googlePay?: boolean } | undefined,
 ): boolean {
@@ -54,10 +57,20 @@ export function ShopCheckoutPayment({
   const [paying, setPaying] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
   const [expressWallets, setExpressWallets] = useState(false);
+  const [mountPaymentElement, setMountPaymentElement] = useState(false);
 
   useEffect(() => {
     if (initialError) setError(initialError);
   }, [initialError]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setMountPaymentElement(true);
+    }, PAYMENT_ELEMENT_DEFER_MS);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  const showExpressSection = !expressReady || expressWallets;
 
   const completePath = `/shop/complete?payment_intent=${encodeURIComponent(paymentIntentId)}`;
 
@@ -120,6 +133,15 @@ export function ShopCheckoutPayment({
     [runPaymentConfirmation],
   );
 
+  const onExpressReady = useCallback(
+    ({ availablePaymentMethods }: { availablePaymentMethods?: { applePay?: boolean; googlePay?: boolean } }) => {
+      setExpressReady(true);
+      setExpressWallets(hasWalletQuickPay(availablePaymentMethods));
+      setMountPaymentElement(true);
+    },
+    [],
+  );
+
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setPaying(true);
@@ -134,29 +156,31 @@ export function ShopCheckoutPayment({
 
   return (
     <form onSubmit={onSubmit} className="shop-checkout__form">
-      <section
-        className={`shop-checkout__express${expressWallets ? " shop-checkout__express--visible" : ""}`}
-        aria-label="Quick pay"
-      >
-        <p className="shop-checkout__express-label">Quick pay</p>
-        <div
-          className={`shop-checkout__express-mount${expressReady ? "" : " shop-checkout__express-mount--loading"}`}
-        >
-          <ExpressCheckoutElement
-            options={expressCheckoutOptions}
-            onReady={({ availablePaymentMethods }) => {
-              setExpressReady(true);
-              setExpressWallets(hasWalletQuickPay(availablePaymentMethods));
-            }}
-            onConfirm={onExpressConfirm}
-          />
-        </div>
-        {!expressReady ? (
-          <p className="customer-portal__hint shop-checkout__express-hint">
-            Checking Apple Pay and Google Pay…
-          </p>
-        ) : null}
-      </section>
+      {showExpressSection ? (
+        <section className="shop-checkout__express shop-checkout__express--visible" aria-label="Quick pay">
+          <p className="shop-checkout__express-label">Quick pay</p>
+          <div className="shop-checkout__express-mount">
+            {!expressReady ? (
+              <div className="shop-checkout__express-skeleton" aria-hidden>
+                <span className="shop-checkout__express-skeleton-btn" />
+              </div>
+            ) : null}
+            <div
+              className={
+                expressReady
+                  ? "shop-checkout__express-element"
+                  : "shop-checkout__express-element shop-checkout__express-element--loading"
+              }
+            >
+              <ExpressCheckoutElement
+                options={expressCheckoutOptions}
+                onReady={onExpressReady}
+                onConfirm={onExpressConfirm}
+              />
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {expressWallets ? (
         <div className="shop-checkout__divider" role="separator">
@@ -164,23 +188,29 @@ export function ShopCheckoutPayment({
         </div>
       ) : null}
 
-      <div className="shop-checkout__element">
-        <PaymentElement
-          options={{
-            paymentMethodOrder: ["card", "mobilepay", "paypal", "revolut_pay"],
-            layout: {
-              type: "accordion",
-              defaultCollapsed: expressWallets,
-              radios: true,
-              spacedAccordionItems: true,
-            },
-            wallets: {
-              applePay: "never",
-              googlePay: "never",
-            },
-          }}
-        />
-      </div>
+      {mountPaymentElement ? (
+        <div className="shop-checkout__element">
+          <PaymentElement
+            options={{
+              paymentMethodOrder: ["card", "mobilepay", "paypal", "revolut_pay"],
+              layout: {
+                type: "accordion",
+                defaultCollapsed: expressWallets,
+                radios: true,
+                spacedAccordionItems: true,
+              },
+              wallets: {
+                applePay: "never",
+                googlePay: "never",
+              },
+            }}
+          />
+        </div>
+      ) : (
+        <div className="shop-checkout__element shop-checkout__element--placeholder" aria-hidden>
+          <div className="shop-checkout__payment-skeleton" />
+        </div>
+      )}
 
       {error ? (
         <p className="customer-portal__error" role="alert">
@@ -191,7 +221,7 @@ export function ShopCheckoutPayment({
       <button
         type="submit"
         className="customer-portal__button shop-checkout__pay"
-        disabled={!stripe || !elements || paying}
+        disabled={!stripe || !elements || paying || !mountPaymentElement}
       >
         {paying ? "Processing…" : `Pay ${totalLabel}`}
       </button>
@@ -199,7 +229,7 @@ export function ShopCheckoutPayment({
       <p className="customer-portal__hint">
         {expressWallets
           ? "Use the buttons above for Apple Pay or Google Pay when available."
-          : "Apple Pay and Google Pay appear here when your browser and domain support them (HTTPS, registered in Stripe)."}
+          : "Apple Pay and Google Pay appear at the top when your browser and domain support them (HTTPS, registered in Stripe)."}
         {" "}
         MobilePay, PayPal, Revolut Pay, and card are below. MobilePay opens via redirect.
       </p>

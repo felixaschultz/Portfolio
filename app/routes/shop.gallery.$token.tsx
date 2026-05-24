@@ -1,6 +1,12 @@
 import { useEffect, useState, type ComponentType } from "react";
 import type { Route } from "./+types/shop.gallery.$token";
-import { fetchShopGallery, isShopConfigured, type ShopGalleryView } from "../lib/shop.server";
+import { ShopStripePreload } from "../components/ShopStripePreload";
+import {
+  fetchShopGallery,
+  getStripePublishableKey,
+  isShopConfigured,
+  type ShopGalleryView,
+} from "../lib/shop.server";
 import { describeVolumeDiscountOffer, formatShopMoney } from "../lib/shop-licenses";
 
 export const handle = { shopWide: true };
@@ -20,11 +26,12 @@ export async function loader({ params }: Route.LoaderArgs) {
     shopToken: token,
     gallery,
     shopReady: isShopConfigured(),
+    stripePublishableKey: getStripePublishableKey(),
   };
 }
 
 export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
-  const { gallery, shopToken, shopReady } = loaderData;
+  const { gallery, shopToken, shopReady, stripePublishableKey } = loaderData;
   const [Picker, setPicker] = useState<ComponentType<{
     shopToken: string;
     gallery: ShopGalleryView;
@@ -43,6 +50,7 @@ export default function ShopGalleryPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
+      <ShopStripePreload publishableKey={stripePublishableKey} enabled={shopReady} />
       <header className="customer-portal__header">
         <h1 className="customer-portal__title">{gallery.title}</h1>
         <p className="customer-portal__muted">

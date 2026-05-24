@@ -1,7 +1,8 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schema";
-import { structure } from "./structure";
+import { defaultDocumentNode, structure } from "./structure";
+import { portfolioTheme } from "./theme";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET ?? "production";
@@ -18,6 +19,7 @@ export default defineConfig({
   projectId,
   dataset,
   // Vision (Monaco) breaks on mobile Safari; use local `npm run studio` if you need GROQ playground.
-  plugins: [structureTool({ structure })],
+  theme: portfolioTheme,
+  plugins: [structureTool({ structure, defaultDocumentNode })],
   schema: { types: schemaTypes },
 });

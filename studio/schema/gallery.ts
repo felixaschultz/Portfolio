@@ -1,7 +1,5 @@
 import { defineArrayMember, defineField, defineType, type PreviewValue } from "sanity";
 import { CoverImageInput } from "../components/CoverImageInput";
-import { GalleryDownloadLinkInput } from "../components/GalleryDownloadLinkInput";
-import { GalleryShopLinkInput } from "../components/GalleryShopLinkInput";
 import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
@@ -94,45 +92,36 @@ export const gallery = defineType({
       name: "downloadToken",
       title: "Customer download link",
       type: "string",
-      description:
-        "Secret URL for full-size ZIP downloads. Works before publish; manage the link here only — never on the public site.",
       readOnly: true,
-      components: {
-        input: GalleryDownloadLinkInput,
-      },
+      hidden: true,
     }),
     defineField({
       name: "shopPricePersonalDkk",
       title: "Shop: personal price (DKK)",
       type: "number",
-      description: "Override per-photo personal download price. Leave empty for default 149 DKK.",
       validation: (rule) => rule.min(1).max(100_000),
+      hidden: true,
     }),
     defineField({
       name: "shopPriceCommercialDkk",
       title: "Shop: commercial price (DKK)",
       type: "number",
-      description: "Override per-photo commercial license price. Leave empty for default 799 DKK.",
       validation: (rule) => rule.min(1).max(100_000),
+      hidden: true,
     }),
     defineField({
       name: "shopPublicEnabled",
       title: "Show buy button on public gallery",
       type: "boolean",
       initialValue: false,
-      description:
-        "When enabled (and a shop link exists), visitors on the published photography album see “Buy & license photos”. The private shop link still works when this is off.",
+      hidden: true,
     }),
     defineField({
       name: "shopToken",
       title: "Customer shop link",
       type: "string",
-      description:
-        "Stripe checkout for selected photos. Generate a link below. Works before publish; can also be shared directly when the public buy button is off.",
       readOnly: true,
-      components: {
-        input: GalleryShopLinkInput,
-      },
+      hidden: true,
     }),
   ],
   preview: {

@@ -1,4 +1,16 @@
+import type { DefaultDocumentNodeResolver } from "sanity/structure";
 import type { StructureResolver } from "sanity/structure";
+import { GalleryStudioPanel } from "./components/GalleryStudioPanel";
+
+export const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) => {
+  if (schemaType === "gallery") {
+    return S.document().views([
+      S.view.form().title("Edit"),
+      S.view.component(GalleryStudioPanel).title("Shop"),
+    ]);
+  }
+  return S.document().views([S.view.form()]);
+};
 
 export const structure: StructureResolver = (S) =>
   S.list()

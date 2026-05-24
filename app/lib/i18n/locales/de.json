@@ -223,7 +223,8 @@
       "ready_other": "Deine {{count}} digitalen Fotos aus «{{gallery}}» können heruntergeladen werden.",
       "cta": "ZIP herunterladen",
       "expiry": "Dieser Link ist 7 Tage gültig.",
-      "fallback": "Wenn der Button nicht funktioniert, kopiere diese URL in den Browser:"
+      "fallback": "Wenn der Button nicht funktioniert, kopiere diese URL in den Browser:",
+      "tagline": "Fotografie"
     },
     "merchantNoticeBefore": "Auf deinem Kontoauszug und bei Apple Pay erscheint",
     "merchantNoticeAfter": "als Händler (z. B. «Pay Intastellar Solutions»), nicht Felix Schultz. Du kaufst Fotolizenzen von Felix Schultz.",

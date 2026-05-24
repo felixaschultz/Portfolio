@@ -222,7 +222,8 @@
       "ready_other": "Dine {{count}} digitale billeder fra «{{gallery}}» er klar til download.",
       "cta": "Download ZIP",
       "expiry": "Linket er gyldigt i 7 dage.",
-      "fallback": "Hvis knappen ikke virker, kan du kopiere denne adresse ind i browseren:"
+      "fallback": "Hvis knappen ikke virker, kan du kopiere denne adresse ind i browseren:",
+      "tagline": "Fotografi"
     },
     "merchantNoticeBefore": "På dit kontoudtog og Apple Pay vises",
     "merchantNoticeAfter": "som forhandler (fx «Betal Intastellar Solutions»), ikke Felix Schultz. Du køber fotolicenser fra Felix Schultz.",

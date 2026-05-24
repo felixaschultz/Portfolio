@@ -223,7 +223,8 @@
       "ready_other": "Your {{count}} digital photos from «{{gallery}}» are ready to download.",
       "cta": "Download ZIP",
       "expiry": "This link is valid for 7 days.",
-      "fallback": "If the button does not work, copy and paste this URL into your browser:"
+      "fallback": "If the button does not work, copy and paste this URL into your browser:",
+      "tagline": "Photography"
     },
     "merchantNoticeBefore": "Your bank statement and Apple Pay will show",
     "merchantNoticeAfter": "as the merchant (e.g. “Pay Intastellar Solutions”), not Felix Schultz. You are buying photo licenses from Felix Schultz.",

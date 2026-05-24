@@ -63,10 +63,10 @@ export function ShopGalleryPicker({
   const selectAll = () => setSelected(new Set(gallery.images.map((i) => i.key)));
   const clearAll = () => setSelected(new Set());
 
-  const payLabel =
+  const submitLabel =
     selected.size === 0
-      ? t("shop.continueCheckout")
-      : t("shop.payAmount", {
+      ? t("shop.selectPhotosToContinue")
+      : t("shop.continueCheckoutTotal", {
           amount: formatShopMoney(pricing.totalOre, locale),
         });
 
@@ -276,7 +276,7 @@ export function ShopGalleryPicker({
               className="customer-portal__button shop-cart__pay"
               disabled={!shopReady || selected.size === 0 || !emailValid}
             >
-              {payLabel}
+              {submitLabel}
             </button>
           </div>
         </Form>

@@ -159,6 +159,8 @@
     "total": "Total",
     "cartTotalEmpty": "Total updates when you select photos.",
     "continueCheckout": "Continue to checkout",
+    "continueCheckoutTotal": "Continue to checkout · {{amount}}",
+    "selectPhotosToContinue": "Select photos to continue",
     "payAmount": "Pay {{amount}}",
     "loadingShop": "Loading shop",
     "loadingSelection": "Loading selection…",

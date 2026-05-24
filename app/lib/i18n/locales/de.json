@@ -159,6 +159,8 @@
     "total": "Gesamt",
     "cartTotalEmpty": "Gesamtsumme aktualisiert sich, sobald du Fotos auswählst.",
     "continueCheckout": "Zur Kasse",
+    "continueCheckoutTotal": "Zur Kasse · {{amount}}",
+    "selectPhotosToContinue": "Fotos auswählen, um fortzufahren",
     "payAmount": "{{amount}} bezahlen",
     "loadingShop": "Shop wird geladen",
     "loadingSelection": "Auswahl wird geladen…",

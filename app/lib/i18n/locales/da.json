@@ -158,6 +158,8 @@
     "total": "Total",
     "cartTotalEmpty": "Total opdateres, når du vælger billeder.",
     "continueCheckout": "Fortsæt til betaling",
+    "continueCheckoutTotal": "Fortsæt til betaling · {{amount}}",
+    "selectPhotosToContinue": "Vælg billeder for at fortsætte",
     "payAmount": "Betal {{amount}}",
     "loadingShop": "Indlæser shop",
     "loadingSelection": "Indlæser valg…",

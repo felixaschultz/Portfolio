@@ -1,3 +1,5 @@
+/** Bundled schema migration (must ship in server build — no runtime fs read). */
+export const INITIAL_MIGRATION_SQL = `
 -- Shop orders (download tracking)
 CREATE TABLE IF NOT EXISTS shop_orders (
   payment_intent_id TEXT PRIMARY KEY,
@@ -52,3 +54,4 @@ CREATE TABLE IF NOT EXISTS admin_webauthn_challenges (
   type TEXT NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL
 );
+`.trim();

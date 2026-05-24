@@ -1,6 +1,5 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import postgres from "postgres";
+import { INITIAL_MIGRATION_SQL } from "./db/initial-migration.server";
 
 let sql: ReturnType<typeof postgres> | null = null;
 let migrated = false;
@@ -62,13 +61,8 @@ export async function ensureDatabaseReady(): Promise<boolean> {
     return true;
   }
 
-  const migrationPath = fileURLToPath(
-    new URL("./db/migrations/001_initial.sql", import.meta.url),
-  );
-  const sqlText = readFileSync(migrationPath, "utf8");
-
   try {
-    await db.unsafe(sqlText);
+    await db.unsafe(INITIAL_MIGRATION_SQL);
     migrated = true;
     lastConnectionError = null;
     return true;

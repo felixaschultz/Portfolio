@@ -85,6 +85,15 @@ Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 | `RESEND_API_KEY` | [Resend](https://resend.com) API key for post-purchase emails |
 | `SHOP_EMAIL_FROM` | Sender, e.g. `Felix A. Schultz <photos@felix-schultz.net>` |
 | `DELIVERY_CONTACT_EMAIL` | Optional reply-to on download emails |
+| `SHOP_ADMIN_SECRET` | Password for `/shop/admin` (orders + revenue, min. 16 chars) |
+
+### Shop admin dashboard
+
+1. Set `SHOP_ADMIN_SECRET` (e.g. `openssl rand -hex 24`) in `.env.local` and Vercel.
+2. Open **`/shop/admin`** and sign in with that password.
+3. View paid orders, customer name, email, gallery, and total revenue (DKK, from Stripe).
+
+Customer names also appear in the **Stripe Dashboard** on each payment (description + `customerName` metadata) after they complete the buyer step at checkout.
 
 ### Shop download email (Resend)
 

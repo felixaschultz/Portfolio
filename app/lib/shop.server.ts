@@ -30,6 +30,7 @@ import {
   buildImageKeysMetadata,
   parseImageKeysFromMetadata,
 } from "./shop-stripe-metadata";
+import { buildShopPaymentIntentDescription } from "./shop-payment-description.server";
 import type {
   ShopCheckoutLineItem,
   ShopCheckoutView,
@@ -275,8 +276,17 @@ export async function updateShopPaymentIntentBuyer(
       return { error: shopT(locale, "errors.checkoutEmailLocked") };
     }
 
+    const imageKeys = parseImageKeysFromMetadata(intent.metadata ?? undefined);
+    const imageCount = imageKeys?.length ?? 0;
+
     await stripe.paymentIntents.update(intent.id, {
       receipt_email: customerEmail,
+      description: buildShopPaymentIntentDescription({
+        customerName,
+        galleryTitle: intent.metadata?.galleryTitle?.trim() || intent.metadata?.gallerySlug || "Gallery",
+        imageCount: imageCount || 1,
+        licenseLabel: intent.metadata?.licenseLabel,
+      }),
       metadata: {
         ...intent.metadata,
         customerEmail,
@@ -337,12 +347,18 @@ export async function createShopPaymentIntent(options: {
       amount: pricing.totalOre,
       currency: SHOP_CURRENCY,
       receipt_email: customerEmail,
+      description: buildShopPaymentIntentDescription({
+        galleryTitle: gallery.title,
+        imageCount: imageKeys.length,
+        licenseLabel: tier.label,
+      }),
       // MobilePay and similar methods need redirects; cards/wallets stay on-page via
       // confirmPayment({ redirect: "if_required" }) on the client.
       automatic_payment_methods: { enabled: true },
       metadata: {
         shopToken: options.shopToken,
         gallerySlug: gallery.slug,
+        galleryTitle: gallery.title,
         licenseId: tier.id,
         licenseLabel: tier.label,
         locale,

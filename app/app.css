@@ -2643,6 +2643,140 @@ body {
   margin-top: 0.15rem;
 }
 
+.customer-portal__main:has(.shop-admin) {
+  max-width: min(72rem, 100%);
+}
+
+.shop-admin--login {
+  max-width: 22rem;
+}
+
+.shop-admin__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.shop-admin__logout {
+  margin: 0;
+}
+
+.shop-admin__login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.shop-admin__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shop-admin__input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.shop-admin__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.shop-admin__stat {
+  padding: 1rem 1.125rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shop-admin__stat-label {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.shop-admin__stat-value {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.shop-admin__table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.shop-admin__table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.shop-admin__table th,
+.shop-admin__table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.shop-admin__table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  background: var(--color-surface-elevated);
+}
+
+.shop-admin__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.shop-admin__customer-name {
+  display: block;
+  font-weight: 600;
+}
+
+.shop-admin__email {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.shop-admin__company {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.shop-admin__hint {
+  margin-top: 1rem;
+}
+
+.shop-admin__hint code {
+  font-size: 0.8125em;
+}
+
 .customer-portal__header {
   margin-bottom: 1.5rem;
 }

@@ -520,6 +520,7 @@ const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0
   favoritePhotos[] {
     imageKey,
     framing,
+    stackPose,
     gallery-> {
       "slug": slug.current,
       title,
@@ -543,6 +544,12 @@ type HomePageFavoriteRow = {
     width?: number;
     height?: number;
   };
+  stackPose?: {
+    rotate?: number;
+    offsetX?: number;
+    offsetY?: number;
+    scale?: number;
+  };
   gallery?: GalleryDocument | null;
 };
 
@@ -555,6 +562,7 @@ export async function fetchHomeFavoritePhotos(): Promise<
     framingFromGalleryHotspot,
     normalizeHomeFavoriteFraming,
   } = await import("./home-favorite-framing");
+  const { resolveStackPose } = await import("./home-favorite-stack");
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const widths = [480, 720, 1080, 1440, 1920] as const;
 
@@ -566,10 +574,12 @@ export async function fetchHomeFavoritePhotos(): Promise<
       HOME_PAGE_FAVORITES_QUERY,
     );
     const rows = doc?.favoritePhotos ?? [];
+    const total = Math.min(rows.length, MAX_HOME_FAVORITES);
     const out: import("./home-favorites").HomeFavoritePhoto[] = [];
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;
+      const stackIndex = out.length;
       const gallery = row.gallery;
       const imageKey = row.imageKey?.trim();
       if (!gallery?.slug || !imageKey) continue;
@@ -592,6 +602,7 @@ export async function fetchHomeFavoritePhotos(): Promise<
           imageSrcSet: srcSet,
           imageBlurUrl: photoBlurPlaceholder(source),
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          stackPose: resolveStackPose(row.stackPose, stackIndex, total),
           alt: imageRow.alt,
           gallerySlug: gallery.slug,
           galleryTitle: gallery.title,

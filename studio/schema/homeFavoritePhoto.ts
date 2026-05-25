@@ -30,5 +30,17 @@ export const homeFavoritePhoto = defineType({
         defineField({ name: "height", type: "number", hidden: true }),
       ],
     }),
+    defineField({
+      name: "stackPose",
+      title: "Stack fold",
+      description: "Tilt and offset for this card in the home page stack.",
+      type: "object",
+      fields: [
+        defineField({ name: "rotate", type: "number", hidden: true }),
+        defineField({ name: "offsetX", type: "number", hidden: true }),
+        defineField({ name: "offsetY", type: "number", hidden: true }),
+        defineField({ name: "scale", type: "number", hidden: true }),
+      ],
+    }),
   ],
 });

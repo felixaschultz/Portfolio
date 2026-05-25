@@ -1,4 +1,13 @@
-import { ChevronDownIcon, ChevronRightIcon, ImagesIcon, SearchIcon } from "@sanity/icons";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ImagesIcon,
+  ResetIcon,
+  SearchIcon,
+  TrashIcon,
+} from "@sanity/icons";
 import { Box, Button, Card, Flex, Grid, Spinner, Stack, Text, TextInput } from "@sanity/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -15,6 +24,12 @@ import {
   framingFromImageSource,
 } from "../lib/home-favorite-framing";
 import { HomeFavoriteFramingEditor } from "./HomeFavoriteFramingEditor";
+import { HomeFavoriteStackPoseEditor } from "./HomeFavoriteStackPoseEditor";
+import {
+  type HomeFavoriteStackPose,
+  defaultStackPose,
+  resolveStackPose,
+} from "../lib/home-favorite-stack";
 
 const MAX = 5;
 const GALLERY_LIST_QUERY = `*[_type == "gallery" && defined(slug.current) && defined(images[0])] | order(title.en asc) {
@@ -54,6 +69,7 @@ type PickValue = {
   gallery?: { _ref?: string; _type?: string };
   imageKey?: string;
   framing?: HomeFavoriteFraming;
+  stackPose?: HomeFavoriteStackPose;
 };
 
 type GalleryListItem = {
@@ -231,6 +247,43 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     [picks, writePicks],
   );
 
+  const updatePickStackPose = useCallback(
+    (pickKey: string, stackPose: HomeFavoriteStackPose) => {
+      writePicks(
+        picks.map((p) => (p._key === pickKey ? { ...p, stackPose } : p)),
+      );
+    },
+    [picks, writePicks],
+  );
+
+  const movePick = useCallback(
+    (pickKey: string, direction: -1 | 1) => {
+      const index = picks.findIndex((p) => p._key === pickKey);
+      const target = index + direction;
+      if (index < 0 || target < 0 || target >= picks.length) return;
+      const next = [...picks];
+      [next[index], next[target]] = [next[target]!, next[index]!];
+      writePicks(next);
+    },
+    [picks, writePicks],
+  );
+
+  const removePick = useCallback(
+    (pickKey: string) => {
+      writePicks(picks.filter((p) => p._key !== pickKey));
+    },
+    [picks, writePicks],
+  );
+
+  const rebalanceStackPoses = useCallback(() => {
+    writePicks(
+      picks.map((pick, index) => ({
+        ...pick,
+        stackPose: defaultStackPose(index, picks.length),
+      })),
+    );
+  }, [picks, writePicks]);
+
   const resetPickFraming = useCallback(
     (pick: PickValue) => {
       const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
@@ -248,6 +301,8 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         return;
       }
       if (picks.length >= MAX) return;
+      const nextIndex = picks.length;
+      const nextTotal = nextIndex + 1;
       writePicks([
         ...picks,
         {
@@ -255,6 +310,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           gallery: { _ref: galleryId, _type: "reference" },
           imageKey,
           framing: framingFromImageSource(image),
+          stackPose: defaultStackPose(nextIndex, nextTotal),
         },
       ]);
     },
@@ -403,6 +459,10 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     return framingFromImageSource(resolvePickImage(pick));
   }
 
+  function pickStackPose(pick: PickValue, index: number): HomeFavoriteStackPose {
+    return resolveStackPose(pick.stackPose, index, picks.length);
+  }
+
   return (
     <Stack space={4}>
       <Text size={1} muted>
@@ -411,37 +471,96 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
 
       {picks.length > 0 ? (
         <Stack space={4}>
-          <Flex gap={2} wrap="wrap">
+          <Stack space={3}>
+            <Flex align="center" justify="space-between" gap={2}>
+              <Text size={1} weight="semibold">
+                Stack order &amp; fold
+              </Text>
+              <Button
+                icon={ResetIcon}
+                mode="bleed"
+                fontSize={1}
+                text="Reset all folds"
+                onClick={rebalanceStackPoses}
+              />
+            </Flex>
+            <Text size={1} muted>
+              #1 is the back of the deck; higher numbers sit in front on the home page. Use arrows to
+              reorder.
+            </Text>
             {picks.map((pick, index) => {
               const url = resolvePickThumb(pick);
               const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
+              const label = `#${index + 1}${gallery ? ` · ${galleryLabel(gallery)}` : ""}`;
+              const pose = pickStackPose(pick, index);
               return (
-                <Card key={pick._key} padding={2} radius={2} tone="positive" style={{ width: 80 }}>
-                  {url ? (
-                    <img
-                      src={url}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      style={{
-                        width: "100%",
-                        aspectRatio: "4/5",
-                        objectFit: "cover",
-                        borderRadius: 4,
-                      }}
-                    />
-                  ) : (
-                    <Flex align="center" justify="center" style={{ aspectRatio: "4/5" }}>
-                      <Spinner muted />
-                    </Flex>
-                  )}
-                  <Text size={0} muted align="center" style={{ marginTop: 4 }}>
-                    #{index + 1} {gallery ? galleryLabel(gallery) : ""}
-                  </Text>
+                <Card key={pick._key} padding={3} radius={2} border tone="transparent">
+                  <Flex gap={3} align="flex-start">
+                    <Box style={{ width: 72, flexShrink: 0 }}>
+                      {url ? (
+                        <img
+                          src={url}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          style={{
+                            width: "100%",
+                            aspectRatio: "4/5",
+                            objectFit: "cover",
+                            borderRadius: 4,
+                          }}
+                        />
+                      ) : (
+                        <Flex align="center" justify="center" style={{ aspectRatio: "4/5" }}>
+                          <Spinner muted />
+                        </Flex>
+                      )}
+                    </Box>
+                    <Box flex={1}>
+                    <Stack space={3}>
+                      <Flex align="center" justify="space-between" gap={2}>
+                        <Text size={1} weight="medium">
+                          {label}
+                        </Text>
+                        <Flex gap={1}>
+                          <Button
+                            icon={ArrowUpIcon}
+                            mode="bleed"
+                            disabled={index === 0}
+                            aria-label="Move earlier in stack (back)"
+                            onClick={() => movePick(pick._key, -1)}
+                          />
+                          <Button
+                            icon={ArrowDownIcon}
+                            mode="bleed"
+                            disabled={index === picks.length - 1}
+                            aria-label="Move later in stack (front)"
+                            onClick={() => movePick(pick._key, 1)}
+                          />
+                          <Button
+                            icon={TrashIcon}
+                            mode="bleed"
+                            tone="critical"
+                            aria-label="Remove from favorites"
+                            onClick={() => removePick(pick._key)}
+                          />
+                        </Flex>
+                      </Flex>
+                      <HomeFavoriteStackPoseEditor
+                        pose={pose}
+                        label="Fold"
+                        onChange={(stackPose) => updatePickStackPose(pick._key, stackPose)}
+                        onReset={() =>
+                          updatePickStackPose(pick._key, defaultStackPose(index, picks.length))
+                        }
+                      />
+                    </Stack>
+                    </Box>
+                  </Flex>
                 </Card>
               );
             })}
-          </Flex>
+          </Stack>
 
           <Stack space={4}>
             <Text size={1} weight="semibold">

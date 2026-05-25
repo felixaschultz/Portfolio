@@ -9,7 +9,7 @@ export function resolveHomePhotoCover(
   favoritePhotos: HomeFavoritePhoto[],
   featuredGalleries: GalleryListItem[],
 ): ResponsiveCoverImage | null {
-  const leadFavorite = favoritePhotos[0];
+  const leadFavorite = favoritePhotos.at(-1) ?? favoritePhotos[0];
   if (leadFavorite) {
     return {
       src: leadFavorite.imageUrl,

@@ -10,7 +10,7 @@ export const homePage = defineType({
       name: "favoritePhotos",
       title: "Favorite photos (front page)",
       description:
-        "Pick up to 5 single images from any gallery. Drag each card preview to adjust the 4:5 crop on the home page stack.",
+        "Pick up to 5 images, reorder the stack (#1 = back), adjust fold per card, and crop each photo for the home page.",
       type: "array",
       of: [defineArrayMember({ type: "homeFavoritePhoto" })],
       validation: (rule) => rule.max(5).error("You can highlight at most 5 photos"),

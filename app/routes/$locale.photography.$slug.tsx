@@ -28,8 +28,8 @@ export async function loader({ params }: Route.LoaderArgs) {
   return {
     gallery,
     metaLine,
-    nextGallery: index >= 0 ? toNav(allGalleries[index + 1]) : null,
-    prevGallery: index > 0 ? toNav(allGalleries[index - 1]) : null,
+    nextGallery: index >= 0 ? toNav(navGalleries[index + 1]) : null,
+    prevGallery: index > 0 ? toNav(navGalleries[index - 1]) : null,
     /** @deprecated Stale bundles may still read this */
     photo: gallery,
   };

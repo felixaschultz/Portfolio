@@ -9,6 +9,7 @@ type GalleryImageProps = {
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
+  objectPosition?: string;
   /** Deters drag / context menu on the image node. */
   protectedImage?: boolean;
 };
@@ -22,6 +23,7 @@ export function GalleryImage({
   className = "",
   loading = "lazy",
   fetchPriority,
+  objectPosition,
   protectedImage = false,
 }: GalleryImageProps) {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -71,6 +73,7 @@ export function GalleryImage({
         decoding="async"
         draggable={false}
         className={`gallery-image__main ${className}`.trim()}
+        style={objectPosition ? { objectPosition } : undefined}
         onLoad={markLoaded}
         onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
         onDragStart={protectedImage ? (e) => e.preventDefault() : undefined}

@@ -28,10 +28,11 @@ export function HomeFavoriteStack({ photos, locale, base }: HomeFavoriteStackPro
               <GalleryImage
                 src={photo.imageUrl}
                 srcSet={photo.imageSrcSet}
-                sizes="(max-width: 639px) 72vw, (max-width: 1023px) 42vw, 28rem"
+                sizes="(max-width: 639px) 88vw, (max-width: 1023px) 52vw, 20rem"
                 blurSrc={photo.imageBlurUrl}
                 alt={alt}
                 className="home-favorites__img"
+                objectPosition={photo.imageObjectPosition}
                 loading={index === 0 ? "eager" : "lazy"}
               />
               <div className="home-favorites__shade" aria-hidden />

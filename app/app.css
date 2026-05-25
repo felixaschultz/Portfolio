@@ -550,7 +550,7 @@ body {
 
   .home-favorites-section__inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
     gap: 3rem;
     align-items: center;
   }
@@ -562,15 +562,17 @@ body {
 
 .home-favorites {
   width: 100%;
-  max-width: 26rem;
+  max-width: 36rem;
   margin-inline: auto;
+  overflow: visible;
 }
 
 .home-favorites__stack {
   position: relative;
   width: 100%;
-  height: clamp(18rem, 52vw, 30rem);
+  height: clamp(22rem, 62vw, 40rem);
   margin: 0 auto;
+  overflow: visible;
 }
 
 .home-favorites__card {
@@ -578,7 +580,7 @@ body {
   left: 50%;
   top: 50%;
   display: block;
-  width: min(68%, 15rem);
+  width: min(78%, 18.5rem);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: 0.65rem;
@@ -587,7 +589,8 @@ body {
     0 18px 40px rgb(0 0 0 / 0.45),
     0 0 0 1px rgb(0 0 0 / 0.2);
   transform: translate(-50%, -50%) rotate(var(--fav-rotate, 0deg))
-    translate(var(--fav-x, 0), var(--fav-y, 0));
+    translate(var(--fav-x, 0), var(--fav-y, 0)) scale(var(--fav-scale, 1));
+  transform-origin: center center;
   transition:
     transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.35s ease,
@@ -612,12 +615,14 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Bias crop toward upper-center so faces stay in frame when cards fan */
+  object-position: center 42%;
 }
 
 .home-favorites__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, transparent 50%);
+  background: linear-gradient(to top, rgb(0 0 0 / 0.78) 0%, transparent 38%);
   pointer-events: none;
 }
 
@@ -646,85 +651,100 @@ body {
   line-height: 1.25;
 }
 
-/* Stacked offsets per card count */
+/* Stacked fan — gentle tilt + stagger so subjects stay visible behind the front card */
 .home-favorites__stack--1 .home-favorites__card:nth-child(1) {
   --fav-rotate: 0deg;
   --fav-x: 0;
   --fav-y: 0;
+  --fav-scale: 1;
 }
 
 .home-favorites__stack--2 .home-favorites__card:nth-child(1) {
-  --fav-rotate: -7deg;
-  --fav-x: -6%;
-  --fav-y: 3%;
+  --fav-rotate: -3deg;
+  --fav-x: -7%;
+  --fav-y: 4%;
+  --fav-scale: 0.96;
 }
 .home-favorites__stack--2 .home-favorites__card:nth-child(2) {
-  --fav-rotate: 5deg;
-  --fav-x: 8%;
-  --fav-y: -2%;
+  --fav-rotate: 3deg;
+  --fav-x: 7%;
+  --fav-y: -3%;
+  --fav-scale: 1;
 }
 
 .home-favorites__stack--3 .home-favorites__card:nth-child(1) {
-  --fav-rotate: -9deg;
-  --fav-x: -10%;
+  --fav-rotate: -4deg;
+  --fav-x: -9%;
   --fav-y: 5%;
+  --fav-scale: 0.94;
 }
 .home-favorites__stack--3 .home-favorites__card:nth-child(2) {
-  --fav-rotate: 2deg;
+  --fav-rotate: 0deg;
   --fav-x: 0;
-  --fav-y: -3%;
+  --fav-y: -2%;
+  --fav-scale: 0.97;
 }
 .home-favorites__stack--3 .home-favorites__card:nth-child(3) {
-  --fav-rotate: 8deg;
-  --fav-x: 11%;
-  --fav-y: 4%;
+  --fav-rotate: 4deg;
+  --fav-x: 9%;
+  --fav-y: -4%;
+  --fav-scale: 1;
 }
 
 .home-favorites__stack--4 .home-favorites__card:nth-child(1) {
-  --fav-rotate: -10deg;
-  --fav-x: -12%;
+  --fav-rotate: -5deg;
+  --fav-x: -11%;
   --fav-y: 6%;
+  --fav-scale: 0.92;
 }
 .home-favorites__stack--4 .home-favorites__card:nth-child(2) {
-  --fav-rotate: -3deg;
-  --fav-x: -3%;
-  --fav-y: -2%;
+  --fav-rotate: -2deg;
+  --fav-x: -4%;
+  --fav-y: 2%;
+  --fav-scale: 0.95;
 }
 .home-favorites__stack--4 .home-favorites__card:nth-child(3) {
-  --fav-rotate: 5deg;
-  --fav-x: 6%;
-  --fav-y: 2%;
+  --fav-rotate: 2deg;
+  --fav-x: 4%;
+  --fav-y: -3%;
+  --fav-scale: 0.98;
 }
 .home-favorites__stack--4 .home-favorites__card:nth-child(4) {
-  --fav-rotate: 11deg;
-  --fav-x: 13%;
-  --fav-y: 5%;
+  --fav-rotate: 5deg;
+  --fav-x: 11%;
+  --fav-y: -5%;
+  --fav-scale: 1;
 }
 
 .home-favorites__stack--5 .home-favorites__card:nth-child(1) {
-  --fav-rotate: -11deg;
-  --fav-x: -14%;
+  --fav-rotate: -5deg;
+  --fav-x: -12%;
   --fav-y: 7%;
+  --fav-scale: 0.91;
 }
 .home-favorites__stack--5 .home-favorites__card:nth-child(2) {
-  --fav-rotate: -5deg;
-  --fav-x: -5%;
-  --fav-y: -1%;
+  --fav-rotate: -3deg;
+  --fav-x: -6%;
+  --fav-y: 3%;
+  --fav-scale: 0.94;
 }
 .home-favorites__stack--5 .home-favorites__card:nth-child(3) {
-  --fav-rotate: 1deg;
-  --fav-x: 2%;
-  --fav-y: -4%;
+  --fav-rotate: 0deg;
+  --fav-x: 0;
+  --fav-y: -2%;
+  --fav-scale: 0.97;
 }
 .home-favorites__stack--5 .home-favorites__card:nth-child(4) {
-  --fav-rotate: 7deg;
-  --fav-x: 9%;
-  --fav-y: 3%;
+  --fav-rotate: 3deg;
+  --fav-x: 6%;
+  --fav-y: -4%;
+  --fav-scale: 0.99;
 }
 .home-favorites__stack--5 .home-favorites__card:nth-child(5) {
-  --fav-rotate: 12deg;
-  --fav-x: 15%;
-  --fav-y: 6%;
+  --fav-rotate: 5deg;
+  --fav-x: 12%;
+  --fav-y: -6%;
+  --fav-scale: 1;
 }
 
 /* Site header — fixed to viewport (sticky breaks inside flex column) */

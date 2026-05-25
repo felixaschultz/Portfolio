@@ -556,7 +556,7 @@ export async function fetchHomeFavoritePhotos(): Promise<
     normalizeHomeFavoriteFraming,
   } = await import("./home-favorite-framing");
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
-  const widths = [420, 640, 960, 1200, 1600] as const;
+  const widths = [480, 720, 1080, 1440, 1920] as const;
 
   const client = getSanityClient();
   if (!client) return [];
@@ -591,6 +591,7 @@ export async function fetchHomeFavoritePhotos(): Promise<
           imageUrl: src,
           imageSrcSet: srcSet,
           imageBlurUrl: photoBlurPlaceholder(source),
+          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
           alt: imageRow.alt,
           gallerySlug: gallery.slug,
           galleryTitle: gallery.title,

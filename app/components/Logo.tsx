@@ -15,7 +15,9 @@ export function Logo({ className = "" }: LogoProps) {
       className={`site-logo ${className}`.trim()}
       aria-label="Felix A. Schultz — home"
     >
-      <LogoMark className="site-logo__mark" />
+      <span className="site-logo__mark-ring" aria-hidden>
+        <LogoMark className="site-logo__mark" />
+      </span>
       <span className="site-logo__name">Felix A. Schultz</span>
     </Link>
   );

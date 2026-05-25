@@ -65,3 +65,8 @@ export function resolveStackPose(
 ): HomeFavoriteStackPose {
   return normalizeStackPose(raw) ?? defaultStackPose(index, total);
 }
+
+/** Same transform chain as `.home-favorites__card` on the site. */
+export function stackPoseTransform(pose: HomeFavoriteStackPose): string {
+  return `translate(-50%, -50%) rotate(${pose.rotate}deg) translate(${pose.offsetX}%, ${pose.offsetY}%) scale(${pose.scale})`;
+}

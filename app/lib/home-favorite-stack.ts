@@ -68,11 +68,10 @@ export function resolveStackPose(
   return normalizeStackPose(raw) ?? defaultStackPose(index, total);
 }
 
+export function stackPoseTransform(pose: HomeFavoriteStackPose): string {
+  return `translate(-50%, -50%) rotate(${pose.rotate}deg) translate(${pose.offsetX}%, ${pose.offsetY}%) scale(${pose.scale})`;
+}
+
 export function stackPoseCssVars(pose: HomeFavoriteStackPose): CSSProperties {
-  return {
-    ["--fav-rotate" as string]: `${pose.rotate}deg`,
-    ["--fav-x" as string]: `${pose.offsetX}%`,
-    ["--fav-y" as string]: `${pose.offsetY}%`,
-    ["--fav-scale" as string]: String(pose.scale),
-  };
+  return { transform: stackPoseTransform(pose) };
 }

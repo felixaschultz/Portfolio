@@ -26,6 +26,10 @@ import {
 import { HomeFavoriteFramingEditor } from "./HomeFavoriteFramingEditor";
 import { HomeFavoriteStackPoseEditor } from "./HomeFavoriteStackPoseEditor";
 import {
+  HomeFavoriteStackPreview,
+  type HomeFavoriteStackPreviewCard,
+} from "./HomeFavoriteStackPreview";
+import {
   type HomeFavoriteStackPose,
   defaultStackPose,
   resolveStackPose,
@@ -84,25 +88,35 @@ type GalleryWithImages = GalleryListItem & {
   images?: { _key?: string; alt?: string; image?: SanityImageSource }[];
 };
 
-function thumbUrl(
+function buildThumbUrl(
   client: ReturnType<typeof useClient>,
   source: SanityImageSource | undefined,
-  framing?: HomeFavoriteFraming | null,
+  framing: HomeFavoriteFraming | null | undefined,
+  width: number,
+  height: number,
 ) {
   if (!source) return null;
   try {
     const imageSource = framing ? applyHomeFavoriteFraming(source, framing) : source;
     return createImageUrlBuilder(client)
       .image(imageSource)
-      .width(120)
-      .height(150)
+      .width(width)
+      .height(height)
       .fit("crop")
       .auto("format")
-      .quality(75)
+      .quality(width >= 200 ? 82 : 75)
       .url();
   } catch {
     return null;
   }
+}
+
+function thumbUrl(
+  client: ReturnType<typeof useClient>,
+  source: SanityImageSource | undefined,
+  framing?: HomeFavoriteFraming | null,
+) {
+  return buildThumbUrl(client, source, framing, 120, 150);
 }
 
 function galleryLabel(g: { title?: GalleryListItem["title"]; slug?: string }): string {
@@ -463,6 +477,20 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     return resolveStackPose(pick.stackPose, index, picks.length);
   }
 
+  const stackPreviewCards = useMemo((): HomeFavoriteStackPreviewCard[] => {
+    return picks.map((pick, index) => {
+      const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
+      const framing = pick.framing ?? framingFromImageSource(resolvePickImage(pick));
+      return {
+        key: pick._key,
+        imageUrl: buildThumbUrl(client, resolvePickImage(pick), pick.framing, 296, 370),
+        caption: gallery ? galleryLabel(gallery) : "Gallery",
+        pose: resolveStackPose(pick.stackPose, index, picks.length),
+        objectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+      };
+    });
+  }, [picks, pickGalleries, client]);
+
   return (
     <Stack space={4}>
       <Text size={1} muted>
@@ -471,6 +499,8 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
 
       {picks.length > 0 ? (
         <Stack space={4}>
+          <HomeFavoriteStackPreview cards={stackPreviewCards} />
+
           <Stack space={3}>
             <Flex align="center" justify="space-between" gap={2}>
               <Text size={1} weight="semibold">

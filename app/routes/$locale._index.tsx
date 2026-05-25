@@ -5,13 +5,10 @@ import { GalleryImage } from "../components/GalleryImage";
 import { HomeDoors } from "../components/HomeDoors";
 import { HomeFavoriteStack } from "../components/HomeFavoriteStack";
 import { Recommendations } from "../components/Recommendations";
+import { resolveHomeDevCover, resolveHomePhotoCover } from "../lib/home-page.server";
 import { getFeaturedProjects } from "../lib/projects.server";
 import { fetchFeaturedGalleriesForList, fetchHomeFavoritePhotos } from "../lib/sanity.server";
-import type { GalleryListItem, ResponsiveCoverImage } from "../lib/galleries";
-import {
-  INTASTELLAR_SIGNIN_COVER_VARIANTS,
-  staticImageSrcSet,
-} from "../lib/static-image";
+import type { GalleryListItem } from "../lib/galleries";
 import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
@@ -22,10 +19,13 @@ export async function loader() {
     fetchFeaturedGalleriesForList(),
     fetchHomeFavoritePhotos(),
   ]);
+
   return {
     featuredProjects,
     featuredGalleries,
     favoritePhotos,
+    photoCover: resolveHomePhotoCover(favoritePhotos, featuredGalleries),
+    devCover: resolveHomeDevCover(featuredProjects[0]?.screenshot),
   };
 }
 
@@ -45,7 +45,6 @@ type OutletContext = { openContact: () => void };
 
 export default function HomePage() {
   const data = useLoaderData<typeof loader>();
-  const featuredProjects = data.featuredProjects ?? [];
   const featuredGalleries = data.featuredGalleries ?? [];
   const favoritePhotos = data.favoritePhotos ?? [];
   const { locale } = useParams();
@@ -54,32 +53,18 @@ export default function HomePage() {
   const base = `/${locale}`;
   const lng = (locale ?? "da") as Locale;
 
-  const leadFavorite = favoritePhotos[0];
-  const leadGallery = featuredGalleries[0];
-  const photoCover: ResponsiveCoverImage | null =
-    leadFavorite ?
-      {
-        src: leadFavorite.imageUrl,
-        srcSet: leadFavorite.imageSrcSet,
-        blurSrc: leadFavorite.imageBlurUrl,
-        sizes: "(max-width: 1023px) 100vw, 50vw",
-      }
-    : leadGallery ?
-      {
-        src: leadGallery.coverHeroUrl ?? leadGallery.coverUrl,
-        srcSet: leadGallery.coverHeroSrcSet ?? leadGallery.coverSrcSet,
-        blurSrc: leadGallery.coverBlurUrl,
-        sizes: "(max-width: 1023px) 100vw, 50vw",
-      }
-    : null;
-
-  const devCover = resolveDevDoorCover(featuredProjects[0]?.screenshot);
+  const showFavorites = favoritePhotos.length > 0;
 
   return (
     <>
-      <HomeDoors base={base} photoCover={photoCover} devCover={devCover} onContact={openContact} />
+      <HomeDoors
+        base={base}
+        photoCover={data.photoCover}
+        devCover={data.devCover}
+        onContact={openContact}
+      />
 
-      {favoritePhotos.length > 0 ? (
+      {showFavorites ? (
         <section className="home-favorites-section border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
           <div className="home-favorites-section__inner mx-auto max-w-6xl px-4 sm:px-6">
             <header className="home-favorites-section__header">
@@ -159,15 +144,4 @@ function FeaturedGallery({
       </div>
     </Link>
   );
-}
-
-function resolveDevDoorCover(
-  screenshot: string | null | undefined,
-): Pick<ResponsiveCoverImage, "src" | "srcSet" | "sizes"> | null {
-  if (!screenshot) return null;
-  if (screenshot.includes("intastellarsignin")) {
-    const { src, srcSet } = staticImageSrcSet(INTASTELLAR_SIGNIN_COVER_VARIANTS);
-    return { src, srcSet, sizes: "(max-width: 1023px) 100vw, 50vw" };
-  }
-  return { src: screenshot, sizes: "(max-width: 1023px) 100vw, 50vw" };
 }

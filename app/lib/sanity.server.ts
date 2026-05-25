@@ -519,6 +519,7 @@ export async function fetchProjectsFromSanity(): Promise<Project[]> {
 const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
   favoritePhotos[] {
     imageKey,
+    framing,
     gallery-> {
       "slug": slug.current,
       title,
@@ -536,6 +537,12 @@ const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0
 
 type HomePageFavoriteRow = {
   imageKey?: string;
+  framing?: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  };
   gallery?: GalleryDocument | null;
 };
 
@@ -543,6 +550,11 @@ export async function fetchHomeFavoritePhotos(): Promise<
   import("./home-favorites").HomeFavoritePhoto[]
 > {
   const { MAX_HOME_FAVORITES } = await import("./home-favorites");
+  const {
+    applyHomeFavoriteFraming,
+    framingFromGalleryHotspot,
+    normalizeHomeFavoriteFraming,
+  } = await import("./home-favorite-framing");
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const widths = [420, 640, 960, 1200, 1600] as const;
 
@@ -566,8 +578,12 @@ export async function fetchHomeFavoritePhotos(): Promise<
       if (!imageRow?.image?.asset?._ref) continue;
 
       try {
-        const source = toSanityImageSource(imageRow.image);
-        const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
+        const base = toSanityImageSource(imageRow.image);
+        const framing =
+          normalizeHomeFavoriteFraming(row.framing) ??
+          framingFromGalleryHotspot(imageRow.image);
+        const source = applyHomeFavoriteFraming(base, framing);
+        const { src, srcSet } = photoSrcSet(source, widths, { fit: "4x5" });
         if (!src) continue;
 
         out.push({

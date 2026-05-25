@@ -18,5 +18,17 @@ export const homeFavoritePhoto = defineType({
       type: "string",
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: "framing",
+      title: "Card crop",
+      description: "Adjust in Studio under Home page → favorite photos (drag preview + zoom).",
+      type: "object",
+      fields: [
+        defineField({ name: "x", type: "number", hidden: true }),
+        defineField({ name: "y", type: "number", hidden: true }),
+        defineField({ name: "width", type: "number", hidden: true }),
+        defineField({ name: "height", type: "number", hidden: true }),
+      ],
+    }),
   ],
 });

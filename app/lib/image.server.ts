@@ -22,7 +22,7 @@ export function urlFor(source: SanityImageSource) {
   return createImageUrlBuilder(client).image(source);
 }
 
-export type PhotoFit = "16x9" | "square" | "max";
+export type PhotoFit = "16x9" | "4x5" | "square" | "max";
 
 export type PhotoSrcSetOptions = {
   /** @deprecated Use `fit: "16x9"` */
@@ -60,10 +60,12 @@ function sizedBuilder(
   let chain = builder.width(width);
   if (fit === "16x9") {
     chain = chain.height(Math.round((width * 9) / 16)).fit("crop");
+  } else if (fit === "4x5") {
+    chain = chain.height(Math.round((width * 5) / 4)).fit("crop");
   } else if (fit === "square") {
     chain = chain.height(width).fit("crop");
   }
-  return chain.auto("format").quality(quality);
+  return chain.format("webp").quality(quality);
 }
 
 export function photoSrcSet(
@@ -85,12 +87,12 @@ export function photoSrcSet(
 export function photoOgImage(source: SanityImageSource, width = 1200, height = 630): string {
   const builder = urlFor(source);
   if (!builder) return "";
-  return builder.width(width).height(height).fit("crop").auto("format").url();
+  return builder.width(width).height(height).fit("crop").format("webp").url();
 }
 
 /** Tiny blurred placeholder for progressive loading. */
 export function photoBlurPlaceholder(source: SanityImageSource, width = 48): string {
   const builder = urlFor(source);
   if (!builder) return "";
-  return builder.width(width).blur(40).auto("format").url();
+  return builder.width(width).blur(40).format("webp").url();
 }

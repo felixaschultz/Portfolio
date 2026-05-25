@@ -73,5 +73,36 @@ export function stackPoseTransform(pose: HomeFavoriteStackPose): string {
 }
 
 export function stackPoseCssVars(pose: HomeFavoriteStackPose): CSSProperties {
-  return { transform: stackPoseTransform(pose) };
+  return {
+    "--fav-rotate": `${pose.rotate}deg`,
+    "--fav-x": `${pose.offsetX}%`,
+    "--fav-y": `${pose.offsetY}%`,
+    "--fav-scale": String(pose.scale),
+  } as CSSProperties;
+}
+
+/** Even slot along the stack width when unfolded (0–100%, parent-relative). */
+export function rowLeftPercent(index: number, total: number): number {
+  if (total <= 1) return 50;
+  return ((index + 0.5) / total) * 100;
+}
+
+export function rowScaleForCount(total: number): number {
+  if (total <= 1) return 1;
+  if (total === 2) return 0.92;
+  if (total === 3) return 0.86;
+  if (total === 4) return 0.8;
+  return 0.74;
+}
+
+export function favoriteCardCssVars(
+  pose: HomeFavoriteStackPose,
+  index: number,
+  total: number,
+): CSSProperties {
+  return {
+    ...stackPoseCssVars(pose),
+    "--fav-row-left": `${rowLeftPercent(index, total)}%`,
+    "--fav-row-scale": String(rowScaleForCount(total)),
+  } as CSSProperties;
 }

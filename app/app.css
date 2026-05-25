@@ -573,12 +573,23 @@ body {
   height: clamp(22rem, 62vw, 40rem);
   margin: 0 auto;
   overflow: visible;
+  contain: layout style;
+  isolation: isolate;
+}
+
+/* Full-area hover target so gaps between cards do not toggle hover off */
+.home-favorites__stack::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .home-favorites__card {
   position: absolute;
   left: 50%;
   top: 50%;
+  z-index: 1;
   display: block;
   width: min(78%, 18.5rem);
   aspect-ratio: 4 / 5;
@@ -592,16 +603,52 @@ body {
     translate(var(--fav-x, 0%), var(--fav-y, 0%)) scale(var(--fav-scale, 1));
   transform-origin: center center;
   transition:
+    left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s ease,
-    z-index 0s;
+    box-shadow 0.3s ease,
+    filter 0.3s ease;
 }
 
-.home-favorites__card:hover,
+/* Straight row — left % is relative to the stack, not the card */
+.home-favorites__stack.is-expanded .home-favorites__card {
+  left: var(--fav-row-left, 50%);
+  width: min(30%, 11.25rem);
+  transform: translate(-50%, -50%) rotate(0deg) scale(var(--fav-row-scale, 0.86));
+}
+
+.home-favorites__stack[data-count="2"].is-expanded .home-favorites__card {
+  width: min(42%, 14rem);
+}
+
+.home-favorites__stack[data-count="3"].is-expanded .home-favorites__card {
+  width: min(30%, 11.25rem);
+}
+
+.home-favorites__stack[data-count="4"].is-expanded .home-favorites__card {
+  width: min(24%, 9.5rem);
+}
+
+.home-favorites__stack[data-count="5"].is-expanded .home-favorites__card {
+  width: min(19%, 8rem);
+}
+
+.home-favorites__stack.is-expanded .home-favorites__card:hover,
+.home-favorites__stack.is-expanded .home-favorites__card:focus-visible {
+  z-index: 6 !important;
+  box-shadow: 0 24px 52px rgb(0 0 0 / 0.52);
+  filter: brightness(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-favorites__card {
+    transition: none;
+  }
+}
+
 .home-favorites__card:focus-visible {
-  z-index: 20 !important;
-  transform: translate(-50%, -50%) rotate(0deg) translate(0, -4%) scale(1.04);
-  box-shadow: 0 28px 56px rgb(0 0 0 / 0.55);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  z-index: 6 !important;
 }
 
 .home-favorites__card .gallery-image {
@@ -651,7 +698,7 @@ body {
   line-height: 1.25;
 }
 
-/* Stack fold (--fav-*) is set per card from Studio via inline styles */
+/* Stack fold (--fav-*) is set per card from Studio; row layout on stack hover */
 
 /* Site header — fixed to viewport (sticky breaks inside flex column) */
 .site-header {

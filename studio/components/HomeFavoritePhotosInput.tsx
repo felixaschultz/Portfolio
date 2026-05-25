@@ -6,17 +6,18 @@ import {
   type ArrayInputProps,
   set,
   useClient,
+  useCurrentUser,
 } from "sanity";
 import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url";
 import {
   type HomeFavoriteFraming,
   applyHomeFavoriteFraming,
   framingFromImageSource,
-} from "../../app/lib/home-favorite-framing";
+} from "../lib/home-favorite-framing";
 import { HomeFavoriteFramingEditor } from "./HomeFavoriteFramingEditor";
 
 const MAX = 5;
-const GALLERY_LIST_QUERY = `*[_type == "gallery" && defined(slug.current) && count(images) > 0] | order(title.en asc) {
+const GALLERY_LIST_QUERY = `*[_type == "gallery" && defined(slug.current) && defined(images[0])] | order(title.en asc) {
   _id,
   title,
   "slug": slug.current,
@@ -29,7 +30,17 @@ const GALLERY_IMAGES_QUERY = `*[_type == "gallery" && _id == $id][0] {
   _id,
   title,
   "imageCount": count(images),
-  "images": images[0...${GALLERY_IMAGES_PAGE}] { _key, alt, image }
+  "images": images[0...${GALLERY_IMAGES_PAGE}] {
+    _key,
+    alt,
+    image {
+      ...,
+      asset-> {
+        _id,
+        url
+      }
+    }
+  }
 }`;
 
 const PICK_THUMBS_QUERY = `*[_type == "gallery" && _id in $ids] {
@@ -60,16 +71,17 @@ type GalleryWithImages = GalleryListItem & {
 function thumbUrl(
   client: ReturnType<typeof useClient>,
   source: SanityImageSource | undefined,
-  framing?: HomeFavoriteFraming,
+  framing?: HomeFavoriteFraming | null,
 ) {
   if (!source) return null;
   try {
+    const imageSource = framing ? applyHomeFavoriteFraming(source, framing) : source;
     return createImageUrlBuilder(client)
-      .image(applyHomeFavoriteFraming(source, framing))
+      .image(imageSource)
       .width(120)
       .height(150)
       .fit("crop")
-      .format("webp")
+      .auto("format")
       .quality(75)
       .url();
   } catch {
@@ -82,13 +94,26 @@ function galleryLabel(g: { title?: GalleryListItem["title"]; slug?: string }): s
 }
 
 export function HomeFavoritePhotosInput(props: ArrayInputProps) {
-  const client = useClient({ apiVersion: "2024-05-16" });
+  const baseClient = useClient({ apiVersion: "2024-05-16" });
+  const user = useCurrentUser();
+  const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
+  const userId = user?.id;
+  const client = useMemo(
+    () =>
+      baseClient.withConfig({
+        useCdn: false,
+        ...(!userId && writeToken ? { token: writeToken } : {}),
+      }),
+    [baseClient, userId, writeToken],
+  );
   const [galleryList, setGalleryList] = useState<GalleryListItem[]>([]);
   const [listLoading, setListLoading] = useState(true);
+  const [listError, setListError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
   const [activeGalleryId, setActiveGalleryId] = useState<string | null>(null);
   const [activeGallery, setActiveGallery] = useState<GalleryWithImages | null>(null);
   const [imagesLoading, setImagesLoading] = useState(false);
+  const [imagesError, setImagesError] = useState<string | null>(null);
   const [pickGalleries, setPickGalleries] = useState<GalleryWithImages[]>([]);
 
   const picks = useMemo(() => {
@@ -116,10 +141,17 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   useEffect(() => {
     let cancelled = false;
     setListLoading(true);
+    setListError(null);
     void client
       .fetch<GalleryListItem[]>(GALLERY_LIST_QUERY)
       .then((rows) => {
-        if (!cancelled) setGalleryList(rows ?? []);
+        if (cancelled) return;
+        setGalleryList(rows ?? []);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setGalleryList([]);
+        setListError(err instanceof Error ? err.message : "Failed to load galleries.");
       })
       .finally(() => {
         if (!cancelled) setListLoading(false);
@@ -148,15 +180,31 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   useEffect(() => {
     if (!activeGalleryId) {
       setActiveGallery(null);
+      setImagesError(null);
       return;
     }
 
+    const galleryId = activeGalleryId;
     let cancelled = false;
     setImagesLoading(true);
+    setImagesError(null);
+    setActiveGallery(null);
+
     void client
-      .fetch<GalleryWithImages | null>(GALLERY_IMAGES_QUERY, { id: activeGalleryId })
+      .fetch<GalleryWithImages | null>(GALLERY_IMAGES_QUERY, { id: galleryId })
       .then((row) => {
-        if (!cancelled) setActiveGallery(row ?? null);
+        if (cancelled) return;
+        if (!row?._id) {
+          setActiveGallery(null);
+          setImagesError("Could not load photos for this gallery.");
+          return;
+        }
+        setActiveGallery(row);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setActiveGallery(null);
+        setImagesError(err instanceof Error ? err.message : "Failed to load gallery photos.");
       })
       .finally(() => {
         if (!cancelled) setImagesLoading(false);
@@ -232,7 +280,122 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   }
 
   function resolvePickThumb(pick: PickValue): string | null {
-    return thumbUrl(client, resolvePickImage(pick), pick.framing);
+    return thumbUrl(client, resolvePickImage(pick), pick.framing ?? null);
+  }
+
+  function renderGalleryPhotoGrid(galleryId: string) {
+    const ready = activeGallery?._id === galleryId;
+    if (imagesLoading || !ready) {
+      return (
+        <Flex align="center" gap={2} padding={3}>
+          <Spinner muted />
+          <Text size={1} muted>
+            Loading photos…
+          </Text>
+        </Flex>
+      );
+    }
+
+    if (imagesError) {
+      return (
+        <Card padding={3} radius={2} tone="critical">
+          <Text size={1}>{imagesError}</Text>
+        </Card>
+      );
+    }
+
+    if (activeImages.length === 0) {
+      return (
+        <Text size={1} muted>
+          No photos in this gallery.
+        </Text>
+      );
+    }
+
+    return (
+      <Stack space={2}>
+        {(activeGallery?.imageCount ?? 0) > GALLERY_IMAGES_PAGE ? (
+          <Text size={1} muted>
+            Showing first {GALLERY_IMAGES_PAGE} of {activeGallery?.imageCount} photos.
+          </Text>
+        ) : null}
+        <Grid columns={[4, 5, 6]} gap={2}>
+          {activeImages.map((row) => {
+            const id = `${galleryId}:${row._key}`;
+            const selected = selectedSet.has(id);
+            const order = picks.findIndex(
+              (p) => p.gallery?._ref === galleryId && p.imageKey === row._key,
+            );
+            const atMax = picks.length >= MAX && !selected;
+            const url = thumbUrl(client, row.image);
+            return (
+              <button
+                key={row._key}
+                type="button"
+                disabled={atMax}
+                onClick={() => toggle(galleryId, row._key!, row.image)}
+                style={{
+                  padding: 0,
+                  border: "none",
+                  background: "none",
+                  cursor: atMax ? "not-allowed" : "pointer",
+                  opacity: atMax ? 0.4 : 1,
+                  borderRadius: 6,
+                  overflow: "hidden",
+                }}
+                aria-pressed={selected}
+              >
+                <Card padding={0} radius={2} tone={selected ? "positive" : "default"}>
+                  {url ? (
+                    <Box style={{ aspectRatio: "4/5", position: "relative" }}>
+                      <img
+                        src={url}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                        }}
+                      />
+                      {selected ? (
+                        <Box
+                          style={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            width: 20,
+                            height: 20,
+                            borderRadius: 999,
+                            background: "var(--card-positive-fg-color)",
+                            color: "white",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {order + 1}
+                        </Box>
+                      ) : null}
+                    </Box>
+                  ) : (
+                    <Flex padding={3} align="center" justify="center">
+                      <Text muted>
+                        <ImagesIcon />
+                      </Text>
+                    </Flex>
+                  )}
+                </Card>
+              </button>
+            );
+          })}
+        </Grid>
+      </Stack>
+    );
   }
 
   function pickFraming(pick: PickValue): HomeFavoriteFraming {
@@ -311,6 +474,12 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         onChange={(e) => setFilter(e.currentTarget.value)}
       />
 
+      {listError ? (
+        <Card padding={3} radius={2} tone="critical">
+          <Text size={1}>{listError}</Text>
+        </Card>
+      ) : null}
+
       {listLoading ? (
         <Flex align="center" gap={2}>
           <Spinner muted />
@@ -318,7 +487,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
             Loading gallery list…
           </Text>
         </Flex>
-      ) : (
+      ) : listError ? null : (
         <Card padding={2} radius={2} border tone="transparent">
           <Stack space={1}>
             {filteredList.length === 0 ? (
@@ -346,6 +515,11 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
                         </Text>
                       </Flex>
                     </Button>
+                    {open ? (
+                      <Box paddingLeft={3} paddingTop={2} paddingBottom={3}>
+                        {renderGalleryPhotoGrid(gallery._id)}
+                      </Box>
+                    ) : null}
                   </Box>
                 );
               })
@@ -354,113 +528,11 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         </Card>
       )}
 
-      {activeGalleryId ? (
-        <Stack space={2}>
-          <Text size={1} weight="semibold">
-            {activeGallery ? galleryLabel(activeGallery) : "Loading photos…"}
-          </Text>
-          {imagesLoading ? (
-            <Flex align="center" gap={2} padding={4}>
-              <Spinner muted />
-              <Text size={1} muted>
-                Loading photos for this gallery…
-              </Text>
-            </Flex>
-          ) : activeImages.length === 0 ? (
-            <Text size={1} muted>
-              No photos in this gallery.
-            </Text>
-          ) : (
-            <>
-              {(activeGallery?.imageCount ?? 0) > GALLERY_IMAGES_PAGE ? (
-                <Text size={1} muted>
-                  Showing first {GALLERY_IMAGES_PAGE} of {activeGallery?.imageCount} photos. Narrow
-                  selections from the visible set, or pick from a smaller gallery.
-                </Text>
-              ) : null}
-            <Grid columns={[4, 5, 6]} gap={2}>
-              {activeImages.map((row) => {
-                const id = `${activeGalleryId}:${row._key}`;
-                const selected = selectedSet.has(id);
-                const order = picks.findIndex(
-                  (p) => p.gallery?._ref === activeGalleryId && p.imageKey === row._key,
-                );
-                const atMax = picks.length >= MAX && !selected;
-                const url = thumbUrl(client, row.image, framingFromImageSource(row.image));
-                return (
-                  <button
-                    key={row._key}
-                    type="button"
-                    disabled={atMax}
-                    onClick={() => toggle(activeGalleryId, row._key!, row.image)}
-                    style={{
-                      padding: 0,
-                      border: "none",
-                      background: "none",
-                      cursor: atMax ? "not-allowed" : "pointer",
-                      opacity: atMax ? 0.4 : 1,
-                      borderRadius: 6,
-                      overflow: "hidden",
-                    }}
-                    aria-pressed={selected}
-                  >
-                    <Card padding={0} radius={2} tone={selected ? "positive" : "default"}>
-                      {url ? (
-                        <Box style={{ aspectRatio: "4/5", position: "relative" }}>
-                          <img
-                            src={url}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              display: "block",
-                            }}
-                          />
-                          {selected ? (
-                            <Box
-                              style={{
-                                position: "absolute",
-                                top: 4,
-                                right: 4,
-                                width: 20,
-                                height: 20,
-                                borderRadius: 999,
-                                background: "var(--card-positive-fg-color)",
-                                color: "white",
-                                fontSize: 10,
-                                fontWeight: 700,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              {order + 1}
-                            </Box>
-                          ) : null}
-                        </Box>
-                      ) : (
-                        <Flex padding={3} align="center" justify="center">
-                          <Text muted>
-                            <ImagesIcon />
-                          </Text>
-                        </Flex>
-                      )}
-                    </Card>
-                  </button>
-                );
-              })}
-            </Grid>
-            </>
-          )}
-        </Stack>
-      ) : (
+      {!activeGalleryId ? (
         <Text size={1} muted>
           Expand a gallery above to browse and select photos.
         </Text>
-      )}
+      ) : null}
     </Stack>
   );
 }

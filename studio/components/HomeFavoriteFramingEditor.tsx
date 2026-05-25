@@ -6,7 +6,7 @@ import {
   DEFAULT_HOME_FAVORITE_FRAMING,
   type HomeFavoriteFraming,
   applyHomeFavoriteFraming,
-} from "../../app/lib/home-favorite-framing";
+} from "../lib/home-favorite-framing";
 
 type HomeFavoriteFramingEditorProps = {
   client: ReturnType<typeof import("sanity").useClient>;
@@ -28,7 +28,7 @@ function previewUrl(
       .width(360)
       .height(450)
       .fit("crop")
-      .format("webp")
+      .auto("format")
       .quality(80)
       .url();
   } catch {

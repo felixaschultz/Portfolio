@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale._index";
 import { GalleryImage } from "../components/GalleryImage";
 import { HomeDoors } from "../components/HomeDoors";
+import { HomeFavoriteStack } from "../components/HomeFavoriteStack";
 import { Recommendations } from "../components/Recommendations";
 import { getFeaturedProjects } from "../lib/projects.server";
-import { fetchFeaturedGalleriesForList } from "../lib/sanity.server";
+import { fetchFeaturedGalleriesForList, fetchHomeFavoritePhotos } from "../lib/sanity.server";
 import type { GalleryListItem, ResponsiveCoverImage } from "../lib/galleries";
 import {
   INTASTELLAR_SIGNIN_COVER_VARIANTS,
@@ -16,14 +17,15 @@ import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  const [featuredProjects, featuredGalleries] = await Promise.all([
+  const [featuredProjects, featuredGalleries, favoritePhotos] = await Promise.all([
     getFeaturedProjects(3),
     fetchFeaturedGalleriesForList(),
+    fetchHomeFavoritePhotos(),
   ]);
   return {
     featuredProjects,
     featuredGalleries,
-    featuredPhotos: featuredGalleries,
+    favoritePhotos,
   };
 }
 
@@ -44,16 +46,25 @@ type OutletContext = { openContact: () => void };
 export default function HomePage() {
   const data = useLoaderData<typeof loader>();
   const featuredProjects = data.featuredProjects ?? [];
-  const featuredGalleries = data.featuredGalleries ?? data.featuredPhotos ?? [];
+  const featuredGalleries = data.featuredGalleries ?? [];
+  const favoritePhotos = data.favoritePhotos ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
   const { openContact } = useOutletContext<OutletContext>();
   const base = `/${locale}`;
   const lng = (locale ?? "da") as Locale;
 
+  const leadFavorite = favoritePhotos[0];
   const leadGallery = featuredGalleries[0];
   const photoCover: ResponsiveCoverImage | null =
-    leadGallery ?
+    leadFavorite ?
+      {
+        src: leadFavorite.imageUrl,
+        srcSet: leadFavorite.imageSrcSet,
+        blurSrc: leadFavorite.imageBlurUrl,
+        sizes: "(max-width: 1023px) 100vw, 50vw",
+      }
+    : leadGallery ?
       {
         src: leadGallery.coverHeroUrl ?? leadGallery.coverUrl,
         srcSet: leadGallery.coverHeroSrcSet ?? leadGallery.coverSrcSet,
@@ -68,8 +79,26 @@ export default function HomePage() {
     <>
       <HomeDoors base={base} photoCover={photoCover} devCover={devCover} onContact={openContact} />
 
+      {favoritePhotos.length > 0 ? (
+        <section className="home-favorites-section border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
+          <div className="home-favorites-section__inner mx-auto max-w-6xl px-4 sm:px-6">
+            <header className="home-favorites-section__header">
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+                {t("home.favorites.title")}
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-[var(--color-muted)] sm:text-base">
+                {t("home.favorites.lede")}
+              </p>
+            </header>
+            <div className="home-favorites-section__layout">
+              <HomeFavoriteStack photos={favoritePhotos} locale={lng} base={base} />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {featuredGalleries.length > 0 ? (
-        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-20">
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-bg)] py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
               <h2 className="font-display text-2xl font-semibold sm:text-3xl">

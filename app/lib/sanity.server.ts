@@ -246,6 +246,7 @@ async function mapGalleryToListItem(
     includeHomeHero ?
       photoSrcSet(coverSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" })
     : null;
+
   return {
     _id: gallery._id,
     slug: gallery.slug,
@@ -511,6 +512,81 @@ export async function fetchProjectsFromSanity(): Promise<Project[]> {
     const docs: SanityProjectDocument[] = await client.fetch(PROJECTS_QUERY);
     return docs.filter((d) => d?.id).map(mapSanityProject);
   } catch {
+    return [];
+  }
+}
+
+const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
+  favoritePhotos[] {
+    imageKey,
+    gallery-> {
+      "slug": slug.current,
+      title,
+      images[] {
+        _key,
+        alt,
+        image {
+          ...,
+          "dimensions": asset->metadata.dimensions
+        }
+      }
+    }
+  }
+}`;
+
+type HomePageFavoriteRow = {
+  imageKey?: string;
+  gallery?: GalleryDocument | null;
+};
+
+export async function fetchHomeFavoritePhotos(): Promise<
+  import("./home-favorites").HomeFavoritePhoto[]
+> {
+  const { MAX_HOME_FAVORITES } = await import("./home-favorites");
+  const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
+  const widths = [420, 640, 960, 1200, 1600] as const;
+
+  const client = getSanityClient();
+  if (!client) return [];
+
+  try {
+    const doc = await client.fetch<{ favoritePhotos?: HomePageFavoriteRow[] } | null>(
+      HOME_PAGE_FAVORITES_QUERY,
+    );
+    const rows = doc?.favoritePhotos ?? [];
+    const out: import("./home-favorites").HomeFavoritePhoto[] = [];
+
+    for (const row of rows) {
+      if (out.length >= MAX_HOME_FAVORITES) break;
+      const gallery = row.gallery;
+      const imageKey = row.imageKey?.trim();
+      if (!gallery?.slug || !imageKey) continue;
+
+      const imageRow = gallery.images?.find((item) => item._key === imageKey);
+      if (!imageRow?.image?.asset?._ref) continue;
+
+      try {
+        const source = toSanityImageSource(imageRow.image);
+        const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
+        if (!src) continue;
+
+        out.push({
+          _key: imageKey,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageBlurUrl: photoBlurPlaceholder(source),
+          alt: imageRow.alt,
+          gallerySlug: gallery.slug,
+          galleryTitle: gallery.title,
+        });
+      } catch {
+        continue;
+      }
+    }
+
+    return out;
+  } catch (err) {
+    console.error("[sanity] fetchHomeFavoritePhotos failed:", err);
     return [];
   }
 }

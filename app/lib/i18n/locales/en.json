@@ -44,6 +44,10 @@
       "devCta": "View portfolio projects",
       "devNote": "Main professional presence:"
     },
+    "favorites": {
+      "title": "Favorite shots",
+      "lede": "Five single images I keep coming back to — picked from across the galleries."
+    },
     "photoPreview": {
       "title": "From the galleries"
     }

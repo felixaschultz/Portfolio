@@ -3,7 +3,8 @@ import { getSanityClient } from "./sanity.server";
 
 export function hasValidImageAsset(source: SanityImageSource | null | undefined): boolean {
   if (!source || typeof source !== "object") return false;
-  const ref = (source as { asset?: { _ref?: string } }).asset?._ref;
+  const asset = (source as { asset?: { _ref?: string; _id?: string } }).asset;
+  const ref = asset?._ref ?? asset?._id;
   return typeof ref === "string" && ref.length > 0;
 }
 

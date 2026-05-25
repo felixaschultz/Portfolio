@@ -53,6 +53,7 @@ The studio loads env vars from the root `.env` file.
 3. **Or use a write token** — Create an API token with **Editor** permissions, add to `.env` as `SANITY_STUDIO_API_TOKEN=sk...` (or reuse `SANITY_API_TOKEN` if it has write access). Restart `npm run studio`.
 
 4. Create **Gallery** documents — in **Photos**, click **Upload folder** to add every image from a folder at once, or drag multiple files onto the grid. Mark `featured` for the home page.
+5. **Home page favorites** — In Studio, open **Home page**, pick favorite photos, then **Publish** that document. The live site only reads the published version (not Studio drafts). On Vercel, set `SANITY_PROJECT_ID`, `SANITY_DATASET`, and preferably `SANITY_API_TOKEN` (Viewer is enough for public content).
 
 ### Production Studio (`studio.felix-schultz.net`)
 

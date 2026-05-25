@@ -36,6 +36,19 @@ export function getSanityClient(): SanityClient | null {
   });
 }
 
+/** Published content, API not CDN — for singletons that must reflect recent Studio publishes. */
+function getSanityLivePublishedClient(): SanityClient | null {
+  if (!isSanityConfigured()) return null;
+  return createClient({
+    projectId: projectId!,
+    dataset,
+    apiVersion,
+    token,
+    useCdn: false,
+    perspective: PUBLIC_PERSPECTIVE,
+  });
+}
+
 /**
  * Token-gated gallery ZIP downloads. Uses draft content when present so the link
  * works before the gallery is published. Requires SANITY_API_TOKEN with read access.
@@ -521,16 +534,14 @@ const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0
     imageKey,
     framing,
     stackPose,
-    gallery-> {
-      "slug": slug.current,
-      title,
-      images[] {
-        _key,
-        alt,
-        image {
-          ...,
-          "dimensions": asset->metadata.dimensions
-        }
+    "slug": gallery->slug.current,
+    "title": gallery->title,
+    "imageRow": gallery->images[_key == ^.imageKey][0] {
+      _key,
+      alt,
+      image {
+        ...,
+        "dimensions": asset->metadata.dimensions
       }
     }
   }
@@ -550,7 +561,9 @@ type HomePageFavoriteRow = {
     offsetY?: number;
     scale?: number;
   };
-  gallery?: GalleryDocument | null;
+  slug?: string;
+  title?: LocalizedString;
+  imageRow?: GalleryImageDocument | null;
 };
 
 export async function fetchHomeFavoritePhotos(): Promise<
@@ -566,26 +579,37 @@ export async function fetchHomeFavoritePhotos(): Promise<
   const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
   const widths = [480, 720, 1080, 1440, 1920] as const;
 
-  const client = getSanityClient();
-  if (!client) return [];
+  const client = getSanityLivePublishedClient();
+  if (!client) {
+    console.warn("[sanity] fetchHomeFavoritePhotos: Sanity not configured (check SANITY_PROJECT_ID)");
+    return [];
+  }
 
   try {
     const doc = await client.fetch<{ favoritePhotos?: HomePageFavoriteRow[] } | null>(
       HOME_PAGE_FAVORITES_QUERY,
     );
-    const rows = doc?.favoritePhotos ?? [];
+    if (!doc) {
+      console.warn(
+        "[sanity] fetchHomeFavoritePhotos: no published homePage document — publish Home page in Studio",
+      );
+      return [];
+    }
+
+    const rows = doc.favoritePhotos ?? [];
     const total = Math.min(rows.length, MAX_HOME_FAVORITES);
     const out: import("./home-favorites").HomeFavoritePhoto[] = [];
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;
       const stackIndex = out.length;
-      const gallery = row.gallery;
       const imageKey = row.imageKey?.trim();
-      if (!gallery?.slug || !imageKey) continue;
-
-      const imageRow = gallery.images?.find((item) => item._key === imageKey);
-      if (!imageRow?.image?.asset?._ref) continue;
+      const slug = row.slug?.trim();
+      const imageRow = row.imageRow;
+      if (!slug || !imageKey || !imageRow?.image) {
+        console.warn("[sanity] fetchHomeFavoritePhotos: skipping pick (missing gallery, image, or key)");
+        continue;
+      }
 
       try {
         const base = toSanityImageSource(imageRow.image);
@@ -594,7 +618,10 @@ export async function fetchHomeFavoritePhotos(): Promise<
           framingFromGalleryHotspot(imageRow.image);
         const source = applyHomeFavoriteFraming(base, framing);
         const { src, srcSet } = photoSrcSet(source, widths, { fit: "4x5" });
-        if (!src) continue;
+        if (!src) {
+          console.warn(`[sanity] fetchHomeFavoritePhotos: no URL for ${slug}/${imageKey}`);
+          continue;
+        }
 
         out.push({
           _key: imageKey,
@@ -604,11 +631,11 @@ export async function fetchHomeFavoritePhotos(): Promise<
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
           stackPose: resolveStackPose(row.stackPose, stackIndex, total),
           alt: imageRow.alt,
-          gallerySlug: gallery.slug,
-          galleryTitle: gallery.title,
+          gallerySlug: slug,
+          galleryTitle: row.title ?? {},
         });
-      } catch {
-        continue;
+      } catch (err) {
+        console.warn(`[sanity] fetchHomeFavoritePhotos: failed ${slug}/${imageKey}`, err);
       }
     }
 

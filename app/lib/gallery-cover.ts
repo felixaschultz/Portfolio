@@ -5,6 +5,13 @@ type GalleryWithImages = {
   coverImageKey?: string;
 };
 
+/** First image in gallery order (album opener). */
+export function resolveGalleryFirstImage(
+  gallery: GalleryWithImages,
+): GalleryImageDocument["image"] | null {
+  return gallery.images?.[0]?.image ?? null;
+}
+
 /** Image used for list cards, OG, and featured strips — explicit cover or first photo. */
 export function resolveGalleryCoverImage(
   gallery: GalleryWithImages,

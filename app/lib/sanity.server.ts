@@ -7,7 +7,7 @@ import {
   type GalleryNavItem,
   type PortfolioPhotoItem,
 } from "./galleries";
-import { resolveGalleryCoverImage } from "./gallery-cover";
+import { resolveGalleryCoverImage, resolveGalleryFirstImage } from "./gallery-cover";
 import {
   applyHomeFavoriteFraming,
   framingFromGalleryHotspot,
@@ -263,9 +263,11 @@ async function mapGalleryToListItem(
   const coverSource = toSanityImageSource(cover);
   const { includeHomeHero, ...fitOptions } = options ?? {};
   const { src, srcSet } = photoSrcSet(coverSource, widths, fitOptions);
+  const heroImage = includeHomeHero ? (resolveGalleryFirstImage(gallery) ?? cover) : null;
+  const heroSource = heroImage ? toSanityImageSource(heroImage) : null;
   const hero =
-    includeHomeHero ?
-      photoSrcSet(coverSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" })
+    heroSource ?
+      photoSrcSet(heroSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" })
     : null;
 
   return {

@@ -1,24 +1,13 @@
-import type { HomeFavoritePhoto } from "./home-favorites";
 import type { GalleryListItem, ResponsiveCoverImage } from "./galleries";
 import {
   INTASTELLAR_SIGNIN_COVER_VARIANTS,
   staticImageSrcSet,
 } from "./static-image";
 
+/** Photography door — lead featured gallery on the home page (first image, 16:9 hero). */
 export function resolveHomePhotoCover(
-  favoritePhotos: HomeFavoritePhoto[],
   featuredGalleries: GalleryListItem[],
 ): ResponsiveCoverImage | null {
-  const leadFavorite = favoritePhotos.at(-1) ?? favoritePhotos[0];
-  if (leadFavorite) {
-    return {
-      src: leadFavorite.imageUrl,
-      srcSet: leadFavorite.imageSrcSet,
-      blurSrc: leadFavorite.imageBlurUrl,
-      sizes: "(max-width: 1023px) 100vw, 50vw",
-    };
-  }
-
   const leadGallery = featuredGalleries[0];
   if (!leadGallery) return null;
 

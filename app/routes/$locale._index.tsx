@@ -24,7 +24,7 @@ export async function loader() {
     featuredProjects,
     featuredGalleries,
     favoritePhotos,
-    photoCover: resolveHomePhotoCover(favoritePhotos, featuredGalleries),
+    photoCover: resolveHomePhotoCover(featuredGalleries),
     devCover: resolveHomeDevCover(featuredProjects[0]?.screenshot),
   };
 }

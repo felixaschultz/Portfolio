@@ -612,24 +612,24 @@ body {
 /* Straight row — left % is relative to the stack, not the card */
 .home-favorites__stack.is-expanded .home-favorites__card {
   left: var(--fav-row-left, 50%);
-  width: min(30%, 11.25rem);
-  transform: translate(-50%, -50%) rotate(0deg) scale(var(--fav-row-scale, 0.86));
+  width: min(34%, 12.5rem);
+  transform: translate(-50%, -50%) rotate(0deg) scale(var(--fav-row-scale, 0.96));
 }
 
 .home-favorites__stack[data-count="2"].is-expanded .home-favorites__card {
-  width: min(42%, 14rem);
+  width: min(46%, 15.5rem);
 }
 
 .home-favorites__stack[data-count="3"].is-expanded .home-favorites__card {
-  width: min(30%, 11.25rem);
+  width: min(34%, 12.5rem);
 }
 
 .home-favorites__stack[data-count="4"].is-expanded .home-favorites__card {
-  width: min(24%, 9.5rem);
+  width: min(28%, 11rem);
 }
 
 .home-favorites__stack[data-count="5"].is-expanded .home-favorites__card {
-  width: min(19%, 8rem);
+  width: min(22%, 9.25rem);
 }
 
 .home-favorites__stack.is-expanded .home-favorites__card:hover,

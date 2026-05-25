@@ -89,10 +89,10 @@ export function rowLeftPercent(index: number, total: number): number {
 
 export function rowScaleForCount(total: number): number {
   if (total <= 1) return 1;
-  if (total === 2) return 0.92;
-  if (total === 3) return 0.86;
-  if (total === 4) return 0.8;
-  return 0.74;
+  if (total === 2) return 1;
+  if (total === 3) return 0.96;
+  if (total === 4) return 0.9;
+  return 0.84;
 }
 
 export function favoriteCardCssVars(

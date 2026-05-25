@@ -8,8 +8,16 @@ import {
   type PortfolioPhotoItem,
 } from "./galleries";
 import { resolveGalleryCoverImage } from "./gallery-cover";
+import {
+  applyHomeFavoriteFraming,
+  framingFromGalleryHotspot,
+  normalizeHomeFavoriteFraming,
+} from "./home-favorite-framing";
+import { MAX_HOME_FAVORITES, type HomeFavoritePhoto } from "./home-favorites";
+import { resolveStackPose } from "./home-favorite-stack";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
+import { photoBlurPlaceholder, photoSrcSet, toSanityImageSource } from "./image.server";
 import type { Project } from "./projects";
 
 const projectId = process.env.SANITY_PROJECT_ID;
@@ -566,17 +574,7 @@ type HomePageFavoriteRow = {
   imageRow?: GalleryImageDocument | null;
 };
 
-export async function fetchHomeFavoritePhotos(): Promise<
-  import("./home-favorites").HomeFavoritePhoto[]
-> {
-  const { MAX_HOME_FAVORITES } = await import("./home-favorites");
-  const {
-    applyHomeFavoriteFraming,
-    framingFromGalleryHotspot,
-    normalizeHomeFavoriteFraming,
-  } = await import("./home-favorite-framing");
-  const { resolveStackPose } = await import("./home-favorite-stack");
-  const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
+export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
   const widths = [480, 720, 1080, 1440, 1920] as const;
 
   const client = getSanityLivePublishedClient();
@@ -598,7 +596,7 @@ export async function fetchHomeFavoritePhotos(): Promise<
 
     const rows = doc.favoritePhotos ?? [];
     const total = Math.min(rows.length, MAX_HOME_FAVORITES);
-    const out: import("./home-favorites").HomeFavoritePhoto[] = [];
+    const out: HomeFavoritePhoto[] = [];
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;

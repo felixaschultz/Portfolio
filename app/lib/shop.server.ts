@@ -6,7 +6,7 @@ import {
   normalizeShopEmail,
 } from "./shop-email";
 import { isShopEmailConfigured } from "./shop-email.server";
-import { getSanityClient, getSanityDownloadClient } from "./sanity.server";
+import { getSanityDownloadClient } from "./sanity.server";
 import { isValidLocale, localizedField, type Locale } from "./i18n";
 import { appendShopLang } from "./shop-locale";
 import { shopLicenseLabel, shopT, translateLicenseTiers } from "./shop-i18n.server";
@@ -151,7 +151,8 @@ export async function fetchShopGallery(
   options?: { onlyKeys?: string[]; locale?: Locale },
 ): Promise<ShopGalleryView | null> {
   const locale = options?.locale ?? "da";
-  const client = getSanityClient() ?? getSanityDownloadClient();
+  // Draft galleries: shop tokens live on unpublished docs — same client as ZIP download links.
+  const client = getSanityDownloadClient();
   if (!client || !token.trim()) return null;
 
   const onlyKeys = options?.onlyKeys?.length ? new Set(options.onlyKeys) : null;

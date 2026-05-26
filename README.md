@@ -80,7 +80,7 @@ Optional Sanity-hosted deploy (`*.sanity.studio`): `npm run studio:deploy`
 | `SANITY_PROJECT_ID` | Sanity project ID |
 | `SANITY_DATASET` | e.g. `production` |
 | `SANITY_API_VERSION` | e.g. `2024-05-16` |
-| `SANITY_API_TOKEN` | Optional read token for private datasets |
+| `SANITY_API_TOKEN` | **Required for draft shop/download links** (Viewer read). Public galleries work without it; unpublished galleries do not. |
 | `STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY` | Shop checkout (Stripe) |
 | `PURCHASE_JWT_SECRET` | Signs download links (7-day ZIP access) |
 | `RESEND_API_KEY` | [Resend](https://resend.com) API key for post-purchase emails |

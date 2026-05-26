@@ -64,7 +64,13 @@ export const gallery = defineType({
         input: CoverImageInput,
       },
     }),
-    defineField({ name: "takenAt", title: "Date", type: "date" }),
+    defineField({
+      name: "takenAt",
+      title: "Date",
+      type: "date",
+      description:
+        "Controls where this gallery appears in the list — newest dates first. Set this to the shoot or event date.",
+    }),
     defineField({ name: "location", title: "Location", type: "string" }),
     defineField({
       name: "categories",
@@ -87,7 +93,13 @@ export const gallery = defineType({
       type: "boolean",
       initialValue: false,
     }),
-    defineField({ name: "sortOrder", title: "Sort order", type: "number" }),
+    defineField({
+      name: "sortOrder",
+      title: "Sort order",
+      type: "number",
+      description:
+        "Optional. Only used when two galleries share the same date — lower numbers appear first. Leave empty for automatic ordering by date.",
+    }),
     defineField({
       name: "downloadToken",
       title: "Customer download link",

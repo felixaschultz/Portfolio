@@ -221,13 +221,16 @@ const galleryDetailProjection = `{
 
 const publishedGalleryFilter = `_type == "gallery" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
-export const GALLERIES_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(sortOrder, 999) asc, takenAt desc) ${galleryProjection}`;
+/** Newest galleries first (date, then last edited). Sort order only breaks ties. */
+const GALLERY_LIST_ORDER = `order(takenAt desc, _updatedAt desc, coalesce(sortOrder, 999) asc)`;
 
-export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured == true] | order(coalesce(sortOrder, 999) asc, takenAt desc)[0...8] ${galleryProjection}`;
+export const GALLERIES_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} ${galleryProjection}`;
+
+export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured == true] | ${GALLERY_LIST_ORDER}[0...8] ${galleryProjection}`;
 
 export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryDetailProjection}`;
 
-const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | order(coalesce(sortOrder, 999) asc, takenAt desc) {
+const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} {
   _id,
   "slug": slug.current,
   title,

@@ -92,10 +92,8 @@ export default function HomePage() {
       ) : null}
 
       {showSpotlight ? (
-        <section className="home-spotlight-section py-16 sm:py-20" aria-label={t("home.spotlight.carousel")}>
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <HomeSpotlightSlider slides={spotlightSlides} locale={lng} base={base} />
-          </div>
+        <section className="home-spotlight-section" aria-label={t("home.spotlight.carousel")}>
+          <HomeSpotlightSlider slides={spotlightSlides} locale={lng} base={base} />
         </section>
       ) : null}
 

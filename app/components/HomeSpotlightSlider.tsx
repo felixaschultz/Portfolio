@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { HomeSpotlightSlide } from "../lib/home-spotlight";
@@ -15,7 +15,7 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const total = slides.length;
-  const slide = slides[index];
+  const single = total <= 1;
 
   const go = useCallback(
     (delta: number) => {
@@ -39,70 +39,92 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [go, total]);
 
-  if (!slide) return null;
+  if (total === 0) return null;
 
-  const galleryTitle = localizedField(slide.galleryTitle, locale);
-  const alt = slide.alt || galleryTitle || t("home.spotlight.imageAlt");
+  const trackStyle = {
+    "--spotlight-index": index,
+  } as CSSProperties;
 
   return (
-    <div className="home-spotlight">
-      <div className="home-spotlight__viewport">
-        <Link
-          to={`${base}/photography/${slide.gallerySlug}`}
-          className="home-spotlight__image-link"
-          aria-label={galleryTitle || t("home.spotlight.openGallery")}
-        >
-          <GalleryImage
-            key={slide._key}
-            src={slide.imageUrl}
-            srcSet={slide.imageSrcSet}
-            sizes="(max-width: 1279px) 100vw, min(72rem, 92vw)"
-            blurSrc={slide.imageBlurUrl}
-            alt={alt}
-            className="home-spotlight__img"
-            objectPosition={slide.imageObjectPosition}
-            loading={index === 0 ? "eager" : "lazy"}
-            fetchPriority={index === 0 ? "high" : undefined}
-          />
-        </Link>
-
-        {total > 1 ? (
-          <>
-            <button
-              type="button"
-              className="home-spotlight__nav home-spotlight__nav--prev"
-              onClick={() => go(-1)}
-              aria-label={t("home.spotlight.prev")}
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className="home-spotlight__nav home-spotlight__nav--next"
-              onClick={() => go(1)}
-              aria-label={t("home.spotlight.next")}
-            >
-              ›
-            </button>
-            <div className="home-spotlight__dots" role="tablist" aria-label={t("home.spotlight.carousel")}>
-              {slides.map((item, dotIndex) => (
-                <button
-                  key={item._key}
-                  type="button"
-                  role="tab"
-                  aria-current={dotIndex === index ? "true" : undefined}
-                  aria-label={t("home.spotlight.slideOf", {
-                    current: dotIndex + 1,
-                    total,
-                  })}
-                  className={`home-spotlight__dot${dotIndex === index ? " is-active" : ""}`}
-                  onClick={() => setIndex(dotIndex)}
+    <div className={`home-spotlight${single ? " home-spotlight--single" : ""}`}>
+      <div className="home-spotlight__stage">
+        <div className="home-spotlight__track-outer">
+          <div
+            className="home-spotlight__track"
+            style={trackStyle}
+            aria-live="polite"
+          >
+            {slides.map((item, slideIndex) => {
+              const isActive = slideIndex === index;
+              const galleryTitle = localizedField(item.galleryTitle, locale);
+              const alt = item.alt || galleryTitle || t("home.spotlight.imageAlt");
+              const image = (
+                <GalleryImage
+                  src={item.imageUrl}
+                  srcSet={item.imageSrcSet}
+                  sizes={single ? "92vw" : "74vw"}
+                  blurSrc={item.imageBlurUrl}
+                  alt={alt}
+                  className="home-spotlight__img"
+                  objectPosition={item.imageObjectPosition}
+                  loading={slideIndex <= 1 ? "eager" : "lazy"}
+                  fetchPriority={slideIndex === 0 ? "high" : undefined}
                 />
-              ))}
-            </div>
-          </>
-        ) : null}
+              );
+
+              return (
+                <div
+                  key={item._key}
+                  className={`home-spotlight__slide${isActive ? " is-active" : ""}`}
+                >
+                  {isActive ? (
+                    <Link
+                      to={`${base}/photography/${item.gallerySlug}`}
+                      className="home-spotlight__image-link"
+                      aria-label={galleryTitle || t("home.spotlight.openGallery")}
+                    >
+                      {image}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="home-spotlight__image-button"
+                      onClick={() => setIndex(slideIndex)}
+                      aria-label={t("home.spotlight.slideOf", {
+                        current: slideIndex + 1,
+                        total,
+                      })}
+                    >
+                      {image}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
+
+      {!single ? (
+        <div className="home-spotlight__controls">
+          <button
+            type="button"
+            className="home-spotlight__nav"
+            onClick={() => go(-1)}
+            aria-label={t("home.spotlight.prev")}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="home-spotlight__nav"
+            onClick={() => go(1)}
+            aria-label={t("home.spotlight.next")}
+          >
+            →
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

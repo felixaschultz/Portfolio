@@ -50,7 +50,7 @@ export function HomeFavoriteStack({ photos, locale, base }: HomeFavoriteStackPro
               <GalleryImage
                 src={photo.imageUrl}
                 srcSet={photo.imageSrcSet}
-                sizes="(max-width: 639px) 88vw, (max-width: 1023px) 52vw, 20rem"
+                sizes="(max-width: 639px) 92vw, (max-width: 1023px) 58vw, 26rem"
                 blurSrc={photo.imageBlurUrl}
                 alt={alt}
                 className="home-favorites__img"

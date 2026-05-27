@@ -139,7 +139,7 @@ function FeaturedGallery({
         className="h-full w-full object-cover transition group-hover:scale-105"
         loading="lazy"
       />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+      <div className="home-featured-gallery__caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
         <p className="text-xs font-medium text-white">{title}</p>
       </div>
     </Link>

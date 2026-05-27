@@ -409,9 +409,15 @@ body {
 .aspect-square > .gallery-image {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.home-featured-gallery__caption {
+  z-index: 2;
+  pointer-events: none;
 }
 
 .home-doors__panel--photo:hover .home-doors__panel-bg,
@@ -569,7 +575,7 @@ body {
 
   .home-favorites-section__inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
     gap: 3rem;
     align-items: center;
   }
@@ -581,7 +587,7 @@ body {
 
 .home-favorites {
   width: 100%;
-  max-width: 36rem;
+  max-width: min(100%, 48rem);
   margin-inline: auto;
   overflow: visible;
 }
@@ -589,7 +595,7 @@ body {
 .home-favorites__stack {
   position: relative;
   width: 100%;
-  height: clamp(22rem, 62vw, 40rem);
+  height: clamp(26rem, 72vw, 48rem);
   margin: 0 auto;
   overflow: visible;
   contain: layout style;
@@ -610,7 +616,7 @@ body {
   top: 50%;
   z-index: 1;
   display: block;
-  width: min(78%, 18.5rem);
+  width: min(84%, 23rem);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: 0.65rem;
@@ -631,24 +637,24 @@ body {
 /* Straight row — left % is relative to the stack, not the card */
 .home-favorites__stack.is-expanded .home-favorites__card {
   left: var(--fav-row-left, 50%);
-  width: min(34%, 12.5rem);
+  width: min(36%, 15rem);
   transform: translate(-50%, -50%) rotate(0deg) scale(var(--fav-row-scale, 0.96));
 }
 
 .home-favorites__stack[data-count="2"].is-expanded .home-favorites__card {
-  width: min(46%, 15.5rem);
+  width: min(48%, 18.5rem);
 }
 
 .home-favorites__stack[data-count="3"].is-expanded .home-favorites__card {
-  width: min(34%, 12.5rem);
+  width: min(36%, 15rem);
 }
 
 .home-favorites__stack[data-count="4"].is-expanded .home-favorites__card {
-  width: min(28%, 11rem);
+  width: min(30%, 13rem);
 }
 
 .home-favorites__stack[data-count="5"].is-expanded .home-favorites__card {
-  width: min(22%, 9.25rem);
+  width: min(24%, 11.25rem);
 }
 
 .home-favorites__stack.is-expanded .home-favorites__card:hover,

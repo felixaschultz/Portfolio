@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type TransitionEvent,
+} from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { HomeSpotlightSlide } from "../lib/home-spotlight";
@@ -11,17 +19,77 @@ type HomeSpotlightSliderProps = {
   base: string;
 };
 
+type ExtendedSlide = HomeSpotlightSlide & { trackKey: string };
+
+function buildExtendedSlides(slides: HomeSpotlightSlide[], loops: number): ExtendedSlide[] {
+  const out: ExtendedSlide[] = [];
+  for (let copy = 0; copy < loops; copy += 1) {
+    for (const slide of slides) {
+      out.push({
+        ...slide,
+        trackKey: `${slide._key}-${copy}`,
+      });
+    }
+  }
+  return out;
+}
+
 export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSliderProps) {
   const { t } = useTranslation();
-  const [index, setIndex] = useState(0);
   const total = slides.length;
-  const single = total <= 1;
+  const loop = total > 1;
+  const single = !loop;
+
+  const extendedSlides = useMemo(
+    () => (loop ? buildExtendedSlides(slides, 3) : buildExtendedSlides(slides, 1)),
+    [loop, slides],
+  );
+
+  const [position, setPosition] = useState(() => (loop ? total : 0));
+  const [instant, setInstant] = useState(false);
+  const positionRef = useRef(position);
+  positionRef.current = position;
+
+  useEffect(() => {
+    const start = loop ? total : 0;
+    setPosition(start);
+    positionRef.current = start;
+    setInstant(false);
+  }, [loop, slides, total]);
+
+  const jumpWithoutAnimation = useCallback((next: number) => {
+    setInstant(true);
+    positionRef.current = next;
+    setPosition(next);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setInstant(false));
+    });
+  }, []);
 
   const go = useCallback(
     (delta: number) => {
-      setIndex((current) => (current + delta + total) % total);
+      if (!loop) return;
+      setPosition((current) => {
+        const next = current + delta;
+        positionRef.current = next;
+        return next;
+      });
     },
-    [total],
+    [loop],
+  );
+
+  const onTrackTransitionEnd = useCallback(
+    (event: TransitionEvent<HTMLDivElement>) => {
+      if (event.propertyName !== "transform" || instant) return;
+      const current = positionRef.current;
+      if (!loop) return;
+      if (current >= total * 2) {
+        jumpWithoutAnimation(current - total);
+      } else if (current < total) {
+        jumpWithoutAnimation(current + total);
+      }
+    },
+    [instant, jumpWithoutAnimation, loop, total],
   );
 
   useEffect(() => {
@@ -42,7 +110,7 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
   if (total === 0) return null;
 
   const trackStyle = {
-    "--spotlight-index": index,
+    "--spotlight-index": position,
   } as CSSProperties;
 
   return (
@@ -50,31 +118,37 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
       <div className="home-spotlight__stage">
         <div className="home-spotlight__track-outer">
           <div
-            className="home-spotlight__track"
+            className={`home-spotlight__track${instant ? " home-spotlight__track--instant" : ""}`}
             style={trackStyle}
             aria-live="polite"
+            onTransitionEnd={onTrackTransitionEnd}
           >
-            {slides.map((item, slideIndex) => {
-              const isActive = slideIndex === index;
+            {extendedSlides.map((item, trackIndex) => {
+              const isActive = trackIndex === position;
               const galleryTitle = localizedField(item.galleryTitle, locale);
               const alt = item.alt || galleryTitle || t("home.spotlight.imageAlt");
+              const eager =
+                loop &&
+                (trackIndex === position ||
+                  trackIndex === position - 1 ||
+                  trackIndex === position + 1);
               const image = (
                 <GalleryImage
                   src={item.imageUrl}
                   srcSet={item.imageSrcSet}
-                  sizes={single ? "92vw" : "74vw"}
+                  sizes={single ? "100vw" : "88vw"}
                   blurSrc={item.imageBlurUrl}
                   alt={alt}
                   className="home-spotlight__img"
                   objectPosition={item.imageObjectPosition}
-                  loading={slideIndex <= 1 ? "eager" : "lazy"}
-                  fetchPriority={slideIndex === 0 ? "high" : undefined}
+                  loading={eager || trackIndex < total ? "eager" : "lazy"}
+                  fetchPriority={trackIndex === position ? "high" : undefined}
                 />
               );
 
               return (
                 <div
-                  key={item._key}
+                  key={item.trackKey}
                   className={`home-spotlight__slide${isActive ? " is-active" : ""}`}
                 >
                   {isActive ? (
@@ -89,9 +163,12 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
                     <button
                       type="button"
                       className="home-spotlight__image-button"
-                      onClick={() => setIndex(slideIndex)}
+                      onClick={() => {
+                        positionRef.current = trackIndex;
+                        setPosition(trackIndex);
+                      }}
                       aria-label={t("home.spotlight.slideOf", {
-                        current: slideIndex + 1,
+                        current: (trackIndex % total) + 1,
                         total,
                       })}
                     >
@@ -105,7 +182,7 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
         </div>
       </div>
 
-      {!single ? (
+      {loop ? (
         <div className="home-spotlight__controls">
           <button
             type="button"

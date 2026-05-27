@@ -42,6 +42,9 @@ export const COVER_WIDTHS_HOME_HERO = [640, 960, 1200, 1600] as const;
 /** Gallery overview cards (16:9). */
 export const COVER_WIDTHS_OVERVIEW = [640, 960, 1200, 1600, 2000] as const;
 
+/** Home page spotlight slider (16:9). */
+export const COVER_WIDTHS_HOME_SPOTLIGHT = [800, 1200, 1600, 2000, 2560] as const;
+
 /** Album prev/next nav thumbs. */
 export const COVER_WIDTHS_NAV = [160, 240, 320, 480] as const;
 

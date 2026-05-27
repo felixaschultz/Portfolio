@@ -18,6 +18,18 @@ export const homePage = defineType({
         input: HomeFavoritePhotosInput,
       },
     }),
+    defineField({
+      name: "spotlightSlides",
+      title: "Spotlight slider",
+      description:
+        "Large manual slider on the home page (between favorites and gallery grid). Pick up to 8 photos; order is left-to-right in the slider.",
+      type: "array",
+      of: [defineArrayMember({ type: "homeFavoritePhoto" })],
+      validation: (rule) => rule.max(8).error("You can add at most 8 spotlight slides"),
+      components: {
+        input: HomeFavoritePhotosInput,
+      },
+    }),
   ],
   preview: {
     prepare() {

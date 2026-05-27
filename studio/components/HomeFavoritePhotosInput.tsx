@@ -35,7 +35,13 @@ import {
   resolveStackPose,
 } from "../lib/home-favorite-stack";
 
-const MAX = 5;
+const MAX_FAVORITES = 5;
+const MAX_SPOTLIGHT = 8;
+
+function fieldMode(props: ArrayInputProps): "favorites" | "spotlight" {
+  const segment = props.path?.[props.path.length - 1];
+  return segment === "spotlightSlides" ? "spotlight" : "favorites";
+}
 const GALLERY_LIST_QUERY = `*[_type == "gallery" && defined(slug.current) && defined(images[0])] | order(title.en asc) {
   _id,
   title,
@@ -124,6 +130,13 @@ function galleryLabel(g: { title?: GalleryListItem["title"]; slug?: string }): s
 }
 
 export function HomeFavoritePhotosInput(props: ArrayInputProps) {
+  const mode = fieldMode(props);
+  const isSpotlight = mode === "spotlight";
+  const max = isSpotlight ? MAX_SPOTLIGHT : MAX_FAVORITES;
+  const thumbAspect = isSpotlight ? "16/9" : "4/5";
+  const thumbW = isSpotlight ? 160 : 120;
+  const thumbH = isSpotlight ? 90 : 150;
+
   const baseClient = useClient({ apiVersion: "2024-05-16" });
   const user = useCurrentUser();
   const writeToken = import.meta.env.SANITY_STUDIO_API_TOKEN as string | undefined;
@@ -314,7 +327,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         writePicks(picks.filter((p) => `${p.gallery?._ref}:${p.imageKey}` !== id));
         return;
       }
-      if (picks.length >= MAX) return;
+      if (picks.length >= max) return;
       const nextIndex = picks.length;
       const nextTotal = nextIndex + 1;
       writePicks([
@@ -324,11 +337,13 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           gallery: { _ref: galleryId, _type: "reference" },
           imageKey,
           framing: framingFromImageSource(image),
-          stackPose: defaultStackPose(nextIndex, nextTotal),
+          ...(isSpotlight
+            ? {}
+            : { stackPose: defaultStackPose(nextIndex, nextTotal) }),
         },
       ]);
     },
-    [picks, selectedSet, writePicks],
+    [isSpotlight, max, picks, selectedSet, writePicks],
   );
 
   const filteredList = useMemo(() => {
@@ -350,7 +365,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   }
 
   function resolvePickThumb(pick: PickValue): string | null {
-    return thumbUrl(client, resolvePickImage(pick), pick.framing ?? null);
+    return buildThumbUrl(client, resolvePickImage(pick), pick.framing ?? null, thumbW, thumbH);
   }
 
   function renderGalleryPhotoGrid(galleryId: string) {
@@ -396,7 +411,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
             const order = picks.findIndex(
               (p) => p.gallery?._ref === galleryId && p.imageKey === row._key,
             );
-            const atMax = picks.length >= MAX && !selected;
+            const atMax = picks.length >= max && !selected;
             const url = thumbUrl(client, row.image);
             return (
               <button
@@ -417,7 +432,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
               >
                 <Card padding={0} radius={2} tone={selected ? "positive" : "default"}>
                   {url ? (
-                    <Box style={{ aspectRatio: "4/5", position: "relative" }}>
+                    <Box style={{ aspectRatio: thumbAspect, position: "relative" }}>
                       <img
                         src={url}
                         alt=""
@@ -494,13 +509,16 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   return (
     <Stack space={4}>
       <Text size={1} muted>
-        Choose a gallery, then pick photos ({picks.length} / {MAX}). Only one gallery loads at a time.
+        {isSpotlight
+          ? `Choose a gallery, then pick slides for the home page slider (${picks.length} / ${max}).`
+          : `Choose a gallery, then pick photos (${picks.length} / ${max}). Only one gallery loads at a time.`}
       </Text>
 
       {picks.length > 0 ? (
         <Stack space={4}>
-          <HomeFavoriteStackPreview cards={stackPreviewCards} />
+          {!isSpotlight ? <HomeFavoriteStackPreview cards={stackPreviewCards} /> : null}
 
+          {!isSpotlight ? (
           <Stack space={3}>
             <Flex align="center" justify="space-between" gap={2}>
               <Text size={1} weight="semibold">
@@ -591,10 +609,72 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
               );
             })}
           </Stack>
+          ) : (
+          <Stack space={3}>
+            <Text size={1} weight="semibold">
+              Slide order
+            </Text>
+            <Text size={1} muted>
+              First slide shows first on the home page. Use arrows to reorder.
+            </Text>
+            {picks.map((pick, index) => {
+              const url = resolvePickThumb(pick);
+              const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
+              const label = `#${index + 1}${gallery ? ` · ${galleryLabel(gallery)}` : ""}`;
+              return (
+                <Card key={pick._key} padding={3} radius={2} border tone="transparent">
+                  <Flex gap={3} align="center">
+                    {url ? (
+                      <img
+                        src={url}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        style={{
+                          width: 96,
+                          aspectRatio: "16/9",
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          flexShrink: 0,
+                        }}
+                      />
+                    ) : null}
+                    <Text size={1} weight="medium" style={{ flex: 1 }}>
+                      {label}
+                    </Text>
+                    <Flex gap={1}>
+                      <Button
+                        icon={ArrowUpIcon}
+                        mode="bleed"
+                        disabled={index === 0}
+                        aria-label="Move earlier"
+                        onClick={() => movePick(pick._key, -1)}
+                      />
+                      <Button
+                        icon={ArrowDownIcon}
+                        mode="bleed"
+                        disabled={index === picks.length - 1}
+                        aria-label="Move later"
+                        onClick={() => movePick(pick._key, 1)}
+                      />
+                      <Button
+                        icon={TrashIcon}
+                        mode="bleed"
+                        tone="critical"
+                        aria-label="Remove slide"
+                        onClick={() => removePick(pick._key)}
+                      />
+                    </Flex>
+                  </Flex>
+                </Card>
+              );
+            })}
+          </Stack>
+          )}
 
           <Stack space={4}>
             <Text size={1} weight="semibold">
-              Card crops
+              {isSpotlight ? "Slide crops (16:9)" : "Card crops"}
             </Text>
             {picks.map((pick, index) => {
               const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
@@ -606,6 +686,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
                     image={image}
                     framing={pickFraming(pick)}
                     label={`#${index + 1}${gallery ? ` · ${galleryLabel(gallery)}` : ""}`}
+                    aspectRatio={isSpotlight ? "16 / 9" : "4 / 5"}
                     onChange={(framing) => updatePickFraming(pick._key, framing)}
                     onReset={() => resetPickFraming(pick)}
                   />

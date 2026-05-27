@@ -14,10 +14,16 @@ import {
   normalizeHomeFavoriteFraming,
 } from "./home-favorite-framing";
 import { MAX_HOME_FAVORITES, type HomeFavoritePhoto } from "./home-favorites";
+import { MAX_HOME_SPOTLIGHT_SLIDES, type HomeSpotlightSlide } from "./home-spotlight";
 import { resolveStackPose } from "./home-favorite-stack";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
-import { photoBlurPlaceholder, photoSrcSet, toSanityImageSource } from "./image.server";
+import {
+  COVER_WIDTHS_HOME_SPOTLIGHT,
+  photoBlurPlaceholder,
+  photoSrcSet,
+  toSanityImageSource,
+} from "./image.server";
 import type { Project } from "./projects";
 
 const projectId = process.env.SANITY_PROJECT_ID;
@@ -542,22 +548,28 @@ export async function fetchProjectsFromSanity(): Promise<Project[]> {
   }
 }
 
-const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
-  favoritePhotos[] {
-    imageKey,
-    framing,
-    stackPose,
-    "slug": gallery->slug.current,
-    "title": gallery->title,
-    "imageRow": gallery->images[_key == ^.imageKey][0] {
-      _key,
-      alt,
-      image {
-        ...,
-        "dimensions": asset->metadata.dimensions
-      }
+const HOME_PAGE_PHOTO_ROW_PROJECTION = `{
+  imageKey,
+  framing,
+  stackPose,
+  "slug": gallery->slug.current,
+  "title": gallery->title,
+  "imageRow": gallery->images[_key == ^.imageKey][0] {
+    _key,
+    alt,
+    image {
+      ...,
+      "dimensions": asset->metadata.dimensions
     }
   }
+}`;
+
+const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
+  favoritePhotos[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
+}`;
+
+const HOME_PAGE_SPOTLIGHT_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
+  spotlightSlides[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
 }`;
 
 type HomePageFavoriteRow = {
@@ -645,6 +657,73 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
     return out;
   } catch (err) {
     console.error("[sanity] fetchHomeFavoritePhotos failed:", err);
+    return [];
+  }
+}
+
+export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> {
+  const widths = COVER_WIDTHS_HOME_SPOTLIGHT;
+
+  const client = getSanityLivePublishedClient();
+  if (!client) {
+    console.warn("[sanity] fetchHomeSpotlightSlides: Sanity not configured");
+    return [];
+  }
+
+  try {
+    const doc = await client.fetch<{ spotlightSlides?: HomePageFavoriteRow[] } | null>(
+      HOME_PAGE_SPOTLIGHT_QUERY,
+    );
+    if (!doc) {
+      console.warn(
+        "[sanity] fetchHomeSpotlightSlides: no published homePage document — publish Home page in Studio",
+      );
+      return [];
+    }
+
+    const rows = doc.spotlightSlides ?? [];
+    const out: HomeSpotlightSlide[] = [];
+
+    for (const row of rows) {
+      if (out.length >= MAX_HOME_SPOTLIGHT_SLIDES) break;
+      const imageKey = row.imageKey?.trim();
+      const slug = row.slug?.trim();
+      const imageRow = row.imageRow;
+      if (!slug || !imageKey || !imageRow?.image) {
+        console.warn("[sanity] fetchHomeSpotlightSlides: skipping pick (missing gallery, image, or key)");
+        continue;
+      }
+
+      try {
+        const base = toSanityImageSource(imageRow.image);
+        const framing =
+          normalizeHomeFavoriteFraming(row.framing) ??
+          framingFromGalleryHotspot(imageRow.image);
+        const source = applyHomeFavoriteFraming(base, framing);
+        const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
+        if (!src) {
+          console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
+          continue;
+        }
+
+        out.push({
+          _key: imageKey,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageBlurUrl: photoBlurPlaceholder(source),
+          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          alt: imageRow.alt,
+          gallerySlug: slug,
+          galleryTitle: row.title ?? {},
+        });
+      } catch (err) {
+        console.warn(`[sanity] fetchHomeSpotlightSlides: failed ${slug}/${imageKey}`, err);
+      }
+    }
+
+    return out;
+  } catch (err) {
+    console.error("[sanity] fetchHomeSpotlightSlides failed:", err);
     return [];
   }
 }

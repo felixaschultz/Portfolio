@@ -15,18 +15,26 @@ type HomeFavoriteFramingEditorProps = {
   onChange: (next: HomeFavoriteFraming) => void;
   onReset: () => void;
   label: string;
+  aspectRatio?: "4 / 5" | "16 / 9";
 };
+
+function previewSize(aspectRatio: "4 / 5" | "16 / 9"): { width: number; height: number } {
+  if (aspectRatio === "16 / 9") return { width: 400, height: 225 };
+  return { width: 360, height: 450 };
+}
 
 function previewUrl(
   client: HomeFavoriteFramingEditorProps["client"],
   image: SanityImageSource,
   framing: HomeFavoriteFraming,
+  aspectRatio: "4 / 5" | "16 / 9",
 ): string | null {
+  const { width, height } = previewSize(aspectRatio);
   try {
     return createImageUrlBuilder(client)
       .image(applyHomeFavoriteFraming(image, framing))
-      .width(360)
-      .height(450)
+      .width(width)
+      .height(height)
       .fit("crop")
       .auto("format")
       .quality(80)
@@ -43,6 +51,7 @@ export function HomeFavoriteFramingEditor({
   onChange,
   onReset,
   label,
+  aspectRatio = "4 / 5",
 }: HomeFavoriteFramingEditorProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; framing: HomeFavoriteFraming } | null>(null);
@@ -53,8 +62,8 @@ export function HomeFavoriteFramingEditor({
       setUrl(null);
       return;
     }
-    setUrl(previewUrl(client, image, framing));
-  }, [client, image, framing]);
+    setUrl(previewUrl(client, image, framing, aspectRatio));
+  }, [aspectRatio, client, image, framing]);
 
   const pan = useCallback(
     (dx: number, dy: number) => {
@@ -133,7 +142,7 @@ export function HomeFavoriteFramingEditor({
         />
       </Flex>
       <Text size={1} muted>
-        Drag the preview to pan. Use zoom to tighten the crop. Matches the 4:5 cards on the home page.
+        Drag the preview to pan. Use zoom to tighten the crop. Matches the {aspectRatio} frame on the home page.
       </Text>
       <div
         ref={frameRef}
@@ -148,7 +157,7 @@ export function HomeFavoriteFramingEditor({
           borderRadius: 8,
           overflow: "hidden",
           border: "1px solid var(--card-border-color)",
-          aspectRatio: "4 / 5",
+          aspectRatio,
           background: "var(--card-muted-bg-color)",
         }}
       >

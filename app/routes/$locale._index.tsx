@@ -4,26 +4,33 @@ import type { Route } from "./+types/$locale._index";
 import { GalleryImage } from "../components/GalleryImage";
 import { HomeDoors } from "../components/HomeDoors";
 import { HomeFavoriteStack } from "../components/HomeFavoriteStack";
+import { HomeSpotlightSlider } from "../components/HomeSpotlightSlider";
 import { Recommendations } from "../components/Recommendations";
 import { resolveHomeDevCover, resolveHomePhotoCover } from "../lib/home-page.server";
 import { getFeaturedProjects } from "../lib/projects.server";
-import { fetchFeaturedGalleriesForList, fetchHomeFavoritePhotos } from "../lib/sanity.server";
+import {
+  fetchFeaturedGalleriesForList,
+  fetchHomeFavoritePhotos,
+  fetchHomeSpotlightSlides,
+} from "../lib/sanity.server";
 import type { GalleryListItem } from "../lib/galleries";
 import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  const [featuredProjects, featuredGalleries, favoritePhotos] = await Promise.all([
+  const [featuredProjects, featuredGalleries, favoritePhotos, spotlightSlides] = await Promise.all([
     getFeaturedProjects(3),
     fetchFeaturedGalleriesForList(),
     fetchHomeFavoritePhotos(),
+    fetchHomeSpotlightSlides(),
   ]);
 
   return {
     featuredProjects,
     featuredGalleries,
     favoritePhotos,
+    spotlightSlides,
     photoCover: resolveHomePhotoCover(featuredGalleries),
     devCover: resolveHomeDevCover(featuredProjects[0]?.screenshot),
   };
@@ -47,6 +54,7 @@ export default function HomePage() {
   const data = useLoaderData<typeof loader>();
   const featuredGalleries = data.featuredGalleries ?? [];
   const favoritePhotos = data.favoritePhotos ?? [];
+  const spotlightSlides = data.spotlightSlides ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
   const { openContact } = useOutletContext<OutletContext>();
@@ -54,6 +62,7 @@ export default function HomePage() {
   const lng = (locale ?? "da") as Locale;
 
   const showFavorites = favoritePhotos.length > 0;
+  const showSpotlight = spotlightSlides.length > 0;
 
   return (
     <>
@@ -78,6 +87,14 @@ export default function HomePage() {
             <div className="home-favorites-section__layout">
               <HomeFavoriteStack photos={favoritePhotos} locale={lng} base={base} />
             </div>
+          </div>
+        </section>
+      ) : null}
+
+      {showSpotlight ? (
+        <section className="home-spotlight-section py-16 sm:py-20" aria-label={t("home.spotlight.carousel")}>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <HomeSpotlightSlider slides={spotlightSlides} locale={lng} base={base} />
           </div>
         </section>
       ) : null}

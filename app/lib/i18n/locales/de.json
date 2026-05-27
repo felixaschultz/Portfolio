@@ -48,9 +48,13 @@
       "title": "Lieblingsaufnahmen",
       "lede": "Fünf einzelne Bilder, zu denen ich immer wieder zurückkehre — aus allen Galerien ausgewählt."
     },
-    "favorites": {
-      "title": "Lieblingsaufnahmen",
-      "lede": "Fünf einzelne Bilder, zu denen ich immer wieder zurückkehre — aus allen Galerien ausgewählt."
+    "spotlight": {
+      "carousel": "Bildkarussell",
+      "prev": "Vorheriges Bild",
+      "next": "Nächstes Bild",
+      "slideOf": "Bild {{current}} von {{total}}",
+      "openGallery": "Galerie öffnen",
+      "imageAlt": "Fotografie"
     },
     "photoPreview": {
       "title": "Aus den Galerien"

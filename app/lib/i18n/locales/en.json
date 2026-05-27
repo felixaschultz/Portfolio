@@ -48,6 +48,14 @@
       "title": "Favorite shots",
       "lede": "Five single images I keep coming back to — picked from across the galleries."
     },
+    "spotlight": {
+      "carousel": "Image carousel",
+      "prev": "Previous image",
+      "next": "Next image",
+      "slideOf": "Image {{current}} of {{total}}",
+      "openGallery": "Open gallery",
+      "imageAlt": "Photograph"
+    },
     "photoPreview": {
       "title": "From the galleries"
     }

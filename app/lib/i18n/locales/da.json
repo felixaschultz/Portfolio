@@ -48,6 +48,14 @@
       "title": "Favoritbilleder",
       "lede": "Fem enkelte billeder jeg vender tilbage til — valgt på tværs af gallerierne."
     },
+    "spotlight": {
+      "carousel": "Billedkarrusel",
+      "prev": "Forrige billede",
+      "next": "Næste billede",
+      "slideOf": "Billede {{current}} af {{total}}",
+      "openGallery": "Åbn galleri",
+      "imageAlt": "Fotografi"
+    },
     "photoPreview": {
       "title": "Fra gallerierne"
     }

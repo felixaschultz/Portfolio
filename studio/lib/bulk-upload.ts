@@ -1,12 +1,12 @@
 import type { SanityClient, SanityAssetDocument } from "@sanity/client";
 
 /** Sanity direct upload limit (stay under to avoid opaque failures). */
-export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 45 * 1024 * 1024;
 
-export const DEFAULT_UPLOAD_CONCURRENCY = 4;
-export const MAX_UPLOAD_CONCURRENCY = 6;
+export const DEFAULT_UPLOAD_CONCURRENCY = 6;
+export const MAX_UPLOAD_CONCURRENCY = 12;
 
-const MAX_RETRIES = 4;
+const MAX_RETRIES = 6;
 const RETRY_BASE_MS = 1500;
 const RATE_LIMIT_PAUSE_MS = 2500;
 

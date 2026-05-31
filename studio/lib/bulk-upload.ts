@@ -3,9 +3,12 @@ import type { SanityClient, SanityAssetDocument } from "@sanity/client";
 /** Sanity direct upload limit (stay under to avoid opaque failures). */
 export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
-const UPLOAD_DELAY_MS = 700;
+export const DEFAULT_UPLOAD_CONCURRENCY = 4;
+export const MAX_UPLOAD_CONCURRENCY = 6;
+
 const MAX_RETRIES = 4;
 const RETRY_BASE_MS = 1500;
+const RATE_LIMIT_PAUSE_MS = 2500;
 
 export type UploadFailure = {
   filename: string;
@@ -72,8 +75,16 @@ export function formatUploadError(err: unknown): string {
   return err instanceof Error ? err.message : "Upload failed";
 }
 
+function uploadStatusCode(err: unknown): number | undefined {
+  if (err && typeof err === "object" && "statusCode" in err) {
+    const code = (err as { statusCode?: number }).statusCode;
+    return typeof code === "number" ? code : undefined;
+  }
+  return undefined;
+}
+
 function isRetryableUploadError(err: unknown): boolean {
-  const status = err && typeof err === "object" ? (err as { statusCode?: number }).statusCode : undefined;
+  const status = uploadStatusCode(err);
   if (status === 429 || status === 502 || status === 503 || status === 504) return true;
 
   const message = formatUploadError(err).toLowerCase();
@@ -111,6 +122,16 @@ export function skipMessageForFile(file: File): string {
   return `Over ${Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB — resize or export smaller JPEGs`;
 }
 
+/** Optional override via SANITY_STUDIO_UPLOAD_CONCURRENCY (1–6). */
+export function resolveUploadConcurrency(): number {
+  const raw = import.meta.env.SANITY_STUDIO_UPLOAD_CONCURRENCY as string | undefined;
+  if (!raw) return DEFAULT_UPLOAD_CONCURRENCY;
+
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_UPLOAD_CONCURRENCY;
+  return Math.max(1, Math.min(MAX_UPLOAD_CONCURRENCY, parsed));
+}
+
 export async function uploadSingleImage(
   client: SanityClient,
   file: File,
@@ -132,10 +153,12 @@ export type ProcessUploadQueueOptions = {
   onFileStart?: (filename: string, index: number, total: number) => void;
   onFileComplete?: (result: UploadFileResult, index: number, total: number) => void;
   shouldCancel?: () => boolean;
+  /** Parallel uploads (default 4). Lower if you hit rate limits. */
+  concurrency?: number;
 };
 
 /**
- * Upload files one at a time; each result is reported via onFileComplete (failures do not stop the queue).
+ * Upload files with a small worker pool; failures do not stop the queue.
  */
 export async function processUploadQueue({
   client,
@@ -144,11 +167,25 @@ export async function processUploadQueue({
   onFileStart,
   onFileComplete,
   shouldCancel,
+  concurrency = resolveUploadConcurrency(),
 }: ProcessUploadQueueOptions): Promise<void> {
   const total = files.length;
+  if (total === 0) return;
 
-  for (let index = 0; index < total; index++) {
-    if (shouldCancel?.()) break;
+  let nextIndex = 0;
+  let pauseUntil = 0;
+
+  const waitIfPaused = async () => {
+    const wait = pauseUntil - Date.now();
+    if (wait > 0) await sleep(wait);
+  };
+
+  const noteRateLimit = () => {
+    pauseUntil = Math.max(pauseUntil, Date.now() + RATE_LIMIT_PAUSE_MS);
+  };
+
+  const processOne = async (index: number) => {
+    if (shouldCancel?.()) return;
 
     const file = files[index];
     onFileStart?.(file.name, index, total);
@@ -159,24 +196,35 @@ export async function processUploadQueue({
         index,
         total,
       );
-      continue;
+      return;
     }
+
+    await waitIfPaused();
 
     try {
       const asset = await uploadSingleImage(client, file, safeFilename);
       onFileComplete?.({ filename: file.name, status: "success", asset }, index, total);
     } catch (err) {
+      if (uploadStatusCode(err) === 429) noteRateLimit();
       onFileComplete?.(
         { filename: file.name, status: "failed", message: formatUploadError(err) },
         index,
         total,
       );
     }
+  };
 
-    if (index < total - 1 && !shouldCancel?.()) {
-      await sleep(UPLOAD_DELAY_MS);
+  const worker = async () => {
+    while (!shouldCancel?.()) {
+      const index = nextIndex;
+      nextIndex += 1;
+      if (index >= total) break;
+      await processOne(index);
     }
-  }
+  };
+
+  const workers = Math.max(1, Math.min(concurrency, total));
+  await Promise.all(Array.from({ length: workers }, () => worker()));
 }
 
 /** @deprecated Use processUploadQueue + uploadSingleImage for UI-driven uploads */

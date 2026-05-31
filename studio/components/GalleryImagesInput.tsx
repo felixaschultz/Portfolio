@@ -14,6 +14,7 @@ import {
   formatUploadError,
   isFileTooLarge,
   processUploadQueue,
+  resolveUploadConcurrency,
   skipMessageForFile,
   uploadSingleImage,
 } from "../lib/bulk-upload";
@@ -22,7 +23,8 @@ import { isIos, supportsFolderUpload } from "../lib/device";
 import { UploadQueuePanel, type UploadQueueItem } from "./UploadQueuePanel";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
-const FLUSH_EVERY = 8;
+const FLUSH_EVERY = 12;
+const uploadConcurrency = resolveUploadConcurrency();
 
 function isImageFile(file: File): boolean {
   return file.type.startsWith("image/") || IMAGE_EXT.test(file.name);
@@ -85,6 +87,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -178,18 +181,19 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         client,
         files: items.map((item) => item.file),
         safeFilename,
-        onFileStart: (filename) => {
-          const item = items.find((i) => i.file.name === filename);
+        concurrency: uploadConcurrency,
+        onFileStart: (_filename, index) => {
+          const item = items[index];
           if (item) {
             batchById.set(item.id, { ...item, status: "uploading", message: undefined });
             syncQueueFromBatch();
           }
-          setProgress(`${completed} / ${total} — ${filename}`);
+          setProgress(`${completed} / ${total}`);
         },
-        onFileComplete: (result) => {
-          const item = items.find((i) => i.file.name === result.filename);
+        onFileComplete: (result, index) => {
+          const item = items[index];
           completed += 1;
-          setProgress(`${completed} / ${total} — ${result.filename}`);
+          setProgress(`${completed} / ${total}`);
 
           if (!item) return;
 
@@ -354,8 +358,49 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     [uploadFiles],
   );
 
+  const onDragOver = useCallback(
+    (event: React.DragEvent) => {
+      if (props.readOnly || !canUpload || uploading) return;
+      event.preventDefault();
+      setDragOver(true);
+    },
+    [canUpload, props.readOnly, uploading],
+  );
+
+  const onDragLeave = useCallback((event: React.DragEvent) => {
+    if (event.currentTarget.contains(event.relatedTarget as Node)) return;
+    setDragOver(false);
+  }, []);
+
+  const onDrop = useCallback(
+    async (event: React.DragEvent) => {
+      event.preventDefault();
+      setDragOver(false);
+      if (props.readOnly || !canUpload || uploading) return;
+
+      const files = Array.from(event.dataTransfer.files);
+      if (!files.length) return;
+      await uploadFiles(files);
+    },
+    [canUpload, props.readOnly, uploadFiles, uploading],
+  );
+
   return (
-    <Stack space={4}>
+    <Stack
+      space={4}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      style={
+        dragOver
+          ? {
+              outline: "2px dashed var(--card-focus-ring-color, #2291ff)",
+              outlineOffset: "4px",
+              borderRadius: "4px",
+            }
+          : undefined
+      }
+    >
       <Flex align="center" gap={3} wrap="wrap">
         <Button
           icon={UploadIcon}
@@ -376,10 +421,10 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         <Text size={1} muted>
           {canUpload
             ? folderUpload
-              ? "Large folders upload one file at a time (slower, more reliable). Progress is saved every few photos."
+              ? `Drop a folder here or use Upload folder — ${uploadConcurrency} photos upload at once. Progress saves every ${FLUSH_EVERY} photos.`
               : isIos()
                 ? "On iPhone, pick multiple photos from the library (folder upload is not supported in Safari)."
-                : "Select multiple image files. Progress is saved every few photos."
+                : `Drop photos here or pick multiple files — ${uploadConcurrency} upload at once. Progress saves every ${FLUSH_EVERY} photos.`
             : "Sign in to Sanity (top right) to enable uploads."}
         </Text>
       </Flex>

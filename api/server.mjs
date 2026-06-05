@@ -38141,7 +38141,7 @@ var init_sanity_server_C_oxC9QH = __esm({
       },
       photography: {
         "title": "Fotografi",
-        "description": "Fotogallerier fra rejser, natur og hverdagen.",
+        "description": "Fotogallerier fra festivals, arrangementer, naturen og mindre fotoshoots.",
         "showMore": "Se alle gallerier",
         "empty": "Gallerier kommer snart.",
         "back": "Tilbage til gallerier",
@@ -38266,7 +38266,7 @@ var init_sanity_server_C_oxC9QH = __esm({
       },
       photography: {
         "title": "Fotografie",
-        "description": "Fotogalerien von Reisen, Natur und Alltagsmomenten.",
+        "description": "Fotogalerien von Festivals, Veranstaltungen, Natur und kleineren Fotoshootings.",
         "showMore": "Alle Galerien anzeigen",
         "empty": "Galerien folgen in K\xFCrze.",
         "back": "Zur\xFCck zu den Galerien",

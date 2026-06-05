@@ -38110,7 +38110,7 @@ var init_sanity_server_C_oxC9QH = __esm({
           "lede": "V\xE6lg hvor du vil hen \u2014 gallerier for fotografen, projekter og virksomhedssider for udvikleren.",
           "photoEyebrow": "Fotografi",
           "photoTitle": "Fotografi",
-          "photoText": "Rejser, natur og hverdagsbilleder \u2014 gennemse album og billeder i fuld st\xF8rrelse.",
+          "photoText": "Festivals, arrangementer og fotoshoots — eller projekter og produkter fra udvikleren.",
           "photoCta": "G\xE5 til gallerier",
           "devEyebrow": "Webudvikling",
           "devTitle": "Udvikling",
@@ -38231,11 +38231,11 @@ var init_sanity_server_C_oxC9QH = __esm({
       },
       home: {
         "doors": {
-          "heading": "Zwei Seiten dessen, was ich mache",
-          "lede": "W\xE4hlen Sie, wohin es gehen soll \u2014 Galerien f\xFCr den Fotografen, Projekte und Unternehmensseiten f\xFCr den Entwickler.",
+          "heading": "Ich fange Momente. Ich baue Systeme.",
+          "lede": "Festivals, Veranstaltungen und Fotoshoots — oder Projekte und Produkte von Entwicklern.",
           "photoEyebrow": "Fotografie",
           "photoTitle": "Fotografie",
-          "photoText": "Reisen, Natur und Alltag \u2014 Alben und Bilder in voller Gr\xF6\xDFe durchst\xF6bern.",
+          "photoText": "Festivals, Veranstaltungen und Fotoshoots — oder Projekte und Produkte von Entwicklern.",
           "photoCta": "Zu den Galerien",
           "devEyebrow": "Webentwicklung",
           "devTitle": "Entwicklung",

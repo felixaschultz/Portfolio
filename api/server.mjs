@@ -38107,10 +38107,10 @@ var init_sanity_server_C_oxC9QH = __esm({
       home: {
         "doors": {
           "heading": "Jeg fanger øjeblikke. Jeg bygger systemer.",
-          "lede": "V\xE6lg hvor du vil hen \u2014 gallerier for fotografen, projekter og virksomhedssider for udvikleren.",
+          "lede": "Festivaler, arrangementer og fotoshoots — eller projekter og produkter fra udvikleren.",
           "photoEyebrow": "Fotografi",
           "photoTitle": "Fotografi",
-          "photoText": "Festivals, arrangementer og fotoshoots — eller projekter og produkter fra udvikleren.",
+          "photoText": "Fotogallerier fra festivals, arrangementer, naturen og mindre fotoshoots — gennemse album og billeder i fuld størrelse.",
           "photoCta": "G\xE5 til gallerier",
           "devEyebrow": "Webudvikling",
           "devTitle": "Udvikling",
@@ -38235,7 +38235,7 @@ var init_sanity_server_C_oxC9QH = __esm({
           "lede": "Festivals, Veranstaltungen und Fotoshoots — oder Projekte und Produkte von Entwicklern.",
           "photoEyebrow": "Fotografie",
           "photoTitle": "Fotografie",
-          "photoText": "Festivals, Veranstaltungen und Fotoshoots — oder Projekte und Produkte von Entwicklern.",
+          "photoText": "Festivals, Veranstaltungen und Fotoshoots — Galerien und Bilder in voller Größe durchstöbern.",
           "photoCta": "Zu den Galerien",
           "devEyebrow": "Webentwicklung",
           "devTitle": "Entwicklung",
@@ -38356,11 +38356,11 @@ var init_sanity_server_C_oxC9QH = __esm({
       },
       home: {
         "doors": {
-          "heading": "Two sides of what I do",
-          "lede": "Choose where you want to go \u2014 galleries for the photographer, projects and company work for the developer.",
+          "heading": "I capture moments. I build systems.",
+          "lede": "Festivals, events and photoshoots — or projects and products from developers.",
           "photoEyebrow": "Photography",
           "photoTitle": "Photography",
-          "photoText": "Travel, nature, and everyday scenes \u2014 browse albums and full-size work.",
+          "photoText": "Photo galleries from festivals, events, nature, and smaller photoshoots — browse albums and full-size work.",
           "photoCta": "Enter galleries",
           "devEyebrow": "Web development",
           "devTitle": "Development",

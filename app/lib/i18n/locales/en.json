@@ -32,7 +32,7 @@
   },
   "home": {
     "doors": {
-      "heading": "Two sides of what I do",
+      "heading": "I capture moments. I build systems.",
       "lede": "Choose where you want to go — galleries for the photographer, projects and company work for the developer.",
       "photoEyebrow": "Photography",
       "photoTitle": "Photography",
@@ -81,7 +81,7 @@
   },
   "photography": {
     "title": "Photography",
-    "description": "Photo galleries from festivals, events, nature, and smaller photoshoots.",
+    "description": "Photo galleries from travels, nature, and everyday life.",
     "showMore": "View all galleries",
     "empty": "Galleries coming soon.",
     "back": "Back to galleries",

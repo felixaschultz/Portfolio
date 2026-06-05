@@ -38106,7 +38106,7 @@ var init_sanity_server_C_oxC9QH = __esm({
       },
       home: {
         "doors": {
-          "heading": "To sider af det, jeg laver",
+          "heading": "Jeg fanger øjeblikke. Jeg bygger systemer.",
           "lede": "V\xE6lg hvor du vil hen \u2014 gallerier for fotografen, projekter og virksomhedssider for udvikleren.",
           "photoEyebrow": "Fotografi",
           "photoTitle": "Fotografi",

@@ -72,7 +72,10 @@ export default function HomePage() {
         devCover={data.devCover}
         onContact={openContact}
       />
-
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("about.title")}</h2>
+        <p className="mt-6 max-w-3xl leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
+      </section>
       {showFavorites ? (
         <section className="home-favorites-section border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
           <div className="home-favorites-section__inner mx-auto max-w-6xl px-4 sm:px-6">
@@ -119,11 +122,6 @@ export default function HomePage() {
           </div>
         </section>
       ) : null}
-
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("about.title")}</h2>
-        <p className="mt-6 max-w-3xl leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
-      </section>
 
       <Recommendations />
     </>

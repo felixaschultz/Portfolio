@@ -129,7 +129,7 @@ export function resolveErrorPageContent(
   }
 
   const devMessage =
-    import.meta.env.DEV && error instanceof Error ? error.message : undefined;
+    import.meta.env.DEV && error instanceof Error ? error.message : error.toString();
   const devStack =
     import.meta.env.DEV && error instanceof Error ? error.stack : undefined;
 

@@ -6,6 +6,12 @@ import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { LocaleProvider } from "../components/LocaleProvider";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
+import {
+  crossDomainUrl,
+  localeAllowedOnHost,
+  resolveEntryLocale,
+  shouldEnforceDomainLocale,
+} from "../lib/site-domains";
 
 const ContactModal = lazy(() =>
   import("../components/ContactModal").then((m) => ({ default: m.ContactModal })),
@@ -14,12 +20,21 @@ const SearchDialog = lazy(() =>
   import("../components/SearchDialog").then((m) => ({ default: m.SearchDialog })),
 );
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const locale = (params as { locale?: string }).locale ?? defaultLocale;
-  if (!isValidLocale(locale)) {
-    throw redirect(`/${defaultLocale}`);
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const localeParam = (params as { locale?: string }).locale ?? defaultLocale;
+
+  if (!isValidLocale(localeParam)) {
+    throw redirect(`/${resolveEntryLocale(url.hostname)}`);
   }
-  return { locale: locale as Locale };
+
+  const locale = localeParam as Locale;
+
+  if (shouldEnforceDomainLocale(url.hostname) && !localeAllowedOnHost(locale, url.hostname)) {
+    throw redirect(crossDomainUrl(locale, url.pathname, url.search));
+  }
+
+  return { locale };
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

@@ -1,5 +1,6 @@
 import type { Route } from "./+types/sitemap[.]xml";
-import { supportedLocales, type Locale } from "../lib/i18n";
+import type { Locale } from "../lib/i18n";
+import { localesForSitemap } from "../lib/site-domains";
 import { getProjects } from "../lib/projects.server";
 import { fetchGalleries } from "../lib/sanity.server";
 import { pageUrlForSite, resolveSiteUrl } from "../lib/seo";
@@ -45,10 +46,12 @@ function entriesForLocale(
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
   const siteUrl = resolveSiteUrl(request);
   const projects = await getProjects();
   const galleries = await fetchGalleries();
-  const all = supportedLocales.flatMap((locale) =>
+  const locales = localesForSitemap(url.hostname);
+  const all = locales.flatMap((locale) =>
     entriesForLocale(siteUrl, locale, projects, galleries),
   );
 

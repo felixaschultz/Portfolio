@@ -1,4 +1,8 @@
 import { defaultLocale, supportedLocales, type Locale } from "./i18n";
+import {
+  HREFLANG_TAGS,
+  siteOriginForLocale,
+} from "./site-domains";
 
 export const SITE_NAME = "Felix A. Schultz";
 export const DEFAULT_OG_IMAGE = "/assets/me.jpg";
@@ -10,7 +14,7 @@ export function getSiteUrl(): string {
   return url.replace(/\/$/, "");
 }
 
-/** Request origin for public URLs (sitemap, robots, shop links). */
+/** Request origin for sitemap, robots, shop links. */
 export function resolveSiteUrl(request: Request): string {
   return new URL(request.url).origin.replace(/\/$/, "");
 }
@@ -25,8 +29,9 @@ export function pageUrlForSite(siteUrl: string, locale: Locale, path = ""): stri
   return `${base}/${locale}${normalized}`;
 }
 
+/** Canonical public URL for a locale (uses domain mapping: da → .dk, en/de → .net). */
 export function pageUrl(locale: Locale, path = ""): string {
-  return pageUrlForSite(getSiteUrl(), locale, path);
+  return pageUrlForSite(siteOriginForLocale(locale), locale, path);
 }
 
 export type PageMetaInput = {
@@ -48,9 +53,10 @@ export type PageMetaInput = {
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 
-function absoluteImage(image: string): string {
+function absoluteImage(image: string, siteUrl: string): string {
   if (image.startsWith("http")) return image;
-  return `${getSiteUrl()}${image.startsWith("/") ? image : `/${image}`}`;
+  const base = siteUrl.replace(/\/$/, "");
+  return `${base}${image.startsWith("/") ? image : `/${image}`}`;
 }
 
 function fullTitle(title: string): string {
@@ -58,7 +64,7 @@ function fullTitle(title: string): string {
   return `${title} | ${SITE_NAME}`;
 }
 
-/** Path used for hreflang alternates (same across locales), e.g. `/projects/cykelfaergen` */
+/** Cross-domain hreflang alternates (da on .dk, en/de on .net). */
 export function hreflangLinks(path = ""): Array<{
   tagName: "link";
   rel: "alternate";
@@ -66,12 +72,26 @@ export function hreflangLinks(path = ""): Array<{
   href: string;
 }> {
   const normalized = path.startsWith("/") ? path : path ? `/${path}` : "";
-  return supportedLocales.map((locale) => ({
-    tagName: "link" as const,
-    rel: "alternate" as const,
-    hrefLang: locale,
-    href: pageUrl(locale, normalized),
-  }));
+  const links: Array<{
+    tagName: "link";
+    rel: "alternate";
+    hrefLang: string;
+    href: string;
+  }> = [];
+
+  for (const locale of supportedLocales) {
+    const href = pageUrlForSite(siteOriginForLocale(locale), locale, normalized);
+    for (const hrefLang of HREFLANG_TAGS[locale]) {
+      links.push({
+        tagName: "link",
+        rel: "alternate",
+        hrefLang,
+        href,
+      });
+    }
+  }
+
+  return links;
 }
 
 export function xDefaultHref(path = ""): {
@@ -85,7 +105,7 @@ export function xDefaultHref(path = ""): {
     tagName: "link",
     rel: "alternate",
     hrefLang: "x-default",
-    href: pageUrl(defaultLocale, normalized),
+    href: pageUrlForSite(siteOriginForLocale("en"), "en", normalized),
   };
 }
 
@@ -102,8 +122,9 @@ export function buildPageMeta({
   indexable = true,
 }: PageMetaInput) {
   const normalized = path.startsWith("/") ? path : path ? `/${path}` : "";
-  const url = pageUrl(locale, normalized);
-  const ogImage = absoluteImage(image);
+  const canonicalOrigin = siteOriginForLocale(locale);
+  const url = pageUrlForSite(canonicalOrigin, locale, normalized);
+  const ogImage = absoluteImage(image, canonicalOrigin);
   const pageTitle = fullTitle(title);
   const socialTitle = ogTitle ?? pageTitle;
 

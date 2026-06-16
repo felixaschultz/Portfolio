@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import { createI18n, type Locale } from "../lib/i18n";
+import { HTML_LANG } from "../lib/site-domains";
 import { localeCookieHeader } from "../lib/shop-locale";
 
 type LocaleProviderProps = {
@@ -13,7 +14,7 @@ export function LocaleProvider({ locale, children }: LocaleProviderProps) {
 
   useEffect(() => {
     void i18n.changeLanguage(locale);
-    document.documentElement.lang = locale;
+    document.documentElement.lang = HTML_LANG[locale];
     document.cookie = localeCookieHeader(locale);
   }, [locale, i18n]);
 

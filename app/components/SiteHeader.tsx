@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 import { useScrolled } from "../lib/use-scrolled";
 import { type Locale } from "../lib/i18n";
+import { crossDomainUrl, localizedPath, pathSuffixAfterLocale, siteOriginForLocale } from "../lib/site-domains";
 import { Logo } from "./Logo";
 
 const websiteLinks = [
@@ -39,8 +40,18 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   }, [location.pathname]);
 
   function localeHref(next: Locale): string {
-    const path = location.pathname.replace(`/${currentLocale}`, `/${next}`);
-    return path || `/${next}`;
+    const suffix = pathSuffixAfterLocale(location.pathname);
+    if (isCrossDomainLocale(next)) {
+      return crossDomainUrl(next, `/${currentLocale}${suffix}`, location.search);
+    }
+    return `${localizedPath(next, suffix)}${location.search}`;
+  }
+
+  function isCrossDomainLocale(next: Locale): boolean {
+    if (typeof window === "undefined") {
+      return siteOriginForLocale(next) !== siteOriginForLocale(currentLocale);
+    }
+    return siteOriginForLocale(next) !== window.location.origin.replace(/\/$/, "");
   }
 
   function openSearch() {
@@ -112,19 +123,24 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5 rounded-full border border-[var(--color-border)] p-0.5">
-            {(["da", "de", "en"] as Locale[]).map((lng) => (
-              <Link
-                key={lng}
-                to={localeHref(lng)}
-                className={`flex min-h-9 min-w-9 items-center justify-center rounded-full text-xs font-medium uppercase transition ${
-                  i18n.language === lng
-                    ? "bg-[var(--color-accent)] text-[#0a0f0e]"
-                    : "text-[var(--color-muted)] hover:text-[var(--color-text)]"
-                }`}
-              >
-                {lng}
-              </Link>
-            ))}
+            {(["da", "de", "en"] as Locale[]).map((lng) => {
+              const href = localeHref(lng);
+              const active = i18n.language === lng;
+              const className = `flex min-h-9 min-w-9 items-center justify-center rounded-full text-xs font-medium uppercase transition ${
+                active
+                  ? "bg-[var(--color-accent)] text-[#0a0f0e]"
+                  : "text-[var(--color-muted)] hover:text-[var(--color-text)]"
+              }`;
+              return isCrossDomainLocale(lng) ? (
+                <a key={lng} href={href} className={className} hrefLang={lng}>
+                  {lng}
+                </a>
+              ) : (
+                <Link key={lng} to={href} className={className} hrefLang={lng}>
+                  {lng}
+                </Link>
+              );
+            })}
           </div>
 
           <button

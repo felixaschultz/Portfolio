@@ -10,7 +10,7 @@ export function getSiteUrl(): string {
   return url.replace(/\/$/, "");
 }
 
-/** Request origin for shop links (localhost in dev, production host when deployed). */
+/** Request origin for public URLs (sitemap, robots, shop links). */
 export function resolveSiteUrl(request: Request): string {
   return new URL(request.url).origin.replace(/\/$/, "");
 }
@@ -19,9 +19,14 @@ export function shopGalleryPath(shopToken: string): string {
   return `/shop/gallery/${encodeURIComponent(shopToken)}`;
 }
 
-export function pageUrl(locale: Locale, path = ""): string {
+export function pageUrlForSite(siteUrl: string, locale: Locale, path = ""): string {
   const normalized = path.startsWith("/") ? path : path ? `/${path}` : "";
-  return `${getSiteUrl()}/${locale}${normalized}`;
+  const base = siteUrl.replace(/\/$/, "");
+  return `${base}/${locale}${normalized}`;
+}
+
+export function pageUrl(locale: Locale, path = ""): string {
+  return pageUrlForSite(getSiteUrl(), locale, path);
 }
 
 export type PageMetaInput = {

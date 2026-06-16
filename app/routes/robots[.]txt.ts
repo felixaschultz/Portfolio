@@ -1,13 +1,14 @@
 import type { Route } from "./+types/robots[.]txt";
-import { getSiteUrl } from "../lib/seo";
+import { resolveSiteUrl } from "../lib/seo";
 
-export function loader({}: Route.LoaderArgs) {
+export function loader({ request }: Route.LoaderArgs) {
+  const siteUrl = resolveSiteUrl(request);
   const body = `User-agent: *
 Allow: /
 Disallow: /download/
 Disallow: /shop/
 
-Sitemap: ${getSiteUrl()}/sitemap.xml
+Sitemap: ${siteUrl}/sitemap.xml
 `;
 
   return new Response(body, {

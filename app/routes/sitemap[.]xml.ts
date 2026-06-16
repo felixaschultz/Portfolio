@@ -2,7 +2,7 @@ import type { Route } from "./+types/sitemap[.]xml";
 import { supportedLocales, type Locale } from "../lib/i18n";
 import { getProjects } from "../lib/projects.server";
 import { fetchGalleries } from "../lib/sanity.server";
-import { getSiteUrl, pageUrl } from "../lib/seo";
+import { pageUrlForSite, resolveSiteUrl } from "../lib/seo";
 
 type SitemapEntry = {
   loc: string;
@@ -11,19 +11,24 @@ type SitemapEntry = {
 };
 
 function entriesForLocale(
+  siteUrl: string,
   locale: Locale,
   projects: Awaited<ReturnType<typeof getProjects>>,
   galleries: Awaited<ReturnType<typeof fetchGalleries>>,
 ): SitemapEntry[] {
   const list: SitemapEntry[] = [
-    { loc: pageUrl(locale, ""), changefreq: "weekly", priority: "1.0" },
-    { loc: pageUrl(locale, "/projects"), changefreq: "weekly", priority: "0.9" },
-    { loc: pageUrl(locale, "/photography"), changefreq: "weekly", priority: "0.9" },
-    { loc: pageUrl(locale, "/photography/photos"), changefreq: "weekly", priority: "0.85" },
+    { loc: pageUrlForSite(siteUrl, locale, ""), changefreq: "weekly", priority: "1.0" },
+    { loc: pageUrlForSite(siteUrl, locale, "/projects"), changefreq: "weekly", priority: "0.9" },
+    { loc: pageUrlForSite(siteUrl, locale, "/photography"), changefreq: "weekly", priority: "0.9" },
+    {
+      loc: pageUrlForSite(siteUrl, locale, "/photography/photos"),
+      changefreq: "weekly",
+      priority: "0.85",
+    },
   ];
   for (const project of projects) {
     list.push({
-      loc: pageUrl(locale, `/projects/${project.id}`),
+      loc: pageUrlForSite(siteUrl, locale, `/projects/${project.id}`),
       changefreq: "monthly",
       priority: "0.8",
     });
@@ -31,7 +36,7 @@ function entriesForLocale(
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
     list.push({
-      loc: pageUrl(locale, `/photography/${gallery.slug}`),
+      loc: pageUrlForSite(siteUrl, locale, `/photography/${gallery.slug}`),
       changefreq: "monthly",
       priority: "0.7",
     });
@@ -39,11 +44,12 @@ function entriesForLocale(
   return list;
 }
 
-export async function loader({}: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const siteUrl = resolveSiteUrl(request);
   const projects = await getProjects();
   const galleries = await fetchGalleries();
   const all = supportedLocales.flatMap((locale) =>
-    entriesForLocale(locale, projects, galleries),
+    entriesForLocale(siteUrl, locale, projects, galleries),
   );
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

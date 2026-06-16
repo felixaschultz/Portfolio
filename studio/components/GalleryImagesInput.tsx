@@ -432,12 +432,8 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
         multiple
         hidden
-        {...(folderUpload
-          ? ({ webkitdirectory: "", directory: "" } as React.InputHTMLAttributes<HTMLInputElement>)
-          : {})}
         onChange={onFolderChange}
       />
 

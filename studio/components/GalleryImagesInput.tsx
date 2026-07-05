@@ -20,6 +20,12 @@ import {
 } from "../lib/bulk-upload";
 import { randomKey, randomQueueId } from "../lib/crypto";
 import { isIos, supportsFolderUpload } from "../lib/device";
+import {
+  getExternalUploadConfig,
+  isExternalUploadConfigured,
+  uploadImageToExternalServer,
+  type ExternalUploadResult,
+} from "../lib/external-upload";
 import { UploadQueuePanel, type UploadQueueItem } from "./UploadQueuePanel";
 
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|tiff?)$/i;
@@ -56,6 +62,16 @@ function assetToGalleryItem(asset: { _id: string }) {
   };
 }
 
+function externalResultToGalleryItem(result: ExternalUploadResult) {
+  return {
+    _type: "galleryImage" as const,
+    _key: newKey(),
+    externalUrl: result.url,
+    externalWidth: result.width,
+    externalHeight: result.height,
+  };
+}
+
 function filesToQueueItems(files: File[]): UploadQueueItem[] {
   return files.map((file) => ({
     id: queueId(),
@@ -83,7 +99,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     ...(!user && writeToken ? { token: writeToken } : {}),
   });
 
-  const canUpload = Boolean(user || writeToken);
+  const canUpload = Boolean(isExternalUploadConfigured() || user || writeToken);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -153,8 +169,82 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
     [],
   );
 
+  const processItemsExternal = useCallback(
+    async (
+      items: UploadQueueItem[],
+      startValue: typeof value,
+      config: { url: string; key: string },
+    ) => {
+      const accumulated = [...startValue];
+      let lastFlushAt = accumulated.length;
+      let nextIndex = 0;
+      let completed = 0;
+      const total = items.length;
+
+      const updateItem = (id: string, patch: Partial<UploadQueueItem>) =>
+        setQueue((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
+
+      const processOne = async (index: number) => {
+        const item = items[index];
+        if (!item) return;
+
+        if (isFileTooLarge(item.file)) {
+          updateItem(item.id, { status: "skipped", message: skipMessageForFile(item.file) });
+          completed++;
+          setProgress(`${completed} / ${total}`);
+          return;
+        }
+
+        updateItem(item.id, { status: "uploading", message: undefined });
+        setProgress(`${completed} / ${total}`);
+
+        try {
+          const result = await uploadImageToExternalServer(item.file, config.url, config.key);
+          accumulated.push(externalResultToGalleryItem(result));
+          if (accumulated.length - lastFlushAt >= FLUSH_EVERY) {
+            flushItems([...accumulated]);
+            lastFlushAt = accumulated.length;
+          }
+          updateItem(item.id, { status: "success", message: undefined });
+        } catch (err) {
+          updateItem(item.id, { status: "failed", message: formatUploadError(err) });
+        }
+
+        completed++;
+        setProgress(`${completed} / ${total}`);
+      };
+
+      const worker = async () => {
+        for (;;) {
+          const index = nextIndex++;
+          if (index >= total) break;
+          await processOne(index);
+        }
+      };
+
+      const concurrency = Math.max(1, Math.min(uploadConcurrency, total));
+      await Promise.all(Array.from({ length: concurrency }, () => worker()));
+
+      flushItems([...accumulated]);
+
+      setQueue((current) => {
+        const successCount = current.filter((i) => i.status === "success").length;
+        const failCount = current.filter((i) => i.status === "failed").length;
+        const skipCount = current.filter((i) => i.status === "skipped").length;
+        applyUploadSummary(successCount, failCount, skipCount);
+        return current;
+      });
+    },
+    [applyUploadSummary, flushItems],
+  );
+
   const processItems = useCallback(
     async (items: UploadQueueItem[], startValue: typeof value) => {
+      const externalConfig = getExternalUploadConfig();
+      if (externalConfig) {
+        return processItemsExternal(items, startValue, externalConfig);
+      }
+
       const accumulated = [...startValue];
       let lastFlushAt = accumulated.length;
       let completed = 0;
@@ -233,7 +323,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
         return merged;
       });
     },
-    [applyUploadSummary, client, flushItems],
+    [applyUploadSummary, client, flushItems, processItemsExternal],
   );
 
   const uploadFiles = useCallback(
@@ -277,10 +367,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
       if (!item || uploading) return;
 
       if (isFileTooLarge(item.file)) {
-        updateQueueItem(id, {
-          status: "skipped",
-          message: skipMessageForFile(item.file),
-        });
+        updateQueueItem(id, { status: "skipped", message: skipMessageForFile(item.file) });
         return;
       }
 
@@ -289,18 +376,27 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
       updateQueueItem(id, { status: "uploading", message: undefined });
 
       try {
-        const asset = await uploadSingleImage(client, item.file, safeFilename);
-        const accumulated = [...value];
-        accumulated.push(assetToGalleryItem(asset));
-        flushItems([...accumulated]);
+        const externalConfig = getExternalUploadConfig();
+        if (externalConfig) {
+          const result = await uploadImageToExternalServer(
+            item.file,
+            externalConfig.url,
+            externalConfig.key,
+          );
+          const accumulated = [...value];
+          accumulated.push(externalResultToGalleryItem(result));
+          flushItems([...accumulated]);
+        } else {
+          const asset = await uploadSingleImage(client, item.file, safeFilename);
+          const accumulated = [...value];
+          accumulated.push(assetToGalleryItem(asset));
+          flushItems([...accumulated]);
+        }
         updateQueueItem(id, { status: "success", message: undefined });
         setNotice(`Added ${item.file.name}.`);
         setError(null);
       } catch (err) {
-        updateQueueItem(id, {
-          status: "failed",
-          message: formatUploadError(err),
-        });
+        updateQueueItem(id, { status: "failed", message: formatUploadError(err) });
       } finally {
         setUploading(false);
       }
@@ -425,7 +521,7 @@ export function GalleryImagesInput(props: ArrayOfObjectsInputProps) {
               : isIos()
                 ? "On iPhone, pick multiple photos from the library (folder upload is not supported in Safari)."
                 : `Drop photos here or pick multiple files — ${uploadConcurrency} upload at once. Progress saves every ${FLUSH_EVERY} photos.`
-            : "Sign in to Sanity (top right) to enable uploads."}
+            : "Sign in to Sanity (top right) or configure SANITY_STUDIO_IMAGE_UPLOAD_URL to enable uploads."}
         </Text>
       </Flex>
 

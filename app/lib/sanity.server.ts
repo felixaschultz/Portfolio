@@ -11,6 +11,7 @@ import { resolveGalleryCoverImage, resolveGalleryFirstImage } from "./gallery-co
 import {
   applyHomeFavoriteFraming,
   framingFromGalleryHotspot,
+  framingFromImageSource,
   normalizeHomeFavoriteFraming,
 } from "./home-favorite-framing";
 import { MAX_HOME_FAVORITES, type HomeFavoritePhoto } from "./home-favorites";
@@ -113,6 +114,10 @@ type SanityImageRef = {
 export type GalleryImageDocument = {
   _key: string;
   image: SanityImageRef;
+  /** Set when the image is stored on the external PHP image server instead of Sanity assets. */
+  externalUrl?: string;
+  externalWidth?: number;
+  externalHeight?: number;
   alt?: string;
   caption?: string | LocalizedString;
 };
@@ -188,6 +193,9 @@ const galleryProjection = `{
     _key,
     alt,
     caption,
+    externalUrl,
+    externalWidth,
+    externalHeight,
     image {
       ...,
       "dimensions": asset->metadata.dimensions
@@ -218,6 +226,9 @@ const galleryDetailProjection = `{
     _key,
     alt,
     caption,
+    externalUrl,
+    externalWidth,
+    externalHeight,
     image {
       ...,
       "dimensions": asset->metadata.dimensions
@@ -243,6 +254,9 @@ const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} 
   coverImageKey,
   images[] {
     _key,
+    externalUrl,
+    externalWidth,
+    externalHeight,
     image {
       asset->{ _id },
       "dimensions": asset->metadata.dimensions
@@ -264,20 +278,55 @@ async function mapGalleryToListItem(
     includeHomeHero?: boolean;
   },
 ): Promise<GalleryListItem | null> {
-  const { photoSrcSet, photoBlurPlaceholder, photoOgImage, COVER_WIDTHS_HOME_HERO } =
-    await import("./image.server");
-  const cover = resolveGalleryCoverImage(gallery);
-  if (!cover) return null;
-  const { toSanityImageSource } = await import("./image.server");
-  const coverSource = toSanityImageSource(cover);
+  const {
+    photoSrcSet,
+    photoBlurPlaceholder,
+    photoOgImage,
+    COVER_WIDTHS_HOME_HERO,
+    externalPhotoSrcSet,
+    externalPhotoBlurPlaceholder,
+    externalPhotoOgImage,
+    toSanityImageSource,
+  } = await import("./image.server");
+
+  const coverItem = resolveGalleryCoverImage(gallery);
+  if (!coverItem) return null;
+
   const { includeHomeHero, ...fitOptions } = options ?? {};
-  const { src, srcSet } = photoSrcSet(coverSource, widths, fitOptions);
-  const heroImage = includeHomeHero ? (resolveGalleryFirstImage(gallery) ?? cover) : null;
-  const heroSource = heroImage ? toSanityImageSource(heroImage) : null;
-  const hero =
-    heroSource ?
-      photoSrcSet(heroSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" })
-    : null;
+
+  let src: string;
+  let srcSet: string;
+  let coverOgUrl: string;
+  let coverBlurUrl: string | undefined;
+
+  if (coverItem.externalUrl) {
+    ({ src, srcSet } = externalPhotoSrcSet(coverItem.externalUrl, widths, fitOptions));
+    coverOgUrl = externalPhotoOgImage(coverItem.externalUrl);
+    coverBlurUrl = externalPhotoBlurPlaceholder(coverItem.externalUrl);
+  } else {
+    const coverSource = toSanityImageSource(coverItem.image);
+    ({ src, srcSet } = photoSrcSet(coverSource, widths, fitOptions));
+    coverOgUrl = photoOgImage(coverSource);
+    coverBlurUrl = photoBlurPlaceholder(coverSource);
+  }
+
+  let heroSrc: string | undefined;
+  let heroSrcSet: string | undefined;
+  if (includeHomeHero) {
+    const heroItem = resolveGalleryFirstImage(gallery) ?? coverItem;
+    if (heroItem.externalUrl) {
+      const hero = externalPhotoSrcSet(heroItem.externalUrl, COVER_WIDTHS_HOME_HERO, {
+        fit: "16x9",
+      });
+      heroSrc = hero.src;
+      heroSrcSet = hero.srcSet;
+    } else {
+      const heroSource = toSanityImageSource(heroItem.image);
+      const hero = photoSrcSet(heroSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" });
+      heroSrc = hero.src;
+      heroSrcSet = hero.srcSet;
+    }
+  }
 
   return {
     _id: gallery._id,
@@ -291,12 +340,12 @@ async function mapGalleryToListItem(
     featured: gallery.featured,
     imageCount: gallery.images?.length ?? 0,
     coverUrl: src,
-    coverOgUrl: photoOgImage(coverSource),
+    coverOgUrl,
     coverSrcSet: srcSet,
-    coverBlurUrl: photoBlurPlaceholder(coverSource),
+    coverBlurUrl,
     coverImageKey: gallery.coverImageKey,
-    coverHeroUrl: hero?.src,
-    coverHeroSrcSet: hero?.srcSet,
+    coverHeroUrl: heroSrc,
+    coverHeroSrcSet: heroSrcSet,
     shopUrl: resolvePublicGalleryShopUrl(gallery),
   };
 }
@@ -307,35 +356,59 @@ async function mapGalleryToDetail(
 ): Promise<GalleryDetail | null> {
   const list = await mapGalleryToListItem(gallery, [1200, 1800, 2400], { fit: "16x9" });
   if (!list) return null;
-  const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource } = await import("./image.server");
+  const {
+    photoSrcSet,
+    photoBlurPlaceholder,
+    toSanityImageSource,
+    externalPhotoSrcSet,
+    externalPhotoBlurPlaceholder,
+  } = await import("./image.server");
   const imageCount = gallery.images?.length ?? 0;
   const large = isLargeGalleryImageCount(imageCount);
   const gridWidths = gridSrcWidthsForCount(imageCount);
   const images: GalleryImageItem[] = [];
 
   for (const item of gallery.images ?? []) {
-    if (!item.image?.asset?._ref) continue;
+    const hasExternal = Boolean(item.externalUrl);
+    const hasSanity = Boolean(item.image?.asset?._ref);
+    if (!hasExternal && !hasSanity) continue;
 
     try {
-      const source = toSanityImageSource(item.image);
-      const { src, srcSet } = photoSrcSet(source, gridWidths);
-      if (!src) continue;
-
       const caption = resolveSanityString(item.caption, locale);
-      const { width, height } = imageDimensionsFromAsset(item.image);
 
-      images.push({
-        _key: item._key,
-        imageUrl: src,
-        imageSrcSet: srcSet,
-        imageFullUrl: large ? undefined : src,
-        imageFullSrcSet: large ? undefined : srcSet,
-        imageBlurUrl: photoBlurPlaceholder(source),
-        alt: item.alt,
-        caption: caption || undefined,
-        width,
-        height,
-      });
+      if (hasExternal && item.externalUrl) {
+        const { src, srcSet } = externalPhotoSrcSet(item.externalUrl, gridWidths);
+        if (!src) continue;
+        images.push({
+          _key: item._key,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageFullUrl: large ? undefined : src,
+          imageFullSrcSet: large ? undefined : srcSet,
+          imageBlurUrl: externalPhotoBlurPlaceholder(item.externalUrl),
+          alt: item.alt,
+          caption: caption || undefined,
+          width: item.externalWidth,
+          height: item.externalHeight,
+        });
+      } else {
+        const source = toSanityImageSource(item.image);
+        const { src, srcSet } = photoSrcSet(source, gridWidths);
+        if (!src) continue;
+        const { width, height } = imageDimensionsFromAsset(item.image);
+        images.push({
+          _key: item._key,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageFullUrl: large ? undefined : src,
+          imageFullSrcSet: large ? undefined : srcSet,
+          imageBlurUrl: photoBlurPlaceholder(source),
+          alt: item.alt,
+          caption: caption || undefined,
+          width,
+          height,
+        });
+      }
     } catch {
       continue;
     }
@@ -395,17 +468,35 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   try {
     const galleries: GalleryDocument[] = await client.fetch(GALLERY_NAV_QUERY);
     const published = dedupeGalleriesBySlug(galleries);
-    const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource, COVER_WIDTHS_NAV } =
-      await import("./image.server");
+    const {
+      photoSrcSet,
+      photoBlurPlaceholder,
+      toSanityImageSource,
+      COVER_WIDTHS_NAV,
+      externalPhotoSrcSet,
+      externalPhotoBlurPlaceholder,
+    } = await import("./image.server");
 
     const items: GalleryNavItem[] = [];
     for (const gallery of published) {
       if (!gallery.slug) continue;
-      const cover = resolveGalleryCoverImage(gallery);
-      if (!cover) continue;
+      const coverItem = resolveGalleryCoverImage(gallery);
+      if (!coverItem) continue;
 
-      const source = toSanityImageSource(cover);
-      const { src, srcSet } = photoSrcSet(source, COVER_WIDTHS_NAV, { fit: "16x9" });
+      let src: string;
+      let srcSet: string;
+      let coverBlurUrl: string | undefined;
+
+      if (coverItem.externalUrl) {
+        ({ src, srcSet } = externalPhotoSrcSet(coverItem.externalUrl, COVER_WIDTHS_NAV, {
+          fit: "16x9",
+        }));
+        coverBlurUrl = externalPhotoBlurPlaceholder(coverItem.externalUrl);
+      } else {
+        const source = toSanityImageSource(coverItem.image);
+        ({ src, srcSet } = photoSrcSet(source, COVER_WIDTHS_NAV, { fit: "16x9" }));
+        coverBlurUrl = photoBlurPlaceholder(source);
+      }
       if (!src) continue;
 
       items.push({
@@ -413,7 +504,7 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
         title: gallery.title,
         coverUrl: src,
         coverSrcSet: srcSet,
-        coverBlurUrl: photoBlurPlaceholder(source),
+        coverBlurUrl,
       });
     }
 
@@ -456,30 +547,55 @@ export async function fetchGalleryDetailBySlug(
 
 export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioPhotoItem[]> {
   const galleries = await fetchGalleries();
-  const { photoSrcSet, photoBlurPlaceholder } = await import("./image.server");
-  const { toSanityImageSource } = await import("./image.server");
+  const {
+    photoSrcSet,
+    photoBlurPlaceholder,
+    toSanityImageSource,
+    externalPhotoSrcSet,
+    externalPhotoBlurPlaceholder,
+  } = await import("./image.server");
   const photos: PortfolioPhotoItem[] = [];
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
     for (const item of gallery.images ?? []) {
-      if (!item?.image?.asset?._ref || !item._key) continue;
-      const { src, srcSet } = photoSrcSet(toSanityImageSource(item.image), GRID_SRC_WIDTHS_LARGE);
+      if (!item._key) continue;
+
       const caption = resolveSanityString(item.caption, locale);
-      const { width, height } = imageDimensionsFromAsset(item.image);
-      photos.push({
-        _key: item._key,
-        imageUrl: src,
-        imageSrcSet: srcSet,
-        imageBlurUrl: photoBlurPlaceholder(toSanityImageSource(item.image)),
-        alt: item.alt,
-        caption: caption || undefined,
-        width,
-        height,
-        gallerySlug: gallery.slug,
-        galleryTitle: gallery.title,
-        galleryTags: gallery.tags,
-      });
+
+      if (item.externalUrl) {
+        const { src, srcSet } = externalPhotoSrcSet(item.externalUrl, GRID_SRC_WIDTHS_LARGE);
+        photos.push({
+          _key: item._key,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageBlurUrl: externalPhotoBlurPlaceholder(item.externalUrl),
+          alt: item.alt,
+          caption: caption || undefined,
+          width: item.externalWidth,
+          height: item.externalHeight,
+          gallerySlug: gallery.slug,
+          galleryTitle: gallery.title,
+          galleryTags: gallery.tags,
+        });
+      } else if (item.image?.asset?._ref) {
+        const source = toSanityImageSource(item.image);
+        const { src, srcSet } = photoSrcSet(source, GRID_SRC_WIDTHS_LARGE);
+        const { width, height } = imageDimensionsFromAsset(item.image);
+        photos.push({
+          _key: item._key,
+          imageUrl: src,
+          imageSrcSet: srcSet,
+          imageBlurUrl: photoBlurPlaceholder(source),
+          alt: item.alt,
+          caption: caption || undefined,
+          width,
+          height,
+          gallerySlug: gallery.slug,
+          galleryTitle: gallery.title,
+          galleryTags: gallery.tags,
+        });
+      }
     }
   }
 
@@ -557,6 +673,9 @@ const HOME_PAGE_PHOTO_ROW_PROJECTION = `{
   "imageRow": gallery->images[_key == ^.imageKey][0] {
     _key,
     alt,
+    externalUrl,
+    externalWidth,
+    externalHeight,
     image {
       ...,
       "dimensions": asset->metadata.dimensions
@@ -571,6 +690,15 @@ const HOME_PAGE_FAVORITES_QUERY = `*[_type == "homePage" && _id == "homePage"][0
 const HOME_PAGE_SPOTLIGHT_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
   spotlightSlides[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
 }`;
+
+type HomePageImageRow = {
+  _key?: string;
+  alt?: string;
+  externalUrl?: string;
+  externalWidth?: number;
+  externalHeight?: number;
+  image: SanityImageRef;
+};
 
 type HomePageFavoriteRow = {
   imageKey?: string;
@@ -588,7 +716,7 @@ type HomePageFavoriteRow = {
   };
   slug?: string;
   title?: LocalizedString;
-  imageRow?: GalleryImageDocument | null;
+  imageRow?: HomePageImageRow | null;
 };
 
 export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
@@ -615,40 +743,63 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
     const total = Math.min(rows.length, MAX_HOME_FAVORITES);
     const out: HomeFavoritePhoto[] = [];
 
+    const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
+
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;
       const stackIndex = out.length;
       const imageKey = row.imageKey?.trim();
       const slug = row.slug?.trim();
       const imageRow = row.imageRow;
-      if (!slug || !imageKey || !imageRow?.image) {
+      if (!slug || !imageKey || !imageRow) {
         console.warn("[sanity] fetchHomeFavoritePhotos: skipping pick (missing gallery, image, or key)");
         continue;
       }
 
       try {
-        const base = toSanityImageSource(imageRow.image);
-        const framing =
-          normalizeHomeFavoriteFraming(row.framing) ??
-          framingFromGalleryHotspot(imageRow.image);
-        const source = applyHomeFavoriteFraming(base, framing);
-        const { src, srcSet } = photoSrcSet(source, widths, { fit: "4x5" });
-        if (!src) {
-          console.warn(`[sanity] fetchHomeFavoritePhotos: no URL for ${slug}/${imageKey}`);
-          continue;
+        if (imageRow.externalUrl) {
+          const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, widths, { fit: "4x5" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeFavoritePhotos: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: externalPhotoBlurPlaceholder(imageRow.externalUrl),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            stackPose: resolveStackPose(row.stackPose, stackIndex, total),
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else if (imageRow.image) {
+          const base = toSanityImageSource(imageRow.image);
+          const framing =
+            normalizeHomeFavoriteFraming(row.framing) ??
+            framingFromImageSource(imageRow.image as import("@sanity/image-url").SanityImageSource);
+          const source = applyHomeFavoriteFraming(base, framing);
+          const { src, srcSet } = photoSrcSet(source, widths, { fit: "4x5" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeFavoritePhotos: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: photoBlurPlaceholder(source),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            stackPose: resolveStackPose(row.stackPose, stackIndex, total),
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else {
+          console.warn("[sanity] fetchHomeFavoritePhotos: skipping pick (no image or externalUrl)");
         }
-
-        out.push({
-          _key: imageKey,
-          imageUrl: src,
-          imageSrcSet: srcSet,
-          imageBlurUrl: photoBlurPlaceholder(source),
-          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
-          stackPose: resolveStackPose(row.stackPose, stackIndex, total),
-          alt: imageRow.alt,
-          gallerySlug: slug,
-          galleryTitle: row.title ?? {},
-        });
       } catch (err) {
         console.warn(`[sanity] fetchHomeFavoritePhotos: failed ${slug}/${imageKey}`, err);
       }
@@ -684,38 +835,60 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
     const rows = doc.spotlightSlides ?? [];
     const out: HomeSpotlightSlide[] = [];
 
+    const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
+
     for (const row of rows) {
       if (out.length >= MAX_HOME_SPOTLIGHT_SLIDES) break;
       const imageKey = row.imageKey?.trim();
       const slug = row.slug?.trim();
       const imageRow = row.imageRow;
-      if (!slug || !imageKey || !imageRow?.image) {
+      if (!slug || !imageKey || !imageRow) {
         console.warn("[sanity] fetchHomeSpotlightSlides: skipping pick (missing gallery, image, or key)");
         continue;
       }
 
       try {
-        const base = toSanityImageSource(imageRow.image);
-        const framing =
-          normalizeHomeFavoriteFraming(row.framing) ??
-          framingFromGalleryHotspot(imageRow.image);
-        const source = applyHomeFavoriteFraming(base, framing);
-        const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
-        if (!src) {
-          console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
-          continue;
+        if (imageRow.externalUrl) {
+          const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, widths, { fit: "16x9" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: externalPhotoBlurPlaceholder(imageRow.externalUrl),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else if (imageRow.image) {
+          const base = toSanityImageSource(imageRow.image);
+          const framing =
+            normalizeHomeFavoriteFraming(row.framing) ??
+            framingFromImageSource(imageRow.image as import("@sanity/image-url").SanityImageSource);
+          const source = applyHomeFavoriteFraming(base, framing);
+          const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: photoBlurPlaceholder(source),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else {
+          console.warn("[sanity] fetchHomeSpotlightSlides: skipping pick (no image or externalUrl)");
         }
-
-        out.push({
-          _key: imageKey,
-          imageUrl: src,
-          imageSrcSet: srcSet,
-          imageBlurUrl: photoBlurPlaceholder(source),
-          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
-          alt: imageRow.alt,
-          gallerySlug: slug,
-          galleryTitle: row.title ?? {},
-        });
       } catch (err) {
         console.warn(`[sanity] fetchHomeSpotlightSlides: failed ${slug}/${imageKey}`, err);
       }

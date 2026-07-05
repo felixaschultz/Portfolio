@@ -100,3 +100,49 @@ export function photoBlurPlaceholder(source: SanityImageSource, width = 48): str
   if (!builder) return "";
   return builder.width(width).blur(40).format("webp").url();
 }
+
+// ── External image server (PHP) ───────────────────────────────────────────────
+
+function buildExternalUrl(
+  baseUrl: string,
+  params: Record<string, string | number>,
+): string {
+  const url = new URL(baseUrl);
+  for (const [key, val] of Object.entries(params)) {
+    url.searchParams.set(key, String(val));
+  }
+  return url.toString();
+}
+
+export function externalPhotoSrcSet(
+  baseUrl: string,
+  widths: readonly number[] | number[],
+  options?: PhotoSrcSetOptions,
+): { src: string; srcSet: string } {
+  if (!baseUrl) return { src: "", srcSet: "" };
+  const fit = resolveFit(options);
+  const quality = options?.quality ?? 80;
+  const maxWidth = widths[widths.length - 1] ?? 1200;
+
+  const makeUrl = (w: number): string => {
+    const params: Record<string, string | number> = { w, q: quality };
+    if (fit === "16x9") { params.h = Math.round((w * 9) / 16); params.fit = "crop"; }
+    else if (fit === "4x5") { params.h = Math.round((w * 5) / 4); params.fit = "crop"; }
+    else if (fit === "square") { params.h = w; params.fit = "crop"; }
+    return buildExternalUrl(baseUrl, params);
+  };
+
+  const src = makeUrl(maxWidth);
+  const srcSet = widths.map((w) => `${makeUrl(w)} ${w}w`).join(", ");
+  return { src, srcSet };
+}
+
+export function externalPhotoBlurPlaceholder(baseUrl: string, width = 48): string {
+  if (!baseUrl) return "";
+  return buildExternalUrl(baseUrl, { w: width, q: 40, blur: 10 });
+}
+
+export function externalPhotoOgImage(baseUrl: string, width = 1200, height = 630): string {
+  if (!baseUrl) return "";
+  return buildExternalUrl(baseUrl, { w: width, h: height, fit: "crop", q: 85 });
+}

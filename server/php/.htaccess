@@ -1,0 +1,28 @@
+# Disable directory listing
+Options -Indexes
+
+RewriteEngine On
+
+# Route photos with transform params through transform.php
+# Matches any request to photos/*.webp that has w, h, q, fit, or blur query params
+RewriteCond %{QUERY_STRING} (?:^|&)(?:w|h|q|fit|blur)=
+RewriteRule ^photos/([a-zA-Z0-9._-]+\.webp)$ transform.php?src=$1 [L,QSA]
+
+# Protect PHP source files (only upload.php and transform.php are public)
+<FilesMatch "^(?!upload|transform).*\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Serve photos directory — static WebP files for requests without transform params
+<Directory "photos">
+    Options -Indexes
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Content-Type "image/webp"
+</Directory>
+
+# Protect the cache directory from direct access
+<Directory "cache">
+    Order allow,deny
+    Deny from all
+</Directory>

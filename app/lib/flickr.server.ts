@@ -103,13 +103,12 @@ export function flickrAlbumToListItem(album: FlickrAlbumMeta): GalleryListItem {
     takenAt: albumDate(album),
     imageCount: album.photoCount,
     coverUrl: staticUrl(srv, pid, sec, "z"),
-    coverOgUrl: staticUrl(srv, pid, sec, "h"),
+    coverOgUrl: staticUrl(srv, pid, sec, "b"),
     coverSrcSet: [
       `${staticUrl(srv, pid, sec, "n")} 320w`,
       `${staticUrl(srv, pid, sec, "z")} 640w`,
       `${staticUrl(srv, pid, sec, "c")} 800w`,
-      `${staticUrl(srv, pid, sec, "h")} 1600w`,
-      `${staticUrl(srv, pid, sec, "k")} 2048w`,
+      `${staticUrl(srv, pid, sec, "b")} 1024w`,
     ].join(", "),
     coverBlurUrl: staticUrl(srv, pid, sec, "n"),
   };
@@ -124,7 +123,7 @@ export function flickrAlbumToNavItem(album: FlickrAlbumMeta): GalleryNavItem {
     coverSrcSet: [
       `${staticUrl(srv, pid, sec, "n")} 320w`,
       `${staticUrl(srv, pid, sec, "z")} 640w`,
-      `${staticUrl(srv, pid, sec, "h")} 1600w`,
+      `${staticUrl(srv, pid, sec, "b")} 1024w`,
     ].join(", "),
     coverBlurUrl: staticUrl(srv, pid, sec, "n"),
   };

@@ -39,7 +39,7 @@ function buildFullSrcSet(photo: FlickrPhotoRaw): string {
 }
 
 function mapFlickrPhoto(photo: FlickrPhotoRaw): GalleryImageItem | null {
-  const imageUrl = photo.url_b ?? photo.url_h ?? photo.url_z ?? photo.url_n;
+  const imageUrl = photo.url_b ?? photo.url_c ?? photo.url_h ?? photo.url_z ?? photo.url_n;
   if (!imageUrl) return null;
 
   const width = photo.width_k ?? photo.width_h ?? photo.width_b ?? photo.width_z ?? photo.width_n;

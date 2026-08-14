@@ -153,6 +153,7 @@ export type GalleryDocument = {
   featured?: boolean;
   sortOrder?: number;
   coverImageKey?: string;
+  flickrAlbumId?: string;
   shopPublicEnabled?: boolean;
   shopToken?: string;
   images: GalleryImageDocument[];
@@ -187,6 +188,7 @@ const galleryProjection = `{
   featured,
   sortOrder,
   coverImageKey,
+  flickrAlbumId,
   shopPublicEnabled,
   shopToken,
   images[] {
@@ -221,7 +223,8 @@ const galleryDetailProjection = `{
   },
   featured,
   sortOrder,
-  coverImageKey,${galleryShopFields},
+  coverImageKey,
+  flickrAlbumId,${galleryShopFields},
   images[] {
     _key,
     alt,
@@ -363,10 +366,17 @@ async function mapGalleryToDetail(
     externalPhotoSrcSet,
     externalPhotoBlurPlaceholder,
   } = await import("./image.server");
-  const imageCount = gallery.images?.length ?? 0;
+
+  const [flickrImages] = await Promise.all([
+    gallery.flickrAlbumId
+      ? import("./flickr.server").then((m) => m.fetchFlickrAlbumPhotos(gallery.flickrAlbumId!))
+      : Promise.resolve([]),
+  ]);
+
+  const imageCount = (flickrImages.length) + (gallery.images?.length ?? 0);
   const large = isLargeGalleryImageCount(imageCount);
   const gridWidths = gridSrcWidthsForCount(imageCount);
-  const images: GalleryImageItem[] = [];
+  const images: GalleryImageItem[] = [...flickrImages];
 
   for (const item of gallery.images ?? []) {
     const hasExternal = Boolean(item.externalUrl);
@@ -554,10 +564,24 @@ export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioP
     externalPhotoSrcSet,
     externalPhotoBlurPlaceholder,
   } = await import("./image.server");
+  const { fetchFlickrAlbumPhotos } = await import("./flickr.server");
   const photos: PortfolioPhotoItem[] = [];
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;
+
+    if (gallery.flickrAlbumId) {
+      const flickrItems = await fetchFlickrAlbumPhotos(gallery.flickrAlbumId);
+      for (const item of flickrItems) {
+        photos.push({
+          ...item,
+          gallerySlug: gallery.slug,
+          galleryTitle: gallery.title,
+          galleryTags: gallery.tags,
+        });
+      }
+    }
+
     for (const item of gallery.images ?? []) {
       if (!item._key) continue;
 

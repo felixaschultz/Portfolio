@@ -94,6 +94,13 @@ export const gallery = defineType({
       initialValue: false,
     }),
     defineField({
+      name: "flickrAlbumId",
+      title: "Flickr album ID",
+      type: "string",
+      description:
+        "Optional. Paste the numeric album ID from the Flickr URL (e.g. flickr.com/photos/you/albums/72177720305123456). Photos from this album will appear before the Sanity images below.",
+    }),
+    defineField({
       name: "sortOrder",
       title: "Sort order",
       type: "number",

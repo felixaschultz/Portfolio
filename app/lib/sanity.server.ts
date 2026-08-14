@@ -463,11 +463,25 @@ export async function fetchPublishedGalleryCategories(): Promise<GalleryCategory
 
 export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
   const { COVER_WIDTHS_OVERVIEW } = await import("./image.server");
-  const galleries = await fetchGalleries();
-  const items = await Promise.all(
-    galleries.map((g) => mapGalleryToListItem(g, COVER_WIDTHS_OVERVIEW, { fit: "16x9" })),
-  );
-  return items.filter((g): g is GalleryListItem => g !== null);
+  const { fetchFlickrAlbums, flickrAlbumToListItem } = await import("./flickr.server");
+
+  const [galleries, flickrAlbums] = await Promise.all([fetchGalleries(), fetchFlickrAlbums()]);
+
+  const sanityItems = (
+    await Promise.all(galleries.map((g) => mapGalleryToListItem(g, COVER_WIDTHS_OVERVIEW, { fit: "16x9" })))
+  ).filter((g): g is GalleryListItem => g !== null);
+
+  const claimedAlbumIds = new Set(galleries.map((g) => g.flickrAlbumId).filter(Boolean));
+  const flickrItems = flickrAlbums
+    .filter((a) => !claimedAlbumIds.has(a.id))
+    .map(flickrAlbumToListItem);
+
+  return [...sanityItems, ...flickrItems].sort((a, b) => {
+    if (!a.takenAt && !b.takenAt) return 0;
+    if (!a.takenAt) return 1;
+    if (!b.takenAt) return -1;
+    return b.takenAt.localeCompare(a.takenAt);
+  });
 }
 
 /** Lightweight prev/next nav — one cover URL per gallery, no full image grids. */
@@ -475,8 +489,12 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   const client = getSanityClient();
   if (!client) return [];
 
+  const { fetchFlickrAlbums, flickrAlbumToNavItem } = await import("./flickr.server");
+
   try {
-    const galleries: GalleryDocument[] = await client.fetch(GALLERY_NAV_QUERY);
+    const [galleries, flickrAlbums]: [GalleryDocument[], Awaited<ReturnType<typeof fetchFlickrAlbums>>] =
+      await Promise.all([client.fetch(GALLERY_NAV_QUERY), fetchFlickrAlbums()]);
+
     const published = dedupeGalleriesBySlug(galleries);
     const {
       photoSrcSet,
@@ -487,7 +505,7 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       externalPhotoBlurPlaceholder,
     } = await import("./image.server");
 
-    const items: GalleryNavItem[] = [];
+    const sanityItems: GalleryNavItem[] = [];
     for (const gallery of published) {
       if (!gallery.slug) continue;
       const coverItem = resolveGalleryCoverImage(gallery);
@@ -498,9 +516,7 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       let coverBlurUrl: string | undefined;
 
       if (coverItem.externalUrl) {
-        ({ src, srcSet } = externalPhotoSrcSet(coverItem.externalUrl, COVER_WIDTHS_NAV, {
-          fit: "16x9",
-        }));
+        ({ src, srcSet } = externalPhotoSrcSet(coverItem.externalUrl, COVER_WIDTHS_NAV, { fit: "16x9" }));
         coverBlurUrl = externalPhotoBlurPlaceholder(coverItem.externalUrl);
       } else {
         const source = toSanityImageSource(coverItem.image);
@@ -509,16 +525,23 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       }
       if (!src) continue;
 
-      items.push({
-        slug: gallery.slug,
-        title: gallery.title,
-        coverUrl: src,
-        coverSrcSet: srcSet,
-        coverBlurUrl,
-      });
+      sanityItems.push({ slug: gallery.slug, title: gallery.title, coverUrl: src, coverSrcSet: srcSet, coverBlurUrl });
     }
 
-    return items;
+    const claimedAlbumIds = new Set(galleries.map((g) => g.flickrAlbumId).filter(Boolean));
+    const sanityDateBySlug = new Map(galleries.map((g) => [g.slug, g.takenAt ?? ""]));
+
+    type Dated = { item: GalleryNavItem; date: string };
+    const dated: Dated[] = [
+      ...sanityItems.map((item) => ({ item, date: sanityDateBySlug.get(item.slug) ?? "" })),
+      ...flickrAlbums
+        .filter((a) => !claimedAlbumIds.has(a.id))
+        .map((a) => ({ item: flickrAlbumToNavItem(a), date: new Date(parseInt(a.dateCreate, 10) * 1000).toISOString().slice(0, 10) })),
+    ];
+
+    return dated
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .map((d) => d.item);
   } catch (err) {
     console.error("[sanity] fetchGalleryNavList failed:", err);
     return [];
@@ -550,22 +573,36 @@ export async function fetchGalleryDetailBySlug(
   slug: string,
   locale: Locale,
 ): Promise<GalleryDetail | null> {
+  const { albumIdFromSlug, fetchFlickrAlbumDetail } = await import("./flickr.server");
+  const flickrAlbumId = albumIdFromSlug(slug);
+  if (flickrAlbumId) return fetchFlickrAlbumDetail(flickrAlbumId, locale);
+
   const gallery = await fetchGalleryBySlug(slug);
   if (!gallery) return null;
   return mapGalleryToDetail(gallery, locale);
 }
 
 export async function fetchAllPhotosForIndex(locale: Locale): Promise<PortfolioPhotoItem[]> {
-  const galleries = await fetchGalleries();
-  const {
-    photoSrcSet,
-    photoBlurPlaceholder,
-    toSanityImageSource,
-    externalPhotoSrcSet,
-    externalPhotoBlurPlaceholder,
-  } = await import("./image.server");
-  const { fetchFlickrAlbumPhotos } = await import("./flickr.server");
+  const [imageLib, flickrLib] = await Promise.all([
+    import("./image.server"),
+    import("./flickr.server"),
+  ]);
+  const { photoSrcSet, photoBlurPlaceholder, toSanityImageSource, externalPhotoSrcSet, externalPhotoBlurPlaceholder } = imageLib;
+  const { fetchFlickrAlbumPhotos, fetchFlickrAlbums, flickrAlbumSlug } = flickrLib;
+
+  const [galleries, flickrAlbums] = await Promise.all([fetchGalleries(), fetchFlickrAlbums()]);
   const photos: PortfolioPhotoItem[] = [];
+
+  const claimedAlbumIds = new Set(galleries.map((g) => g.flickrAlbumId).filter(Boolean));
+
+  for (const album of flickrAlbums) {
+    if (claimedAlbumIds.has(album.id)) continue;
+    const flickrItems = await fetchFlickrAlbumPhotos(album.id);
+    const galleryTitle = { en: album.title, da: album.title, de: album.title };
+    for (const item of flickrItems) {
+      photos.push({ ...item, gallerySlug: flickrAlbumSlug(album.id), galleryTitle });
+    }
+  }
 
   for (const gallery of galleries) {
     if (!gallery.slug) continue;

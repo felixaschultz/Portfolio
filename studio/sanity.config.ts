@@ -1,8 +1,9 @@
-import { defineConfig } from "sanity";
+import { defineConfig, definePlugin } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schema";
 import { defaultDocumentNode, structure } from "./structure";
 import { portfolioTheme } from "./theme";
+import { FlickrAlbumsPanel } from "./components/FlickrAlbumsPanel";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET ?? "production";
@@ -13,6 +14,17 @@ if (!projectId || projectId === "your_project_id") {
   );
 }
 
+const flickrPlugin = definePlugin({
+  name: "flickr-albums",
+  tools: [
+    {
+      name: "flickr-albums",
+      title: "Flickr",
+      component: FlickrAlbumsPanel,
+    },
+  ],
+});
+
 export default defineConfig({
   name: "portfolio",
   title: "Felix Portfolio",
@@ -20,6 +32,6 @@ export default defineConfig({
   dataset,
   // Vision (Monaco) breaks on mobile Safari; use local `npm run studio` if you need GROQ playground.
   theme: portfolioTheme,
-  plugins: [structureTool({ structure, defaultDocumentNode })],
+  plugins: [structureTool({ structure, defaultDocumentNode }), flickrPlugin()],
   schema: { types: schemaTypes },
 });

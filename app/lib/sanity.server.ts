@@ -425,8 +425,10 @@ async function mapGalleryToDetail(
   }
 
   const shopUrl = resolvePublicGalleryShopUrl(gallery);
+  const { flickrAlbumUrl } = await import("./flickr.server");
+  const albumUrl = gallery.flickrAlbumId ? flickrAlbumUrl(gallery.flickrAlbumId) : undefined;
 
-  return { ...list, images, ...(shopUrl ? { shopUrl } : {}) };
+  return { ...list, images, ...(shopUrl ? { shopUrl } : {}), ...(albumUrl ? { flickrAlbumUrl: albumUrl } : {}) };
 }
 
 export async function fetchGalleries(): Promise<GalleryDocument[]> {

@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType, type PreviewValue } from "sanity";
 import { CoverImageInput } from "../components/CoverImageInput";
+import { FlickrAlbumIdInput } from "../components/FlickrAlbumIdInput";
 import { GalleryImagesInput } from "../components/GalleryImagesInput";
 
 const localizedString = (name: string, title: string) =>
@@ -99,6 +100,7 @@ export const gallery = defineType({
       type: "string",
       description:
         "Optional. Paste the numeric album ID from the Flickr URL (e.g. flickr.com/photos/you/albums/72177720305123456). Photos from this album will appear before the Sanity images below.",
+      components: { input: FlickrAlbumIdInput },
     }),
     defineField({
       name: "sortOrder",

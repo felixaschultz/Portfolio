@@ -218,6 +218,11 @@ export function GalleryView({
             </Link>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
+              {gallery.flickrAlbumUrl ? (
+                <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
+                  Flickr
+                </a>
+              ) : null}
               <GalleryShare payload={sharePayload} />
             </div>
           </div>
@@ -243,6 +248,11 @@ export function GalleryView({
             </Link>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
+              {gallery.flickrAlbumUrl ? (
+                <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
+                  Flickr
+                </a>
+              ) : null}
               <GalleryShare payload={sharePayload} />
             </div>
           </div>

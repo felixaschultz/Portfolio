@@ -294,6 +294,11 @@ export async function fetchFlickrAlbumPhotos(albumId: string): Promise<GalleryIm
 
 // ── Build a full GalleryDetail for a standalone Flickr album ──────────────────
 
+export function flickrAlbumUrl(albumId: string): string {
+  const userId = process.env.FLICKR_USER_ID ?? "";
+  return `https://www.flickr.com/photos/${userId}/albums/${albumId}`;
+}
+
 export async function fetchFlickrAlbumDetail(albumId: string, _locale: Locale): Promise<GalleryDetail | null> {
   const [albumMeta, images] = await Promise.all([
     fetchFlickrAlbumInfo(albumId),
@@ -301,5 +306,5 @@ export async function fetchFlickrAlbumDetail(albumId: string, _locale: Locale): 
   ]);
   if (!albumMeta) return null;
 
-  return { ...flickrAlbumToListItem(albumMeta), images };
+  return { ...flickrAlbumToListItem(albumMeta), images, flickrAlbumUrl: flickrAlbumUrl(albumId) };
 }

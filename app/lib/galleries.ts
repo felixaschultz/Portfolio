@@ -60,6 +60,8 @@ export type GalleryDetail = GalleryListItem & {
   images: GalleryImageItem[];
   /** Set when public shop is enabled and a shop token exists. */
   shopUrl?: string;
+  /** Direct link to the Flickr album, when images come from Flickr. */
+  flickrAlbumUrl?: string;
 };
 
 export function resolvePublicGalleryShopUrl(gallery: {

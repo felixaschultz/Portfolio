@@ -267,6 +267,36 @@ const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} 
   }
 }`;
 
+const FLICKR_ALBUM_META_QUERY = `*[_type == "flickrAlbumMeta" && defined(flickrAlbumId) && !(_id in path("drafts.**"))] {
+  flickrAlbumId,
+  "categories": categories[]->{
+    "slug": slug.current,
+    title
+  },
+  "tags": array::unique(array::compact(tags[]->name)),
+  featured,
+  location
+}`;
+
+type FlickrAlbumMetaDoc = {
+  flickrAlbumId: string;
+  categories?: GalleryCategoryRef[];
+  tags?: string[];
+  featured?: boolean;
+  location?: string;
+};
+
+async function fetchFlickrAlbumMeta(): Promise<Map<string, FlickrAlbumMetaDoc>> {
+  const client = getSanityClient();
+  if (!client) return new Map();
+  try {
+    const docs: FlickrAlbumMetaDoc[] = await client.fetch(FLICKR_ALBUM_META_QUERY);
+    return new Map(docs.map((d) => [d.flickrAlbumId, d]));
+  } catch {
+    return new Map();
+  }
+}
+
 const publishedCategoryFilter = `_type == "galleryCategory" && defined(slug.current) && !(_id in path("drafts.**"))`;
 
 export const GALLERY_CATEGORIES_QUERY = `*[${publishedCategoryFilter}] | order(coalesce(title.en, title.da, title.de) asc) {
@@ -467,7 +497,11 @@ export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
   const { COVER_WIDTHS_OVERVIEW } = await import("./image.server");
   const { fetchFlickrAlbums, flickrAlbumToListItem } = await import("./flickr.server");
 
-  const [galleries, flickrAlbums] = await Promise.all([fetchGalleries(), fetchFlickrAlbums()]);
+  const [galleries, flickrAlbums, metaMap] = await Promise.all([
+    fetchGalleries(),
+    fetchFlickrAlbums(),
+    fetchFlickrAlbumMeta(),
+  ]);
 
   const sanityItems = (
     await Promise.all(galleries.map((g) => mapGalleryToListItem(g, COVER_WIDTHS_OVERVIEW, { fit: "16x9" })))
@@ -476,7 +510,18 @@ export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
   const claimedAlbumIds = new Set(galleries.map((g) => g.flickrAlbumId).filter(Boolean));
   const flickrItems = flickrAlbums
     .filter((a) => !claimedAlbumIds.has(a.id))
-    .map(flickrAlbumToListItem);
+    .map((a) => {
+      const item = flickrAlbumToListItem(a);
+      const meta = metaMap.get(a.id);
+      if (!meta) return item;
+      return {
+        ...item,
+        categories: meta.categories?.filter((c) => c?.slug) ?? [],
+        tags: meta.tags ?? [],
+        featured: meta.featured ?? item.featured,
+        location: meta.location ?? item.location,
+      };
+    });
 
   return [...sanityItems, ...flickrItems].sort((a, b) => {
     if (!a.takenAt && !b.takenAt) return 0;
@@ -577,7 +622,22 @@ export async function fetchGalleryDetailBySlug(
 ): Promise<GalleryDetail | null> {
   const { albumIdFromSlug, fetchFlickrAlbumDetail } = await import("./flickr.server");
   const flickrAlbumId = albumIdFromSlug(slug);
-  if (flickrAlbumId) return fetchFlickrAlbumDetail(flickrAlbumId, locale);
+  if (flickrAlbumId) {
+    const [detail, metaMap] = await Promise.all([
+      fetchFlickrAlbumDetail(flickrAlbumId, locale),
+      fetchFlickrAlbumMeta(),
+    ]);
+    if (!detail) return null;
+    const meta = metaMap.get(flickrAlbumId);
+    if (!meta) return detail;
+    return {
+      ...detail,
+      categories: meta.categories?.filter((c) => c?.slug) ?? detail.categories ?? [],
+      tags: meta.tags ?? detail.tags ?? [],
+      featured: meta.featured ?? detail.featured,
+      location: meta.location ?? detail.location,
+    };
+  }
 
   const gallery = await fetchGalleryBySlug(slug);
   if (!gallery) return null;

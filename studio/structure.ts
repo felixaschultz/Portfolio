@@ -34,6 +34,10 @@ export const structure: StructureResolver = (S) =>
         .schemaType("gallery")
         .child(S.documentTypeList("gallery").title("Galleries")),
       S.listItem()
+        .title("Flickr album metadata")
+        .schemaType("flickrAlbumMeta")
+        .child(S.documentTypeList("flickrAlbumMeta").title("Flickr album metadata")),
+      S.listItem()
         .title("Gallery bundles")
         .schemaType("galleryBundle")
         .child(S.documentTypeList("galleryBundle").title("Gallery bundles")),

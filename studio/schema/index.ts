@@ -1,3 +1,4 @@
+import { flickrAlbumMeta } from "./flickrAlbumMeta";
 import { gallery } from "./gallery";
 import { galleryBundle } from "./galleryBundle";
 import { galleryCategory } from "./galleryCategory";
@@ -9,6 +10,7 @@ import { photo } from "./photo";
 import { project } from "./project";
 
 export const schemaTypes = [
+  flickrAlbumMeta,
   gallery,
   galleryBundle,
   galleryImage,

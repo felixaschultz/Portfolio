@@ -28,15 +28,6 @@ type GalleryViewProps = {
   prevGallery?: GalleryNavItem | null;
 };
 
-function resolveCoverImage(gallery: GalleryDetail): GalleryImageItem | null {
-  if (gallery.images.length === 0) return null;
-  if (gallery.coverImageKey) {
-    const picked = gallery.images.find((img) => img._key === gallery.coverImageKey);
-    if (picked) return picked;
-  }
-  return gallery.images[0];
-}
-
 type AlbumPhotoProps = {
   image: GalleryImageItem;
   index: number;
@@ -106,7 +97,8 @@ function AlbumPhoto({ image, index, title, caption, onOpen, animate }: AlbumPhot
             alt={image.alt || title}
             blurSrc={image.imageBlurUrl}
             className="gallery-album__img"
-            loading="lazy"
+            loading={index < 3 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : undefined}
             protectedImage
           />
           <span className="gallery-protected__shield" aria-hidden />
@@ -154,21 +146,13 @@ export function GalleryView({
   const tags = gallery.tags?.filter((tag) => tag.trim()) ?? [];
   const categories = gallery.categories ?? [];
 
-  const coverImage = useMemo(() => resolveCoverImage(gallery), [gallery]);
-  const moreImages = useMemo(() => {
-    if (!coverImage) return gallery.images;
-    return gallery.images.filter((img) => img._key !== coverImage._key);
-  }, [gallery.images, coverImage]);
-
   const imageCaption = useCallback(
     (caption: GalleryImageItem["caption"]) => resolveSanityString(caption, lng),
     [lng],
   );
 
-  const metaLine =
-    metaLineFromLoader ?? buildGalleryAlbumMetaLine(gallery, lng, t);
-
-  const streamAnimates = !shouldDisableReveal(moreImages.length);
+  const metaLine = metaLineFromLoader ?? buildGalleryAlbumMetaLine(gallery, lng, t);
+  const streamAnimates = !shouldDisableReveal(gallery.images.length);
 
   const sharePayload = useMemo(
     () => ({
@@ -183,87 +167,42 @@ export function GalleryView({
     <article className="gallery-album">
       {nextGallery?.coverUrl ? <link rel="preload" as="image" href={nextGallery.coverUrl} /> : null}
       {prevGallery?.coverUrl ? <link rel="preload" as="image" href={prevGallery.coverUrl} /> : null}
-      {coverImage ? (
-        <section className="gallery-album__hero">
-          <button
-            type="button"
-            className="gallery-album__hero-media"
-            onClick={() => openPhoto(coverImage._key)}
-            aria-label={title}
-          >
-            <GalleryImage
-              src={coverImage.imageUrl}
-              srcSet={coverImage.imageSrcSet}
-              sizes="100vw"
-              alt={coverImage.alt || title}
-              blurSrc={coverImage.imageBlurUrl ?? gallery.coverBlurUrl}
-              className="gallery-album__hero-img"
-              loading="eager"
-              fetchPriority="high"
-              protectedImage
+
+      <header className="gallery-album__masthead">
+        <div className="gallery-album__intro-toolbar">
+          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain" viewTransition>
+            ←{" "}
+            <GalleryResponsiveLabel
+              short={t("photography.backShort")}
+              long={t("photography.back")}
             />
-            <span className="gallery-protected__shield" aria-hidden />
-            <div className="gallery-album__hero-shade" aria-hidden />
-          </button>
-
-          <div className="gallery-album__hero-toolbar">
-            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover" viewTransition>
-              ←
-            </Link>
-            <div className="gallery-album__toolbar-actions">
-              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
-              {gallery.flickrAlbumUrl ? (
-                <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
-                  Flickr
-                </a>
-              ) : null}
-              <GalleryShare payload={sharePayload} />
-            </div>
+          </Link>
+          <div className="gallery-album__toolbar-actions">
+            <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
+            {gallery.flickrAlbumUrl ? (
+              <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
+                Flickr
+              </a>
+            ) : null}
+            <GalleryShare payload={sharePayload} />
           </div>
+        </div>
+        <h1 className="gallery-album__title mt-10">{title}</h1>
+        {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
+        <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
+      </header>
 
-          <div className="gallery-album__hero-copy">
-            <h1 className="gallery-album__title">{title}</h1>
-            {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
-            <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
-          </div>
-        </section>
-      ) : (
-        <header className="gallery-album__masthead">
-          <div className="gallery-album__intro-toolbar">
-            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain" viewTransition>
-              ←{" "}
-              <GalleryResponsiveLabel
-                short={t("photography.backShort")}
-                long={t("photography.back")}
-              />
-            </Link>
-            <div className="gallery-album__toolbar-actions">
-              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
-              {gallery.flickrAlbumUrl ? (
-                <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
-                  Flickr
-                </a>
-              ) : null}
-              <GalleryShare payload={sharePayload} />
-            </div>
-          </div>
-          <h1 className="gallery-album__title mt-10">{title}</h1>
-          {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
-          <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
-        </header>
-      )}
-
-      {moreImages.length > 0 ? (
+      {gallery.images.length > 0 ? (
         <ProtectedGallerySurface className="gallery-album__stream-wrap">
           <GalleryMasonry
-            images={moreImages}
+            images={gallery.images}
             seed={gallery.slug}
             className="gallery-album__stream"
             renderItem={(image, index) => (
               <AlbumPhoto
                 key={image._key}
                 image={image}
-                index={coverImage ? index + 1 : index}
+                index={index}
                 title={title}
                 caption={imageCaption(image.caption)}
                 onOpen={openPhoto}

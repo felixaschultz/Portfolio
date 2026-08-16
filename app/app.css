@@ -11,7 +11,7 @@
   --color-border: #1e2e2c;
   --color-text: #e8f0ef;
   --color-muted: #8aa8a4;
-  --color-accent: #f5f0e8;
+  --color-accent: #1996d2;
   --color-accent-soft: rgba(21, 176, 171, 0.12);
 }
 
@@ -1412,7 +1412,7 @@ body {
 }
 
 .gallery-album__title {
-  @apply font-display text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.95] font-normal tracking-tight text-[var(--color-text)];
+  @apply font-display text-[clamp(2.5rem,8vw,3.5rem)] leading-[0.95] font-normal tracking-tight text-[var(--color-text)];
 }
 
 .gallery-album__meta {

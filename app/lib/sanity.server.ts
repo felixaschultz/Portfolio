@@ -797,6 +797,8 @@ const HOME_PAGE_PHOTO_ROW_PROJECTION = `{
   flickrPhotoId,
   flickrServer,
   flickrSecret,
+  flickrPhotoUrl,
+  flickrThumbUrl,
   "slug": gallery->slug.current,
   "title": gallery->title,
   "imageRow": gallery->images[_key == ^.imageKey][0] {
@@ -850,6 +852,8 @@ type HomePageFavoriteRow = {
   flickrPhotoId?: string;
   flickrServer?: string;
   flickrSecret?: string;
+  flickrPhotoUrl?: string;
+  flickrThumbUrl?: string;
 };
 
 export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
@@ -885,17 +889,15 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "z");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        const srcSetParts: string[] = [];
+        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 320w`);
+        srcSetParts.push(`${imageUrl} 1024w`);
         out.push({
           _key: pid,
-          imageUrl: flickrStaticUrl(srv, pid, sec, "b"),
-          imageSrcSet: [
-            `${flickrStaticUrl(srv, pid, sec, "n")} 320w`,
-            `${flickrStaticUrl(srv, pid, sec, "z")} 640w`,
-            `${flickrStaticUrl(srv, pid, sec, "c")} 800w`,
-            `${flickrStaticUrl(srv, pid, sec, "b")} 1024w`,
-            `${flickrStaticUrl(srv, pid, sec, "h")} 1600w`,
-          ].join(", "),
+          imageUrl,
+          imageSrcSet: srcSetParts.join(", "),
           imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
           stackPose: resolveStackPose(row.stackPose, stackIndex, total),
@@ -1000,17 +1002,15 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "z");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        const srcSetParts: string[] = [];
+        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 320w`);
+        srcSetParts.push(`${imageUrl} 1024w`);
         out.push({
           _key: pid,
-          imageUrl: flickrStaticUrl(srv, pid, sec, "b"),
-          imageSrcSet: [
-            `${flickrStaticUrl(srv, pid, sec, "n")} 320w`,
-            `${flickrStaticUrl(srv, pid, sec, "z")} 640w`,
-            `${flickrStaticUrl(srv, pid, sec, "c")} 800w`,
-            `${flickrStaticUrl(srv, pid, sec, "b")} 1024w`,
-            `${flickrStaticUrl(srv, pid, sec, "h")} 1600w`,
-          ].join(", "),
+          imageUrl,
+          imageSrcSet: srcSetParts.join(", "),
           imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
           gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,

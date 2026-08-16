@@ -44,5 +44,7 @@ export const homeFavoritePhoto = defineType({
     defineField({ name: "flickrPhotoId", title: "Flickr photo ID", type: "string", hidden: true }),
     defineField({ name: "flickrServer", title: "Flickr server", type: "string", hidden: true }),
     defineField({ name: "flickrSecret", title: "Flickr secret", type: "string", hidden: true }),
+    defineField({ name: "flickrPhotoUrl", title: "Flickr photo URL (best available)", type: "string", hidden: true }),
+    defineField({ name: "flickrThumbUrl", title: "Flickr photo URL (small)", type: "string", hidden: true }),
   ],
 });

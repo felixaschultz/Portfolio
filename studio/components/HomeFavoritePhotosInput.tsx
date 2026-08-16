@@ -93,6 +93,8 @@ type PickValue = {
   flickrPhotoId?: string;
   flickrServer?: string;
   flickrSecret?: string;
+  flickrPhotoUrl?: string;
+  flickrThumbUrl?: string;
 };
 
 type GalleryListItem = {
@@ -119,6 +121,7 @@ type FlickrPhotoItem = {
   secret: string;
   title: string;
   thumbUrl: string;
+  bestUrl: string; // largest available size (url_b ?? url_z ?? url_n)
 };
 
 function buildThumbUrl(
@@ -175,7 +178,8 @@ function mapFlickrPhoto(photo: FlickrPhoto): FlickrPhotoItem | null {
     server: parsed.server,
     secret: parsed.secret,
     title: photo.title,
-    thumbUrl: srcUrl,
+    thumbUrl: photo.url_s ?? photo.url_n ?? srcUrl,
+    bestUrl: photo.url_b ?? photo.url_z ?? photo.url_n ?? srcUrl,
   };
 }
 
@@ -450,7 +454,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   );
 
   const toggleFlickr = useCallback(
-    (albumId: string, photoId: string, server: string, secret: string) => {
+    (albumId: string, photoId: string, server: string, secret: string, bestUrl: string, smallUrl: string) => {
       const id = `flickr:${photoId}`;
       if (selectedSet.has(id)) {
         writePicks(picks.filter((p) => p.flickrPhotoId !== photoId));
@@ -467,6 +471,8 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           flickrPhotoId: photoId,
           flickrServer: server,
           flickrSecret: secret,
+          flickrPhotoUrl: bestUrl,
+          flickrThumbUrl: smallUrl,
           ...(isSpotlight ? {} : { stackPose: defaultStackPose(nextIndex, nextTotal) }),
         },
       ]);
@@ -681,7 +687,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
               key={photo.id}
               type="button"
               disabled={atMax}
-              onClick={() => toggleFlickr(albumId, photo.id, photo.server, photo.secret)}
+              onClick={() => toggleFlickr(albumId, photo.id, photo.server, photo.secret, photo.bestUrl, photo.thumbUrl)}
               style={{
                 padding: 0,
                 border: "none",

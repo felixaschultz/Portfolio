@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { Outlet, redirect, useLoaderData } from "react-router";
+import { Outlet, redirect, useLoaderData, useNavigation } from "react-router";
 import type { Route } from "./+types/$locale";
 import { RouteErrorBoundary } from "../components/RouteErrorBoundary";
 import { SiteHeader } from "../components/SiteHeader";
@@ -47,6 +47,29 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   );
 }
 
+function NavProgressBar() {
+  const navigation = useNavigation();
+  const [phase, setPhase] = useState<"idle" | "loading" | "complete">("idle");
+
+  useEffect(() => {
+    if (navigation.state !== "idle") {
+      setPhase("loading");
+    } else if (phase === "loading") {
+      setPhase("complete");
+      const timer = setTimeout(() => setPhase("idle"), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [navigation.state, phase]);
+
+  if (phase === "idle") return null;
+  return (
+    <div
+      aria-hidden
+      className={`nav-progress-bar${phase === "complete" ? " nav-progress-bar--complete" : ""}`}
+    />
+  );
+}
+
 export default function LocaleLayout() {
   const { locale } = useLoaderData<typeof loader>();
   const [contactOpen, setContactOpen] = useState(false);
@@ -70,6 +93,7 @@ export default function LocaleLayout() {
 
   return (
     <LocaleProvider locale={locale}>
+      <NavProgressBar />
       <div className="site-layout">
         <SiteHeader onContactClick={openContact} onSearchClick={openSearch} />
         <div className="site-layout__body">

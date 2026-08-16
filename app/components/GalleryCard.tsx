@@ -45,6 +45,7 @@ export function GalleryCard({ gallery, index }: GalleryCardProps) {
           to={`${base}/photography/${gallery.slug}`}
           className="gallery-overview__item-visual-link"
           aria-label={title}
+          viewTransition
         >
           <GalleryImage
             src={gallery.coverUrl}
@@ -64,7 +65,7 @@ export function GalleryCard({ gallery, index }: GalleryCardProps) {
         {shopUrl ? <GalleryOverviewShopBadge shopUrl={shopUrl} locale={lng} /> : null}
       </div>
       <div className="gallery-overview__item-body">
-        <Link to={`${base}/photography/${gallery.slug}`} className="gallery-overview__item-body-link">
+        <Link to={`${base}/photography/${gallery.slug}`} className="gallery-overview__item-body-link" viewTransition>
           <h2 className="gallery-overview__item-title">{title}</h2>
           {metaParts.length > 0 ? (
             <p className="gallery-overview__item-meta">{metaParts.join(" · ")}</p>

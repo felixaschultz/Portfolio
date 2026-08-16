@@ -28,6 +28,7 @@ function NavCard({
     <Link
       to={`${base}/photography/${gallery.slug}`}
       className={`gallery-album__nav-link ${direction === "next" ? "gallery-album__nav-link--next" : ""}`}
+      viewTransition
     >
       <span className="gallery-album__nav-label">{label}</span>
       <span className="gallery-album__nav-body">

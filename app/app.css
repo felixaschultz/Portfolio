@@ -4032,3 +4032,53 @@ body {
   color: var(--color-muted);
 }
 
+/* ─── Navigation progress bar ─── */
+
+.nav-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  height: 2px;
+  width: 100%;
+  pointer-events: none;
+  background: var(--color-accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.15s ease, opacity 0.35s ease 0.08s;
+  animation: nav-progress-load 2s cubic-bezier(0.05, 0.8, 0.15, 1) forwards;
+}
+
+.nav-progress-bar--complete {
+  animation: none;
+  transform: scaleX(1);
+  opacity: 0;
+}
+
+@keyframes nav-progress-load {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(0.85); }
+}
+
+/* ─── View transitions ─── */
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 160ms ease both vt-page-out;
+  }
+  ::view-transition-new(root) {
+    animation: 280ms 80ms ease both vt-page-in;
+  }
+}
+
+@keyframes vt-page-out {
+  to { opacity: 0; }
+}
+
+@keyframes vt-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+

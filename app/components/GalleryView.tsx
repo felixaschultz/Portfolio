@@ -205,7 +205,7 @@ export function GalleryView({
           </button>
 
           <div className="gallery-album__hero-toolbar">
-            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
+            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover" viewTransition>
               ←
             </Link>
             <div className="gallery-album__toolbar-actions">
@@ -228,7 +228,7 @@ export function GalleryView({
       ) : (
         <header className="gallery-album__masthead">
           <div className="gallery-album__intro-toolbar">
-            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain">
+            <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain" viewTransition>
               ←{" "}
               <GalleryResponsiveLabel
                 short={t("photography.backShort")}

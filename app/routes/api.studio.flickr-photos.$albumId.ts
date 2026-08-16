@@ -1,7 +1,6 @@
-import type { Route } from "./+types/api.studio.flickr-photos.$albumId";
 import { fetchFlickrAlbumPhotosForStudio } from "../lib/flickr.server";
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params }: { params: { albumId?: string } }) {
   const albumId = params.albumId?.trim();
   if (!albumId) {
     return Response.json({ error: "Missing albumId" }, { status: 400 });

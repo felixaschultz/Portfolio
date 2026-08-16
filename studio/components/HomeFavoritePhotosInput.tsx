@@ -24,6 +24,7 @@ import {
   applyHomeFavoriteFraming,
   framingFromImageSource,
 } from "../lib/home-favorite-framing";
+import { fetchAlbumPhotos, type FlickrPhoto } from "../lib/flickr";
 import { HomeFavoriteFramingEditor } from "./HomeFavoriteFramingEditor";
 import { HomeFavoriteStackPoseEditor } from "./HomeFavoriteStackPoseEditor";
 import {
@@ -154,6 +155,28 @@ function thumbUrl(
 function flickrThumbFromPick(pick: PickValue): string | null {
   if (!pick.flickrServer || !pick.flickrPhotoId || !pick.flickrSecret) return null;
   return `https://live.staticflickr.com/${pick.flickrServer}/${pick.flickrPhotoId}_${pick.flickrSecret}_q.jpg`;
+}
+
+// Parse server + secret from a Flickr static URL:
+// https://live.staticflickr.com/{server}/{photoId}_{secret}_{size}.jpg
+function parseFlickrUrl(url: string): { server: string; secret: string } | null {
+  const m = /live\.staticflickr\.com\/(\d+)\/\d+_([a-f0-9]+)_/.exec(url);
+  if (!m) return null;
+  return { server: m[1]!, secret: m[2]! };
+}
+
+function mapFlickrPhoto(photo: FlickrPhoto): FlickrPhotoItem | null {
+  const srcUrl = photo.url_s ?? photo.url_n;
+  if (!srcUrl) return null;
+  const parsed = parseFlickrUrl(srcUrl);
+  if (!parsed) return null;
+  return {
+    id: photo.id,
+    server: parsed.server,
+    secret: parsed.secret,
+    title: photo.title,
+    thumbUrl: srcUrl,
+  };
 }
 
 function galleryLabel(g: { title?: GalleryListItem["title"]; slug?: string }): string {
@@ -333,13 +356,10 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     setFlickrPhotosLoading(true);
     setFlickrPhotosError(null);
     setFlickrPhotos([]);
-    fetch(`/api/studio/flickr-photos/${albumId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<FlickrPhotoItem[]>;
-      })
-      .then((photos) => {
-        if (!cancelled) setFlickrPhotos(photos);
+    fetchAlbumPhotos(albumId)
+      .then((raw) => {
+        if (cancelled) return;
+        setFlickrPhotos(raw.flatMap((p) => { const m = mapFlickrPhoto(p); return m ? [m] : []; }));
       })
       .catch((err: unknown) => {
         if (!cancelled)

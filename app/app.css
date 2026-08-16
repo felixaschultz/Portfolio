@@ -24,7 +24,7 @@
   --color-border: #d9d5ce;
   --color-text: #1a1e1d;
   --color-muted: #6b7d79;
-  --color-accent: #15b0ab;
+  --color-accent: #1996d2;
   --color-accent-soft: rgba(21, 176, 171, 0.10);
   color-scheme: light;
 }
@@ -909,7 +909,7 @@ body {
 .site-header--scrolled {
   border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
   background: color-mix(in srgb, var(--color-surface) 96%, transparent);
-  box-shadow: 0 8px 32px rgb(0 0 0 / 0.35);
+  box-shadow: 0 0 3px rgb(0 0 0 / 0.35);
 }
 
 .site-header__inner {

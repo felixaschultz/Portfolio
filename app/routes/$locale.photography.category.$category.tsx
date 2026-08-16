@@ -22,14 +22,16 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw redirect(`/${locale}/photography`);
   }
 
-  const categoryLabel =
-    categoryOptions.find((c) => c.slug === activeCategorySlug)?.label ?? activeCategorySlug;
+  const activeCategory = categoryOptions.find((c) => c.slug === activeCategorySlug);
+  const categoryLabel = activeCategory?.label ?? activeCategorySlug;
+  const categoryDescription = activeCategory?.description ?? null;
 
   return {
     galleries,
     publishedCategories,
     activeCategorySlug,
     categoryLabel,
+    categoryDescription,
     locale,
     currentYear: new Date().getUTCFullYear(),
   };
@@ -50,7 +52,7 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyCategoryPage() {
-  const { galleries, publishedCategories, activeCategorySlug, categoryLabel, currentYear } =
+  const { galleries, publishedCategories, activeCategorySlug, categoryLabel, categoryDescription, currentYear } =
     useLoaderData<typeof loader>();
   return (
     <PhotographyOverview
@@ -59,6 +61,7 @@ export default function PhotographyCategoryPage() {
       currentYear={currentYear}
       activeCategorySlug={activeCategorySlug}
       categoryLabel={categoryLabel}
+      categoryDescription={categoryDescription}
     />
   );
 }

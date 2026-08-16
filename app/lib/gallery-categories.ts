@@ -4,6 +4,7 @@ import { localizedField, type Locale } from "./i18n";
 export type GalleryCategoryOption = {
   slug: string;
   label: string;
+  description?: string;
 };
 
 /** Photography index category filter path. */
@@ -24,7 +25,10 @@ export function categoryOptionsFromRefs(
 ): GalleryCategoryOption[] {
   return categories
     .filter((c) => c.slug)
-    .map((c) => ({ slug: c.slug, label: categoryLabel(c, locale) }))
+    .map((c) => {
+      const description = localizedField(c.description, locale) || undefined;
+      return { slug: c.slug, label: categoryLabel(c, locale), description };
+    })
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 }
 

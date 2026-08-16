@@ -12,6 +12,7 @@ type PhotographyOverviewProps = {
   activeTag?: string | null;
   activeCategorySlug?: string | null;
   categoryLabel?: string | null;
+  categoryDescription?: string | null;
 };
 
 export function PhotographyOverview({
@@ -21,6 +22,7 @@ export function PhotographyOverview({
   activeTag = null,
   activeCategorySlug = null,
   categoryLabel = null,
+  categoryDescription = null,
 }: PhotographyOverviewProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
@@ -32,7 +34,9 @@ export function PhotographyOverview({
         <h1 className="gallery-overview__title">
           {categoryLabel ?? activeTag ?? t("photography.title")}
         </h1>
-        <p className="gallery-overview__lede">{t("photography.description")}</p>
+        <p className="gallery-overview__lede">
+          {categoryDescription ?? t("photography.description")}
+        </p>
         <p className="mt-8">
           <Link to={`${base}/photography/photos`} className="gallery-overview__photos-link">
             {t("photography.browseAllPhotos")} →

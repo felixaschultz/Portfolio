@@ -18,6 +18,7 @@ export const galleryCategory = defineType({
   type: "document",
   fields: [
     localizedString("title", "Title"),
+    localizedString("description", "Description"),
     defineField({
       name: "slug",
       title: "Slug",

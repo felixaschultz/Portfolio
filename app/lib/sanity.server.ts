@@ -103,6 +103,7 @@ export type LocalizedString = { da?: string; de?: string; en?: string };
 export type GalleryCategoryRef = {
   slug: string;
   title: LocalizedString;
+  description?: LocalizedString;
 };
 
 type SanityImageRef = {
@@ -301,7 +302,8 @@ const publishedCategoryFilter = `_type == "galleryCategory" && defined(slug.curr
 
 export const GALLERY_CATEGORIES_QUERY = `*[${publishedCategoryFilter}] | order(coalesce(title.en, title.da, title.de) asc) {
   "slug": slug.current,
-  title
+  title,
+  description
 }`;
 
 async function mapGalleryToListItem(

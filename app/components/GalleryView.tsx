@@ -181,6 +181,8 @@ export function GalleryView({
 
   return (
     <article className="gallery-album">
+      {nextGallery?.coverUrl ? <link rel="preload" as="image" href={nextGallery.coverUrl} /> : null}
+      {prevGallery?.coverUrl ? <link rel="preload" as="image" href={prevGallery.coverUrl} /> : null}
       {coverImage ? (
         <section className="gallery-album__hero">
           <button

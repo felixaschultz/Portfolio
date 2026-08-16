@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Link, useParams, useRouteLoaderData } from "react-router";
+import { Link, useLocation, useNavigate, useParams, useRouteLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { GalleryCategoryRef, GalleryDetail, GalleryImageItem, GalleryNavItem } from "../lib/galleries";
 import { buildGalleryAlbumMetaLine } from "../lib/gallery-meta";
@@ -140,6 +140,16 @@ export function GalleryView({
   const lng = parentLocale?.locale ?? ((localeParam ?? "da") as Locale);
   const base = `/${lng}`;
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleBack = useCallback(() => {
+    if (location.key !== "default") {
+      navigate(-1);
+    } else {
+      navigate(`${base}/photography`, { viewTransition: true });
+    }
+  }, [location.key, navigate, base]);
   const openPhoto = useGalleryLightbox();
   const title = localizedField(gallery.title, lng) || "Gallery";
   const description = localizedField(gallery.description, lng);
@@ -170,13 +180,13 @@ export function GalleryView({
 
       <header className="gallery-album__masthead">
         <div className="gallery-album__intro-toolbar">
-          <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--plain" viewTransition>
+          <button type="button" onClick={handleBack} className="gallery-album__back gallery-album__back--plain">
             ←{" "}
             <GalleryResponsiveLabel
               short={t("photography.backShort")}
               long={t("photography.back")}
             />
-          </Link>
+          </button>
           <div className="gallery-album__toolbar-actions">
             <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
             {gallery.flickrAlbumUrl ? (

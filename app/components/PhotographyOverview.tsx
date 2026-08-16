@@ -34,7 +34,7 @@ export function PhotographyOverview({
         </h1>
         <p className="gallery-overview__lede">{t("photography.description")}</p>
         <p className="mt-8">
-          <Link to={`${base}/photography/photos`} className="btn-primary text-sm">
+          <Link to={`${base}/photography/photos`} className="gallery-overview__photos-link">
             {t("photography.browseAllPhotos")} →
           </Link>
         </p>

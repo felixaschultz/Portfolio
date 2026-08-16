@@ -130,7 +130,6 @@ export function GalleryGrid({
                   key={entry.gallery._id}
                   gallery={entry.gallery}
                   index={entry.index}
-                  total={filtered.length}
                 />
               ),
             )}

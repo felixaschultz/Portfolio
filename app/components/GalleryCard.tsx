@@ -13,10 +13,9 @@ import { Reveal } from "./Reveal";
 type GalleryCardProps = {
   gallery: GalleryListItem;
   index: number;
-  total: number;
 };
 
-export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
+export function GalleryCard({ gallery, index }: GalleryCardProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
@@ -25,8 +24,6 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
   const dateLabel = formatGalleryDate(gallery.takenAt, lng);
   const categories = gallery.categories ?? [];
   const tags = gallery.tags?.filter((tag) => tag.trim()).slice(0, 4) ?? [];
-  const indexLabel = String(index + 1).padStart(2, "0");
-  const totalLabel = String(total).padStart(2, "0");
   const metaParts = [
     dateLabel,
     gallery.location,
@@ -43,9 +40,6 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
       delay={revealStagger(index)}
       immediate={index === 0}
     >
-      <span className="gallery-overview__item-index" aria-hidden>
-        {indexLabel} / {totalLabel}
-      </span>
       <div className="gallery-overview__item-visual">
         <Link
           to={`${base}/photography/${gallery.slug}`}

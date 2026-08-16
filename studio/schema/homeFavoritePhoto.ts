@@ -10,13 +10,11 @@ export const homeFavoritePhoto = defineType({
       title: "Gallery",
       type: "reference",
       to: [{ type: "gallery" }],
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "imageKey",
       title: "Image key",
       type: "string",
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "framing",
@@ -42,5 +40,9 @@ export const homeFavoritePhoto = defineType({
         defineField({ name: "scale", type: "number", hidden: true }),
       ],
     }),
+    defineField({ name: "flickrAlbumId", title: "Flickr album ID", type: "string", hidden: true }),
+    defineField({ name: "flickrPhotoId", title: "Flickr photo ID", type: "string", hidden: true }),
+    defineField({ name: "flickrServer", title: "Flickr server", type: "string", hidden: true }),
+    defineField({ name: "flickrSecret", title: "Flickr secret", type: "string", hidden: true }),
   ],
 });

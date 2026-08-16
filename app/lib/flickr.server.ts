@@ -86,6 +86,20 @@ function staticUrl(server: string, photoId: string, secret: string, size: string
   return `https://live.staticflickr.com/${server}/${photoId}_${secret}_${size}.jpg`;
 }
 
+export function flickrStaticUrl(server: string, photoId: string, secret: string, size: string): string {
+  return staticUrl(server, photoId, secret, size);
+}
+
+// ── Studio photo picker type ──────────────────────────────────────────────────
+
+export type FlickrPhotoForStudio = {
+  id: string;
+  server: string;
+  secret: string;
+  title: string;
+  thumbUrl: string;
+};
+
 function albumDate(album: FlickrAlbumMeta): string {
   return new Date(parseInt(album.dateCreate, 10) * 1000).toISOString().slice(0, 10);
 }
@@ -307,4 +321,47 @@ export async function fetchFlickrAlbumDetail(albumId: string, _locale: Locale): 
   if (!albumMeta) return null;
 
   return { ...flickrAlbumToListItem(albumMeta), images, flickrAlbumUrl: flickrAlbumUrl(albumId) };
+}
+
+// ── Fetch photos for Studio picker (returns id/server/secret for storage) ────
+
+export async function fetchFlickrAlbumPhotosForStudio(albumId: string): Promise<FlickrPhotoForStudio[]> {
+  const apiKey = process.env.FLICKR_API_KEY;
+  const userId = process.env.FLICKR_USER_ID;
+  if (!apiKey) {
+    console.warn("[flickr] FLICKR_API_KEY is not set");
+    return [];
+  }
+
+  const url = new URL(FLICKR_API_BASE);
+  url.searchParams.set("method", "flickr.photosets.getPhotos");
+  url.searchParams.set("api_key", apiKey);
+  url.searchParams.set("photoset_id", albumId);
+  if (userId) url.searchParams.set("user_id", userId);
+  url.searchParams.set("extras", "url_q,url_n");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("nojsoncallback", "1");
+  url.searchParams.set("per_page", "500");
+
+  try {
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json() as {
+      stat: string;
+      photoset?: { photo: Array<{ id: string; server: string; secret: string; title: string; url_q?: string; url_n?: string }> };
+      message?: string;
+    };
+    if (data.stat !== "ok" || !data.photoset) throw new Error(data.message ?? data.stat);
+
+    return data.photoset.photo.map((p) => ({
+      id: p.id,
+      server: p.server,
+      secret: p.secret,
+      title: p.title,
+      thumbUrl: p.url_q ?? staticUrl(p.server, p.id, p.secret, "q"),
+    }));
+  } catch (err) {
+    console.error(`[flickr] fetchFlickrAlbumPhotosForStudio(${albumId}) failed:`, err);
+    return [];
+  }
 }

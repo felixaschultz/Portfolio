@@ -793,6 +793,10 @@ const HOME_PAGE_PHOTO_ROW_PROJECTION = `{
   imageKey,
   framing,
   stackPose,
+  flickrAlbumId,
+  flickrPhotoId,
+  flickrServer,
+  flickrSecret,
   "slug": gallery->slug.current,
   "title": gallery->title,
   "imageRow": gallery->images[_key == ^.imageKey][0] {
@@ -842,6 +846,10 @@ type HomePageFavoriteRow = {
   slug?: string;
   title?: LocalizedString;
   imageRow?: HomePageImageRow | null;
+  flickrAlbumId?: string;
+  flickrPhotoId?: string;
+  flickrServer?: string;
+  flickrSecret?: string;
 };
 
 export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
@@ -869,10 +877,34 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
     const out: HomeFavoritePhoto[] = [];
 
     const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
+    const { flickrStaticUrl } = await import("./flickr.server");
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;
       const stackIndex = out.length;
+
+      if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        out.push({
+          _key: pid,
+          imageUrl: flickrStaticUrl(srv, pid, sec, "b"),
+          imageSrcSet: [
+            `${flickrStaticUrl(srv, pid, sec, "n")} 320w`,
+            `${flickrStaticUrl(srv, pid, sec, "z")} 640w`,
+            `${flickrStaticUrl(srv, pid, sec, "c")} 800w`,
+            `${flickrStaticUrl(srv, pid, sec, "b")} 1024w`,
+            `${flickrStaticUrl(srv, pid, sec, "h")} 1600w`,
+          ].join(", "),
+          imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
+          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          stackPose: resolveStackPose(row.stackPose, stackIndex, total),
+          gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
+          galleryTitle: {},
+        });
+        continue;
+      }
+
       const imageKey = row.imageKey?.trim();
       const slug = row.slug?.trim();
       const imageRow = row.imageRow;
@@ -961,9 +993,32 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
     const out: HomeSpotlightSlide[] = [];
 
     const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
+    const { flickrStaticUrl } = await import("./flickr.server");
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_SPOTLIGHT_SLIDES) break;
+
+      if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        out.push({
+          _key: pid,
+          imageUrl: flickrStaticUrl(srv, pid, sec, "b"),
+          imageSrcSet: [
+            `${flickrStaticUrl(srv, pid, sec, "n")} 320w`,
+            `${flickrStaticUrl(srv, pid, sec, "z")} 640w`,
+            `${flickrStaticUrl(srv, pid, sec, "c")} 800w`,
+            `${flickrStaticUrl(srv, pid, sec, "b")} 1024w`,
+            `${flickrStaticUrl(srv, pid, sec, "h")} 1600w`,
+          ].join(", "),
+          imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
+          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
+          galleryTitle: {},
+        });
+        continue;
+      }
+
       const imageKey = row.imageKey?.trim();
       const slug = row.slug?.trim();
       const imageRow = row.imageRow;

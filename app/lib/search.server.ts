@@ -3,7 +3,7 @@ import { localizedField } from "./i18n";
 import { getProjects } from "./projects.server";
 import { getLocalizedText } from "./projects";
 import type { SearchIndexItem } from "./search";
-import { fetchGalleries } from "./sanity.server";
+import { fetchGalleriesForList } from "./sanity.server";
 import { seoCopy } from "./seo-copy";
 import { stripHtml } from "./seo";
 
@@ -44,7 +44,7 @@ export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[
 
 async function buildSearchIndexUncached(locale: Locale): Promise<SearchIndexItem[]> {
   const items: SearchIndexItem[] = [];
-  const [projects, galleries] = await Promise.all([getProjects(), fetchGalleries()]);
+  const [projects, galleries] = await Promise.all([getProjects(), fetchGalleriesForList()]);
 
   items.push(
     pageItem(locale, "home", "Home", "Portfolio home", "", "home portfolio"),

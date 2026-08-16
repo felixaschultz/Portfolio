@@ -58,7 +58,7 @@ export function GalleryCard({ gallery, index, total }: GalleryCardProps) {
             sizes={
               isFeatured
                 ? "(max-width: 1023px) 100vw, min(72rem, 100vw)"
-                : "(max-width: 1023px) 100vw, (max-width: 1279px) 50vw, 36rem"
+                : "(max-width: 1023px) 100vw, (max-width: 1279px) 50vw, 33vw"
             }
             alt=""
             blurSrc={gallery.coverBlurUrl}

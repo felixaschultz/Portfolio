@@ -52,37 +52,49 @@ export function GalleryTaxonomyFilters({
 
   if (tagOptions.length === 0 && categoryOptions.length === 0) return null;
 
+  const isActive = Boolean(activeCategorySlug || activeTag);
+
   return (
-    <div className="gallery-overview__filters">
-      {categoryOptions.length > 0 ? (
-        <Reveal variant="fade" delay={80} immediate>
-          <GalleryFilterNav
-            variant="chips"
-            label={t("photography.filterCategoryLabel")}
-            ariaLabel={t("photography.filterCategoryAria")}
-            options={categoryOptions.map((c) => ({ key: c.slug, label: c.label }))}
-            allHref={photographyCategoryPath(lng, null)}
-            optionHref={(slug) => photographyCategoryPath(lng, slug)}
-            activeKey={activeCategorySlug}
-          />
-        </Reveal>
-      ) : null}
-      {tagOptions.length > 0 ? (
-        <Reveal variant="fade" delay={categoryOptions.length > 0 ? 140 : 80} immediate>
-          <GalleryFilterNav
-            label={t("photography.filterLabel")}
-            ariaLabel={t("photography.filterTagAria")}
-            options={tagOptions}
-            allHref={allHref}
-            optionHref={(key) => {
-              const label = tagOptions.find((o) => o.key === key)?.label;
-              return label ? photographyTagPath(lng, label) : allHref;
-            }}
-            activeKey={activeTagKey}
-            className={categoryOptions.length > 0 ? "gallery-overview__filter--secondary" : ""}
-          />
-        </Reveal>
-      ) : null}
-    </div>
+    <details className="gallery-overview__filters" open={isActive || undefined}>
+      <summary className="gallery-overview__filters-toggle">
+        <span>{t("photography.filterToggle", "Filter")}</span>
+        {isActive ? (
+          <span className="gallery-overview__filters-badge">1</span>
+        ) : null}
+        <span className="gallery-overview__filters-arrow" aria-hidden>▾</span>
+      </summary>
+
+      <div className="gallery-overview__filters-body">
+        {categoryOptions.length > 0 ? (
+          <Reveal variant="fade" delay={80} immediate>
+            <GalleryFilterNav
+              variant="chips"
+              label={t("photography.filterCategoryLabel")}
+              ariaLabel={t("photography.filterCategoryAria")}
+              options={categoryOptions.map((c) => ({ key: c.slug, label: c.label }))}
+              allHref={photographyCategoryPath(lng, null)}
+              optionHref={(slug) => photographyCategoryPath(lng, slug)}
+              activeKey={activeCategorySlug}
+            />
+          </Reveal>
+        ) : null}
+        {tagOptions.length > 0 ? (
+          <Reveal variant="fade" delay={categoryOptions.length > 0 ? 140 : 80} immediate>
+            <GalleryFilterNav
+              label={t("photography.filterLabel")}
+              ariaLabel={t("photography.filterTagAria")}
+              options={tagOptions}
+              allHref={allHref}
+              optionHref={(key) => {
+                const label = tagOptions.find((o) => o.key === key)?.label;
+                return label ? photographyTagPath(lng, label) : allHref;
+              }}
+              activeKey={activeTagKey}
+              className={categoryOptions.length > 0 ? "gallery-overview__filter--secondary" : ""}
+            />
+          </Reveal>
+        ) : null}
+      </div>
+    </details>
   );
 }

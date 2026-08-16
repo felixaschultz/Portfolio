@@ -1791,6 +1791,44 @@ body {
   @apply border-y border-[var(--color-border)];
 }
 
+.gallery-overview__filters summary {
+  list-style: none;
+}
+.gallery-overview__filters summary::-webkit-details-marker {
+  display: none;
+}
+
+.gallery-overview__filters-toggle {
+  @apply flex cursor-pointer select-none items-center gap-3 px-6 py-4 sm:px-10 lg:px-14;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.gallery-overview__filters-toggle:hover {
+  color: var(--color-fg);
+}
+
+.gallery-overview__filters-badge {
+  @apply flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold;
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.gallery-overview__filters-arrow {
+  margin-left: auto;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+.gallery-overview__filters[open] .gallery-overview__filters-arrow {
+  transform: rotate(180deg);
+}
+
+.gallery-overview__filters-body {
+  border-top: 1px solid var(--color-border);
+}
+
 .gallery-overview__filters .gallery-overview__filter {
   border: none;
 }

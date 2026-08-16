@@ -1487,7 +1487,7 @@ body {
 .gallery-mosaic {
   display: flex;
   align-items: flex-start;
-  gap: 0;
+  gap: 3px;
   width: 100vw;
   max-width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -1500,6 +1500,8 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 3px;
+  background: var(--color-border);
 }
 
 .gallery-mosaic__item {
@@ -1799,15 +1801,19 @@ body {
 }
 
 .gallery-overview__filters-toggle {
-  @apply flex cursor-pointer select-none items-center gap-3 px-6 py-4 sm:px-10 lg:px-14;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  @apply block cursor-pointer select-none px-6 py-4 sm:px-10;
   color: var(--color-muted);
 }
 .gallery-overview__filters-toggle:hover {
   color: var(--color-fg);
+}
+
+.gallery-overview__filters-toggle-inner {
+  @apply mx-auto flex max-w-[72rem] items-center gap-3;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .gallery-overview__filters-badge {

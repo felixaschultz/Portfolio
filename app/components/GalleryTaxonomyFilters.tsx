@@ -57,11 +57,13 @@ export function GalleryTaxonomyFilters({
   return (
     <details className="gallery-overview__filters" open={isActive || undefined}>
       <summary className="gallery-overview__filters-toggle">
-        <span>{t("photography.filterToggle", "Filter")}</span>
-        {isActive ? (
-          <span className="gallery-overview__filters-badge">1</span>
-        ) : null}
-        <span className="gallery-overview__filters-arrow" aria-hidden>▾</span>
+        <div className="gallery-overview__filters-toggle-inner">
+          <span>{t("photography.filterToggle", "Filter")}</span>
+          {isActive ? (
+            <span className="gallery-overview__filters-badge">1</span>
+          ) : null}
+          <span className="gallery-overview__filters-arrow" aria-hidden>▾</span>
+        </div>
       </summary>
 
       <div className="gallery-overview__filters-body">

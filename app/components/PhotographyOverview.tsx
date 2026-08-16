@@ -11,6 +11,7 @@ type PhotographyOverviewProps = {
   currentYear?: number;
   activeTag?: string | null;
   activeCategorySlug?: string | null;
+  categoryLabel?: string | null;
 };
 
 export function PhotographyOverview({
@@ -19,6 +20,7 @@ export function PhotographyOverview({
   currentYear,
   activeTag = null,
   activeCategorySlug = null,
+  categoryLabel = null,
 }: PhotographyOverviewProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
@@ -27,7 +29,9 @@ export function PhotographyOverview({
   return (
     <div className="gallery-overview">
       <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
-        <h1 className="gallery-overview__title">{t("photography.title")}</h1>
+        <h1 className="gallery-overview__title">
+          {categoryLabel ?? t("photography.title")}
+        </h1>
         <p className="gallery-overview__lede">{t("photography.description")}</p>
         <p className="mt-8">
           <Link to={`${base}/photography/photos`} className="btn-primary text-sm">

@@ -50,7 +50,7 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyCategoryPage() {
-  const { galleries, publishedCategories, activeCategorySlug, currentYear } =
+  const { galleries, publishedCategories, activeCategorySlug, categoryLabel, currentYear } =
     useLoaderData<typeof loader>();
   return (
     <PhotographyOverview
@@ -58,6 +58,7 @@ export default function PhotographyCategoryPage() {
       publishedCategories={publishedCategories}
       currentYear={currentYear}
       activeCategorySlug={activeCategorySlug}
+      categoryLabel={categoryLabel}
     />
   );
 }

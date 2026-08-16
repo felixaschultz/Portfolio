@@ -2,6 +2,7 @@
   "search": {
     "title": "Search",
     "placeholder": "Search projects, galleries…",
+    "placeholderPhotography": "Search galleries…",
     "close": "Close",
     "noResults": "No results found",
     "loading": "Loading search…",

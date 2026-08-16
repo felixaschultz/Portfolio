@@ -27,22 +27,18 @@ function pageItem(
   };
 }
 
-let searchIndexCache: { locale: Locale; items: SearchIndexItem[]; builtAt: number } | null =
-  null;
+const searchIndexCache = new Map<Locale, { items: SearchIndexItem[]; builtAt: number }>();
 const SEARCH_INDEX_TTL_MS = 5 * 60 * 1000;
 
 export async function buildSearchIndex(locale: Locale): Promise<SearchIndexItem[]> {
   const now = Date.now();
-  if (
-    searchIndexCache &&
-    searchIndexCache.locale === locale &&
-    now - searchIndexCache.builtAt < SEARCH_INDEX_TTL_MS
-  ) {
-    return searchIndexCache.items;
+  const cached = searchIndexCache.get(locale);
+  if (cached && now - cached.builtAt < SEARCH_INDEX_TTL_MS) {
+    return cached.items;
   }
 
   const items = await buildSearchIndexUncached(locale);
-  searchIndexCache = { locale, items, builtAt: now };
+  searchIndexCache.set(locale, { items, builtAt: now });
   return items;
 }
 

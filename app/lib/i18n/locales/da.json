@@ -2,6 +2,7 @@
   "search": {
     "title": "Søg",
     "placeholder": "Søg projekter, gallerier…",
+    "placeholderPhotography": "Søg gallerier…",
     "close": "Luk",
     "noResults": "Ingen resultater",
     "loading": "Indlæser søgning…",

@@ -1,6 +1,6 @@
 import { matchSorter } from "match-sorter";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Locale } from "../lib/i18n";
 import type { SearchIndexItem } from "../lib/search";
@@ -15,6 +15,8 @@ type SearchDialogProps = {
 export function SearchDialog({ locale, open, onClose }: SearchDialogProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPhotographySection = location.pathname.includes("/photography");
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -56,12 +58,22 @@ export function SearchDialog({ locale, open, onClose }: SearchDialogProps) {
 
   const results = useMemo(() => {
     const list = items ?? [];
-    if (!query.trim()) return list.slice(0, 12);
-    return matchSorter(list, query.trim(), {
-      keys: ["title", "excerpt", "keywords", "type"],
-      threshold: matchSorter.rankings.CONTAINS,
-    }).slice(0, 12);
-  }, [items, query]);
+    let matched: SearchIndexItem[];
+    if (!query.trim()) {
+      matched = list.slice(0, 12);
+    } else {
+      matched = matchSorter(list, query.trim(), {
+        keys: ["title", "excerpt", "keywords", "type"],
+        threshold: matchSorter.rankings.CONTAINS,
+      }).slice(0, 12);
+    }
+    if (isPhotographySection) {
+      const galleries = matched.filter((i) => i.type === "gallery");
+      const rest = matched.filter((i) => i.type !== "gallery");
+      return [...galleries, ...rest];
+    }
+    return matched;
+  }, [items, query, isPhotographySection]);
 
   const goTo = useCallback(
     (item: SearchIndexItem) => {
@@ -124,7 +136,7 @@ export function SearchDialog({ locale, open, onClose }: SearchDialogProps) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("search.placeholder")}
+          placeholder={isPhotographySection ? t("search.placeholderPhotography") : t("search.placeholder")}
           className="min-h-11 flex-1 bg-transparent text-base text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)] sm:text-sm"
           autoComplete="off"
           spellCheck={false}

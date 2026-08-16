@@ -2,6 +2,7 @@
   "search": {
     "title": "Suche",
     "placeholder": "Projekte, Galerien suchen…",
+    "placeholderPhotography": "Galerien suchen…",
     "close": "Schließen",
     "noResults": "Keine Ergebnisse",
     "loading": "Suche wird geladen…",

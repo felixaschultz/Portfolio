@@ -107,9 +107,13 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
           <button
             type="button"
             onClick={onSearchClick}
-            className="btn-ghost gap-1.5 px-4"
+            className="btn-ghost gap-2 px-4"
             aria-label={t("search.open")}
           >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M9 9l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
             <span>{t("search.open")}</span>
             <kbd className="hidden rounded border border-[var(--color-border)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--color-muted)] lg:inline">
               {t("search.shortcut")}

@@ -168,10 +168,6 @@ export function GalleryView({
   const metaLine =
     metaLineFromLoader ?? buildGalleryAlbumMetaLine(gallery, lng, t);
 
-  const coverIndex = coverImage
-    ? gallery.images.findIndex((img) => img._key === coverImage._key)
-    : 0;
-
   const streamAnimates = !shouldDisableReveal(moreImages.length);
 
   const sharePayload = useMemo(
@@ -228,9 +224,6 @@ export function GalleryView({
           </div>
 
           <div className="gallery-album__hero-copy">
-            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-muted)]">
-              {String(coverIndex + 1).padStart(2, "0")} / {String(gallery.imageCount).padStart(2, "0")}
-            </p>
             <h1 className="gallery-album__title">{title}</h1>
             {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
             <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />

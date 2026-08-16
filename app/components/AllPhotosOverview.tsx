@@ -54,11 +54,8 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
         </p>
         <h1 className="gallery-overview__title">{t("photography.allPhotosPageTitle")}</h1>
         <p className="gallery-overview__lede">{t("photography.allPhotosPageDescription")}</p>
-        <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.25em] text-[var(--color-muted)]">
-          {t("photography.allPhotosCount", { count: photos.length })}
-        </p>
         <p className="mt-8">
-          <Link to={photographyTagPath(lng, null)} className="btn-ghost text-sm">
+          <Link to={photographyTagPath(lng, null)} className="gallery-overview__photos-link">
             {t("photography.browseGalleries")} →
           </Link>
         </p>
@@ -79,7 +76,7 @@ export function AllPhotosOverview({ photos, galleries, activeTag = null }: AllPh
       ) : null}
 
       {filtered.length > 0 ? (
-        <ProtectedGallerySurface>
+        <ProtectedGallerySurface className="gallery-album__stream-wrap">
           <GalleryMasonry
             images={filtered}
             seed={`all-photos-${activeTag ?? "all"}`}

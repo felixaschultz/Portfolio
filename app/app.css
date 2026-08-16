@@ -1502,11 +1502,21 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%;
   padding: 0 0 clamp(3rem, 8vw, 5rem);
-  background: var(--color-border);
+}
+
+.gallery-album__stream-wrap {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-album__stream-wrap {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
 }
 
 .gallery-mosaic__col {

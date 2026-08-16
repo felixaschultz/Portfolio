@@ -206,11 +206,7 @@ export function GalleryView({
 
           <div className="gallery-album__hero-toolbar">
             <Link to={`${base}/photography`} className="gallery-album__back gallery-album__back--on-cover">
-              ←{" "}
-              <GalleryResponsiveLabel
-                short={t("photography.backShort")}
-                long={t("photography.back")}
-              />
+              ←
             </Link>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />

@@ -34,6 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {gtmId ? <GoogleTagManagerHead containerId={gtmId} /> : null}
+        <script src="https://analytics.consentsmanagement.com/api/a" data-site="isp49uv0Tv1W5mol" async defer />
         <Meta />
         <Links />
       </head>

@@ -16,7 +16,7 @@
     "dotenv": "^16.4.7",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "sanity": "^5.25.1",
+    "sanity": "^6.10.1",
     "styled-components": "^6.4.1"
   }
 }

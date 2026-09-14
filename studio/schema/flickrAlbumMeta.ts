@@ -1,6 +1,18 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { FlickrAlbumIdInput } from "../components/FlickrAlbumIdInput";
 
+const localizedText = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: "object",
+    fields: [
+      { name: "da", title: "Danish", type: "text", rows: 3 },
+      { name: "de", title: "German", type: "text", rows: 3 },
+      { name: "en", title: "English", type: "text", rows: 3 },
+    ],
+  });
+
 export const flickrAlbumMeta = defineType({
   name: "flickrAlbumMeta",
   title: "Flickr album metadata",
@@ -22,6 +34,7 @@ export const flickrAlbumMeta = defineType({
       readOnly: true,
       hidden: true,
     }),
+    localizedText("description", "Description"),
     defineField({
       name: "categories",
       title: "Categories",

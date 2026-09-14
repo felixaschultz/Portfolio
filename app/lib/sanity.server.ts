@@ -270,6 +270,7 @@ const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} 
 
 const FLICKR_ALBUM_META_QUERY = `*[_type == "flickrAlbumMeta" && defined(flickrAlbumId) && !(_id in path("drafts.**"))] {
   flickrAlbumId,
+  description,
   "categories": categories[]->{
     "slug": slug.current,
     title
@@ -281,6 +282,7 @@ const FLICKR_ALBUM_META_QUERY = `*[_type == "flickrAlbumMeta" && defined(flickrA
 
 type FlickrAlbumMetaDoc = {
   flickrAlbumId: string;
+  description?: LocalizedString;
   categories?: GalleryCategoryRef[];
   tags?: string[];
   featured?: boolean;
@@ -518,6 +520,7 @@ export async function fetchGalleriesForList(): Promise<GalleryListItem[]> {
       if (!meta) return item;
       return {
         ...item,
+        description: meta.description ?? item.description,
         categories: meta.categories?.filter((c) => c?.slug) ?? [],
         tags: meta.tags ?? [],
         featured: meta.featured ?? item.featured,
@@ -634,6 +637,7 @@ export async function fetchGalleryDetailBySlug(
     if (!meta) return detail;
     return {
       ...detail,
+      description: meta.description ?? detail.description,
       categories: meta.categories?.filter((c) => c?.slug) ?? detail.categories ?? [],
       tags: meta.tags ?? detail.tags ?? [],
       featured: meta.featured ?? detail.featured,

@@ -27,6 +27,12 @@ export type FlickrPhoto = {
   url_b?: string;
   width_b?: number;
   height_b?: number;
+  url_h?: string;
+  width_h?: number;
+  height_h?: number;
+  url_k?: string;
+  width_k?: number;
+  height_k?: number;
 };
 
 function coverUrl(server: string, photoId: string, secret: string, size: string): string {
@@ -93,7 +99,7 @@ export async function fetchAlbumPhotos(albumId: string): Promise<FlickrPhoto[]> 
   url.searchParams.set("api_key", config.apiKey);
   url.searchParams.set("user_id", config.userId);
   url.searchParams.set("photoset_id", albumId);
-  url.searchParams.set("extras", "url_s,url_n,url_z,url_b");
+  url.searchParams.set("extras", "url_s,url_n,url_z,url_b,url_h,url_k");
   url.searchParams.set("format", "json");
   url.searchParams.set("nojsoncallback", "1");
   url.searchParams.set("per_page", "500");

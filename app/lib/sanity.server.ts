@@ -975,6 +975,16 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
   }
 }
 
+const FLICKR_SIZE_WIDTHS: Record<string, number> = {
+  s: 75, q: 150, t: 100, m: 240, n: 320, w: 400, z: 640, c: 800, b: 1024, h: 1600, k: 2048, o: 2048,
+};
+
+/** Nominal long-edge width for a Flickr static URL, inferred from its size-letter suffix. */
+function flickrSizeWidth(url: string): number {
+  const letter = /_([a-z])\.jpg(?:[?#].*)?$/i.exec(url)?.[1]?.toLowerCase();
+  return (letter && FLICKR_SIZE_WIDTHS[letter]) || 1024;
+}
+
 export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> {
   const widths = COVER_WIDTHS_HOME_SPOTLIGHT;
 
@@ -1006,11 +1016,11 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
-        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "z");
+        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
         const srcSetParts: string[] = [];
-        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 320w`);
-        srcSetParts.push(`${imageUrl} 1024w`);
+        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
+        srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
         out.push({
           _key: pid,
           imageUrl,
@@ -1033,7 +1043,10 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
 
       try {
         if (imageRow.externalUrl) {
-          const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, widths, { fit: "16x9" });
+          const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, widths, {
+            fit: "16x9",
+            quality: 90,
+          });
           if (!src) {
             console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
             continue;
@@ -1055,7 +1068,7 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
             normalizeHomeFavoriteFraming(row.framing) ??
             framingFromImageSource(imageRow.image as import("@sanity/image-url").SanityImageSource);
           const source = applyHomeFavoriteFraming(base, framing);
-          const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9" });
+          const { src, srcSet } = photoSrcSet(source, widths, { fit: "16x9", quality: 90 });
           if (!src) {
             console.warn(`[sanity] fetchHomeSpotlightSlides: no URL for ${slug}/${imageKey}`);
             continue;

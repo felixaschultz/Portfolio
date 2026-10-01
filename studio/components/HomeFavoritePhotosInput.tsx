@@ -168,7 +168,7 @@ function parseFlickrUrl(url: string): { server: string; secret: string } | null 
   return { server: m[1]!, secret: m[2]! };
 }
 
-function mapFlickrPhoto(photo: FlickrPhoto): FlickrPhotoItem | null {
+function mapFlickrPhoto(photo: FlickrPhoto, preferLarge: boolean): FlickrPhotoItem | null {
   const srcUrl = photo.url_s ?? photo.url_n;
   if (!srcUrl) return null;
   const parsed = parseFlickrUrl(srcUrl);
@@ -179,7 +179,9 @@ function mapFlickrPhoto(photo: FlickrPhoto): FlickrPhotoItem | null {
     secret: parsed.secret,
     title: photo.title,
     thumbUrl: photo.url_s ?? photo.url_n ?? srcUrl,
-    bestUrl: photo.url_b ?? photo.url_z ?? photo.url_n ?? srcUrl,
+    bestUrl: preferLarge
+      ? photo.url_k ?? photo.url_h ?? photo.url_b ?? photo.url_z ?? photo.url_n ?? srcUrl
+      : photo.url_b ?? photo.url_z ?? photo.url_n ?? srcUrl,
   };
 }
 
@@ -363,7 +365,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     fetchAlbumPhotos(albumId)
       .then((raw) => {
         if (cancelled) return;
-        setFlickrPhotos(raw.flatMap((p) => { const m = mapFlickrPhoto(p); return m ? [m] : []; }));
+        setFlickrPhotos(raw.flatMap((p) => { const m = mapFlickrPhoto(p, isSpotlight); return m ? [m] : []; }));
       })
       .catch((err: unknown) => {
         if (!cancelled)
@@ -373,7 +375,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         if (!cancelled) setFlickrPhotosLoading(false);
       });
     return () => { cancelled = true; };
-  }, [activeFlickrAlbumId]);
+  }, [activeFlickrAlbumId, isSpotlight]);
 
   // ── Write helpers ──────────────────────────────────────────────────────────
   const writePicks = useCallback(

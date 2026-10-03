@@ -55,6 +55,7 @@ export function HomeFavoriteStack({ photos, locale, base }: HomeFavoriteStackPro
                 alt={alt}
                 className="home-favorites__img"
                 objectPosition={photo.imageObjectPosition}
+                scale={photo.imageScale}
                 loading={index === 0 ? "eager" : "lazy"}
               />
               <div className="home-favorites__shade" aria-hidden />

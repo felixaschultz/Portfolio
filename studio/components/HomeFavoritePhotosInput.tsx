@@ -19,7 +19,6 @@ import {
 } from "sanity";
 import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url";
 import {
-  DEFAULT_HOME_FAVORITE_FRAMING,
   type HomeFavoriteFraming,
   applyHomeFavoriteFraming,
   framingFromImageSource,
@@ -36,6 +35,9 @@ import {
   defaultStackPose,
   resolveStackPose,
 } from "../lib/home-favorite-stack";
+
+/** Flickr has no server-side crop, so default to no zoom (unlike the Sanity default's slight zoom). */
+const FLICKR_DEFAULT_FRAMING: HomeFavoriteFraming = { x: 0.5, y: 0.5, width: 1, height: 1 };
 
 const MAX_FAVORITES = 5;
 const MAX_SPOTLIGHT = 8;
@@ -422,7 +424,10 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
 
   const resetPickFraming = useCallback(
     (pick: PickValue) => {
-      if (pick.flickrPhotoId) return;
+      if (pick.flickrPhotoId) {
+        updatePickFraming(pick._key, FLICKR_DEFAULT_FRAMING);
+        return;
+      }
       const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
       const image = gallery?.images?.find((img) => img._key === pick.imageKey)?.image;
       updatePickFraming(pick._key, framingFromImageSource(image));
@@ -530,7 +535,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
 
   function pickFraming(pick: PickValue): HomeFavoriteFraming {
     if (pick.framing) return pick.framing;
-    if (pick.flickrPhotoId) return DEFAULT_HOME_FAVORITE_FRAMING;
+    if (pick.flickrPhotoId) return FLICKR_DEFAULT_FRAMING;
     return framingFromImageSource(resolvePickImage(pick));
   }
 
@@ -874,23 +879,23 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
             </Stack>
           )}
 
-          {/* Crop editors — only for Sanity picks */}
-          {picks.some((p) => !p.flickrPhotoId) ? (
+          {/* Crop editors */}
+          {picks.length > 0 ? (
             <Stack space={4}>
               <Text size={1} weight="semibold">
                 {isSpotlight ? "Slide crops (16:9)" : "Card crops"}
               </Text>
               {picks.map((pick, index) => {
-                if (pick.flickrPhotoId) return null;
-                const gallery = pickGalleries.find((g) => g._id === pick.gallery?._ref);
                 const image = resolvePickImage(pick);
+                const imageUrl = pick.flickrPhotoId ? pick.flickrPhotoUrl : undefined;
                 return (
                   <Card key={`crop-${pick._key}`} padding={3} radius={2} border tone="transparent">
                     <HomeFavoriteFramingEditor
                       client={client}
                       image={image}
+                      imageUrl={imageUrl}
                       framing={pickFraming(pick)}
-                      label={`#${index + 1}${gallery ? ` · ${galleryLabel(gallery)}` : ""}`}
+                      label={resolvePickLabel(pick, index)}
                       aspectRatio={isSpotlight ? "16 / 9" : "4 / 5"}
                       onChange={(framing) => updatePickFraming(pick._key, framing)}
                       onReset={() => resetPickFraming(pick)}

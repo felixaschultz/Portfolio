@@ -7,6 +7,8 @@ export type HomeFavoritePhoto = GalleryImageItem & {
   galleryTitle: LocalizedString;
   /** CSS object-position from Studio card crop (e.g. "52% 38%"). */
   imageObjectPosition?: string;
+  /** CSS zoom approximating a Studio crop's zoom when there's no server-side crop (Flickr images). */
+  imageScale?: number;
   stackPose: HomeFavoriteStackPose;
 };
 

@@ -10,6 +10,8 @@ type GalleryImageProps = {
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
   objectPosition?: string;
+  /** CSS zoom approximating a Studio crop's zoom when there's no server-side crop (Flickr images). */
+  scale?: number;
   /** Deters drag / context menu on the image node. */
   protectedImage?: boolean;
 };
@@ -24,6 +26,7 @@ export function GalleryImage({
   loading = "lazy",
   fetchPriority,
   objectPosition,
+  scale,
   protectedImage = false,
 }: GalleryImageProps) {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -73,7 +76,14 @@ export function GalleryImage({
         decoding="async"
         draggable={false}
         className={`gallery-image__main ${className}`.trim()}
-        style={objectPosition ? { objectPosition } : undefined}
+        style={
+          objectPosition || scale
+            ? {
+                ...(objectPosition ? { objectPosition } : null),
+                ...(scale && scale !== 1 ? { transform: `scale(${scale})` } : null),
+              }
+            : undefined
+        }
         onLoad={markLoaded}
         onContextMenu={protectedImage ? (e) => e.preventDefault() : undefined}
         onDragStart={protectedImage ? (e) => e.preventDefault() : undefined}

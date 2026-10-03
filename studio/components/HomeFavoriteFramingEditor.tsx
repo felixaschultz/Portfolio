@@ -10,7 +10,9 @@ import {
 
 type HomeFavoriteFramingEditorProps = {
   client: ReturnType<typeof import("sanity").useClient>;
-  image: SanityImageSource | undefined;
+  image?: SanityImageSource;
+  /** Plain image URL (e.g. Flickr) used instead of `image` when there's no Sanity asset to crop server-side. */
+  imageUrl?: string;
   framing: HomeFavoriteFraming;
   onChange: (next: HomeFavoriteFraming) => void;
   onReset: () => void;
@@ -47,6 +49,7 @@ function previewUrl(
 export function HomeFavoriteFramingEditor({
   client,
   image,
+  imageUrl,
   framing,
   onChange,
   onReset,
@@ -56,6 +59,7 @@ export function HomeFavoriteFramingEditor({
   const frameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; framing: HomeFavoriteFraming } | null>(null);
   const [url, setUrl] = useState<string | null>(null);
+  const isRemote = !image && !!imageUrl;
 
   useEffect(() => {
     if (!image) {
@@ -79,11 +83,11 @@ export function HomeFavoriteFramingEditor({
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
-      if (!image) return;
+      if (!image && !imageUrl) return;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       dragRef.current = { x: e.clientX, y: e.clientY, framing };
     },
-    [framing, image],
+    [framing, image, imageUrl],
   );
 
   const onPointerMove = useCallback(
@@ -116,7 +120,7 @@ export function HomeFavoriteFramingEditor({
     [framing, onChange],
   );
 
-  if (!image) {
+  if (!image && !imageUrl) {
     return (
       <Text size={1} muted>
         Image unavailable for crop.
@@ -161,7 +165,21 @@ export function HomeFavoriteFramingEditor({
           background: "var(--card-muted-bg-color)",
         }}
       >
-        {url ? (
+        {isRemote ? (
+          <img
+            src={imageUrl}
+            alt=""
+            draggable={false}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "cover",
+              objectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+              transform: `scale(${1 / Math.max(framing.width, 0.01)})`,
+            }}
+          />
+        ) : url ? (
           <img
             src={url}
             alt=""

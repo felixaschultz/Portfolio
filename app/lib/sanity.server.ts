@@ -893,17 +893,18 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
-        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "z");
-        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
+        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
         const srcSetParts: string[] = [];
-        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 320w`);
-        srcSetParts.push(`${imageUrl} 1024w`);
+        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
+        srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
         out.push({
           _key: pid,
           imageUrl,
           imageSrcSet: srcSetParts.join(", "),
           imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          imageScale: flickrZoomScale(framing),
           stackPose: resolveStackPose(row.stackPose, stackIndex, total),
           gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
           galleryTitle: {},
@@ -985,6 +986,16 @@ function flickrSizeWidth(url: string): number {
   return (letter && FLICKR_SIZE_WIDTHS[letter]) || 1024;
 }
 
+/**
+ * CSS zoom approximating a Studio crop's zoom for Flickr images: Flickr serves fixed
+ * static derivatives, so (unlike Sanity assets) there's no server-side crop to bake the
+ * zoom into — the frontend scales the rendered <img> instead.
+ */
+function flickrZoomScale(framing: { width: number }): number | undefined {
+  if (!(framing.width > 0) || framing.width >= 1) return undefined;
+  return 1 / framing.width;
+}
+
 export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> {
   const widths = COVER_WIDTHS_HOME_SPOTLIGHT;
 
@@ -1017,7 +1028,7 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
         const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
-        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
         const srcSetParts: string[] = [];
         if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
         srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
@@ -1027,6 +1038,7 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
           imageSrcSet: srcSetParts.join(", "),
           imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          imageScale: flickrZoomScale(framing),
           gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
           galleryTitle: {},
         });

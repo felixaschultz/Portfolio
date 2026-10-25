@@ -217,7 +217,7 @@ export function GalleryView({
             </div>
           </div>
 
-          <header className="gallery-album__hero">
+          <section className="home-hero" aria-labelledby="gallery-album-hero-heading">
             <button
               type="button"
               className="gallery-album__hero-media"
@@ -230,15 +230,20 @@ export function GalleryView({
                 sizes="100vw"
                 alt={heroImage.alt || title}
                 blurSrc={heroImage.imageBlurUrl}
-                className="gallery-album__hero-img"
                 loading="eager"
                 fetchPriority="high"
                 protectedImage
               />
-              <span className="gallery-album__hero-shade" aria-hidden />
             </button>
-            <div className="gallery-album__hero-copy">{copy}</div>
-          </header>
+            <div className="home-hero__shade" aria-hidden />
+            <div className="home-hero__content">
+              <h1 id="gallery-album-hero-heading" className="home-hero__title font-display">
+                {title}
+              </h1>
+              {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
+              <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
+            </div>
+          </section>
         </>
       ) : (
         <header className="gallery-album__masthead">

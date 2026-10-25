@@ -1185,48 +1185,17 @@ body {
   @apply text-[var(--color-accent)];
 }
 
-/* Album hero — cover image full-width; title sits below on page bg */
-.gallery-album__hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
+/* Album hero — reuses .home-hero/.home-hero__shade/.home-hero__content (same design as the
+   home + photography-listing heroes); only the clickable full-bleed media layer is bespoke,
+   since it wraps GalleryImage for blur-placeholder + lightbox-open + anti-hotlink support. */
 .gallery-album__hero-media {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
-  max-height: min(78vh, 680px);
-  overflow: hidden;
+  height: 100%;
   cursor: pointer;
-  background: #000;
-  border-radius: 0 0 12px 12px;
-}
-
-.gallery-album__hero-copy {
-  max-width: 72rem;
-  margin: 0 auto;
-  width: 100%;
-  padding: 1.75rem 1.5rem 2rem;
-}
-
-@media (min-width: 640px) {
-  .gallery-album__hero-copy {
-    padding: 2rem 2.5rem 2.5rem;
-  }
-}
-
-.gallery-album__hero .gallery-album__title {
-  text-shadow: none;
-  font-size: clamp(1.75rem, 5vw, 3.5rem);
-}
-
-.gallery-album__hero .gallery-album__meta {
-  color: var(--color-muted);
-  text-shadow: none;
 }
 
 .gallery-album__hero-media .gallery-image {
@@ -1236,35 +1205,36 @@ body {
   height: 100%;
 }
 
-.gallery-album__hero-img,
 .gallery-album__hero-media .gallery-image__main {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  opacity: 1;
-  pointer-events: none;
   transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.gallery-album__hero-media .gallery-image__blur {
-  display: none;
-}
-
 .gallery-album__hero-media:hover .gallery-image__main {
-  transform: scale(1.01);
+  transform: scale(1.02);
 }
 
-.gallery-album__hero-shade {
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 32%;
-  max-height: 9rem;
-  background: linear-gradient(180deg, rgb(6 10 9 / 0.5) 0%, transparent 100%);
+/* Album-specific overlay content (meta line + description + categories/tags) needs its own
+   legibility treatment on a photo — the plain-masthead versions of these classes stay as-is. */
+.home-hero__content .gallery-album__meta {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.home-hero__content .gallery-album__details {
+  border-top-color: rgb(255 255 255 / 0.22);
+}
+
+.home-hero__content .gallery-album__description {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.home-hero__content .gallery-album__categories,
+.home-hero__content .gallery-album__tags {
+  color: rgb(255 255 255 / 0.68);
+}
+
+.home-hero__content .gallery-album__tag-sep {
+  color: rgb(255 255 255 / 0.35);
 }
 
 .gallery-album__title {

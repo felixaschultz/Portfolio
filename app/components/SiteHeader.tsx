@@ -127,7 +127,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
               const active = i18n.language === lng;
               const className = `flex min-h-9 min-w-9 items-center justify-center rounded-full text-xs font-medium uppercase transition ${
                 active
-                  ? "bg-[var(--color-accent)] text-[#0a0f0e]"
+                  ? "bg-[var(--color-accent)] text-[var(--color-bg)]"
                   : "text-[var(--color-muted)] hover:text-[var(--color-text)]"
               }`;
               return isCrossDomainLocale(lng) ? (

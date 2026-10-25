@@ -38,9 +38,9 @@ export function ShopCheckoutStripe({
         appearance: {
           theme: "night",
           variables: {
-            colorPrimary: "#15b0ab",
-            colorBackground: "#0f1615",
-            colorText: "#e8f0ef",
+            colorPrimary: "#c9a876",
+            colorBackground: "#141311",
+            colorText: "#f3f1ec",
             colorDanger: "#f87171",
             borderRadius: "6px",
           },

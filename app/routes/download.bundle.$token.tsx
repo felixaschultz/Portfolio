@@ -28,9 +28,9 @@ export async function loader({ params }: Route.LoaderArgs) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bundle too large for instant download</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0a0f0e; color: #e8f0ef; margin: 0; padding: 2rem; line-height: 1.5; }
+    body { font-family: system-ui, sans-serif; background: #0b0b0a; color: #f3f1ec; margin: 0; padding: 2rem; line-height: 1.5; }
     main { max-width: 32rem; margin: 0 auto; }
-    a { color: #15b0ab; }
+    a { color: #c9a876; }
   </style>
 </head>
 <body>

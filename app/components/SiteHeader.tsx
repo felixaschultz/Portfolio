@@ -64,7 +64,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
       className={`site-header ${scrolled ? "site-header--scrolled" : ""}`.trim()}
     >
       <div className="site-header__inner">
-        <Logo className="min-h-11 shrink-0" />
+        <Logo className="min-h-10 shrink-0" />
 
         <nav className="header-nav-desktop" aria-label="Main">
           <NavLink
@@ -99,7 +99,11 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
             </div>
           </details>
 
-          <button type="button" onClick={onContactClick} className="btn-primary ml-3 px-5">
+          <button
+            type="button"
+            onClick={onContactClick}
+            className="btn-primary header-contact-button ml-3 px-5"
+          >
             {t("nav.contact")}
           </button>
         </nav>

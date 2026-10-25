@@ -186,13 +186,13 @@ body {
 }
 
 :root {
-  /* Match .site-header__inner (logo min-h-11 + vertical padding) */
-  --site-header-height: 4.5rem;
+  /* Match .site-header__inner (40px controls + vertical padding) */
+  --site-header-height: 3.75rem;
 }
 
 @media (min-width: 640px) {
   :root {
-    --site-header-height: 4.75rem;
+    --site-header-height: 4rem;
   }
 }
 
@@ -779,25 +779,25 @@ body {
   gap: 0.75rem;
   max-width: 72rem;
   margin: 0 auto;
-  padding: 0.875rem 1rem;
+  padding: 0.625rem 1rem;
   transition: padding 0.3s ease;
 }
 
 @media (min-width: 640px) {
   .site-header__inner {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
   }
 }
 
 .site-header--scrolled .site-header__inner {
-  padding-top: 0.625rem;
-  padding-bottom: 0.625rem;
+  padding-top: 0.4375rem;
+  padding-bottom: 0.4375rem;
 }
 
 @media (min-width: 640px) {
   .site-header--scrolled .site-header__inner {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 }
 
@@ -814,6 +814,11 @@ body {
 
 .header-search-button {
   display: none;
+}
+
+/* Shrink the shared .btn-primary just for the header's Contact button, without affecting its other uses (contact modal, project/error pages) */
+.header-contact-button {
+  min-height: 2.5rem !important;
 }
 
 @media (min-width: 64rem) {
@@ -870,7 +875,7 @@ body {
 }
 
 .btn-icon {
-  @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
+  @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)];
 }
 
 .input {

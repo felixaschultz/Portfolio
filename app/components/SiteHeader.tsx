@@ -68,16 +68,16 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
 
         <nav className="header-nav-desktop" aria-label="Main">
           <NavLink
-            to={`${base}/projects`}
-            className={({ isActive }) => `nav-link ${isActive ? "nav-link-active" : ""}`}
-          >
-            {t("nav.projects")}
-          </NavLink>
-          <NavLink
             to={`${base}/photography`}
             className={({ isActive }) => `nav-link ${isActive ? "nav-link-active" : ""}`}
           >
             {t("nav.photography")}
+          </NavLink>
+          <NavLink
+            to={`${base}/projects`}
+            className={({ isActive }) => `nav-link ${isActive ? "nav-link-active" : ""}`}
+          >
+            {t("nav.projects")}
           </NavLink>
 
           <details className="relative">
@@ -189,15 +189,6 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
               >
             <div className="flex flex-col gap-1">
               <NavLink
-                to={`${base}/projects`}
-                className={({ isActive }) =>
-                  `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
-                }
-                onClick={() => setMenuOpen(false)}
-              >
-                {t("nav.projects")}
-              </NavLink>
-              <NavLink
                 to={`${base}/photography`}
                 className={({ isActive }) =>
                   `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
@@ -205,6 +196,15 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 onClick={() => setMenuOpen(false)}
               >
                 {t("nav.photography")}
+              </NavLink>
+              <NavLink
+                to={`${base}/projects`}
+                className={({ isActive }) =>
+                  `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
+                }
+                onClick={() => setMenuOpen(false)}
+              >
+                {t("nav.projects")}
               </NavLink>
               <p className="mt-3 px-3 text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
                 {t("nav.websites")}

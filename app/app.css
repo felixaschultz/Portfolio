@@ -979,30 +979,6 @@ body {
   @apply text-[var(--color-muted)] hover:text-[var(--color-accent)];
 }
 
-.gallery-album__flickr-link {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.2s ease;
-}
-
-.gallery-album__intro-toolbar .gallery-album__flickr-link {
-  color: var(--color-muted);
-}
-
-.gallery-album__intro-toolbar .gallery-album__flickr-link:hover {
-  color: var(--color-accent);
-}
-
-.gallery-album__hero-toolbar .gallery-album__flickr-link {
-  color: rgb(255 255 255 / 0.85);
-}
-
-.gallery-album__hero-toolbar .gallery-album__flickr-link:hover {
-  color: var(--color-accent);
-}
-
 .gallery-album__hero-toolbar,
 .gallery-album__intro-toolbar {
   display: flex;

@@ -176,17 +176,6 @@ export function GalleryView({
   const heroImage =
     gallery.images.find((img) => img._key === gallery.coverImageKey) ?? gallery.images[0] ?? null;
 
-  const flickrLink = gallery.flickrAlbumUrl ? (
-    <a
-      href={gallery.flickrAlbumUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="gallery-album__flickr-link"
-    >
-      Flickr
-    </a>
-  ) : null;
-
   const copy = (
     <>
       <h1 className="gallery-album__title">{title}</h1>
@@ -212,7 +201,6 @@ export function GalleryView({
             </button>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
-              {flickrLink}
               <GalleryShare payload={sharePayload} />
             </div>
           </div>
@@ -257,7 +245,6 @@ export function GalleryView({
             </button>
             <div className="gallery-album__toolbar-actions">
               <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
-              {flickrLink}
               <GalleryShare payload={sharePayload} />
             </div>
           </div>

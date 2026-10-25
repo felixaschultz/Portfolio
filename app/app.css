@@ -3903,6 +3903,134 @@ body {
   }
 }
 
+/* Site footer */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.site-footer__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 3.5rem) 1.5rem;
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .site-footer__inner {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .site-footer__inner {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+.site-footer__brand .site-logo__name {
+  display: block;
+}
+
+.site-footer__tagline {
+  margin: 0.9rem 0 0;
+  max-width: 24rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 900px) {
+  .site-footer__nav {
+    padding-top: 0.5rem;
+  }
+}
+
+.site-footer__nav a,
+.site-footer__nav button {
+  display: inline-block;
+  width: fit-content;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.site-footer__nav a:hover,
+.site-footer__nav button:hover {
+  color: var(--color-accent);
+}
+
+.site-footer__social {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+@media (min-width: 900px) {
+  .site-footer__social {
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+  }
+}
+
+.site-footer__social-link {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.site-footer__social-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.site-footer__social-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.site-footer__bottom {
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer__bottom p {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+@media (min-width: 640px) {
+  .site-footer__bottom p {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
 /* Recommendations — one-at-a-time slider */
 .recommendations__slide {
   display: flex;

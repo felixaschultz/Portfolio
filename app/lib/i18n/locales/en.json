@@ -144,7 +144,8 @@
     "close": "Close"
   },
   "footer": {
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "tagline": "Photography & web development, from Denmark."
   },
   "featured": {
     "projects": "Featured projects",

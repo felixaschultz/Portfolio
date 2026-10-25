@@ -100,7 +100,7 @@ export default function LocaleLayout() {
           <main className="site-layout__main">
             <Outlet context={{ openContact }} />
           </main>
-          <SiteFooter />
+          <SiteFooter onContactClick={openContact} />
         </div>
         {contactOpen ? (
           <Suspense fallback={null}>

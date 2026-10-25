@@ -600,20 +600,58 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   }
 }
 
+const CLAIMED_FLICKR_ALBUM_IDS_QUERY = `*[${publishedGalleryFilter} && defined(flickrAlbumId)].flickrAlbumId`;
+
 export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {
   const { COVER_WIDTHS_HOME_TILE } = await import("./image.server");
+  const { fetchFlickrAlbums, flickrAlbumToListItem } = await import("./flickr.server");
   const client = getSanityClient();
   if (!client) return [];
   try {
-    const galleries: GalleryDocument[] = await client.fetch(FEATURED_GALLERIES_QUERY);
+    const [galleries, flickrAlbums, metaMap, claimedAlbumIds] = await Promise.all([
+      client.fetch<GalleryDocument[]>(FEATURED_GALLERIES_QUERY),
+      fetchFlickrAlbums(),
+      fetchFlickrAlbumMeta(),
+      client.fetch<string[]>(CLAIMED_FLICKR_ALBUM_IDS_QUERY),
+    ]);
+
     const published = dedupeGalleriesBySlug(galleries);
+    const claimed = new Set(claimedAlbumIds);
+    const featuredFlickrAlbums = flickrAlbums.filter(
+      (a) => !claimed.has(a.id) && metaMap.get(a.id)?.featured,
+    );
+
+    type Entry =
+      | { kind: "sanity"; takenAt: string; gallery: GalleryDocument }
+      | { kind: "flickr"; takenAt: string; album: (typeof featuredFlickrAlbums)[number] };
+
+    const entries: Entry[] = [
+      ...published.map((gallery): Entry => ({ kind: "sanity", takenAt: gallery.takenAt ?? "", gallery })),
+      ...featuredFlickrAlbums.map((album): Entry => ({
+        kind: "flickr",
+        takenAt: new Date(parseInt(album.dateCreate, 10) * 1000).toISOString().slice(0, 10),
+        album,
+      })),
+    ]
+      .sort((a, b) => b.takenAt.localeCompare(a.takenAt))
+      .slice(0, 8);
+
     const items = await Promise.all(
-      published.map((g, index) =>
-        mapGalleryToListItem(g, COVER_WIDTHS_HOME_TILE, {
-          fit: "square",
-          includeHomeHero: index === 0,
-        }),
-      ),
+      entries.map((entry, index) => {
+        if (entry.kind === "sanity") {
+          return mapGalleryToListItem(entry.gallery, COVER_WIDTHS_HOME_TILE, {
+            fit: "square",
+            includeHomeHero: index === 0,
+          });
+        }
+        const item = flickrAlbumToListItem(entry.album);
+        const meta = metaMap.get(entry.album.id);
+        return Promise.resolve({
+          ...item,
+          description: meta?.description ?? item.description,
+          location: meta?.location ?? item.location,
+        });
+      }),
     );
     return items.filter((g): g is GalleryListItem => g !== null);
   } catch {

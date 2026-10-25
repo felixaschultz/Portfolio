@@ -28,21 +28,46 @@ export function PhotographyOverview({
   const { t } = useTranslation();
   const base = `/${locale}`;
 
+  const heroTitle = categoryLabel ?? activeTag ?? t("photography.title");
+  const heroLede = categoryDescription ?? t("photography.description");
+  const heroGallery = galleries[0] ?? null;
+
   return (
     <div className="gallery-overview">
-      <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
-        <h1 className="gallery-overview__title">
-          {categoryLabel ?? activeTag ?? t("photography.title")}
-        </h1>
-        <p className="gallery-overview__lede">
-          {categoryDescription ?? t("photography.description")}
-        </p>
-        <p className="mt-8">
-          <Link to={`${base}/photography/photos`} className="gallery-overview__photos-link">
-            {t("photography.browseAllPhotos")} →
-          </Link>
-        </p>
-      </Reveal>
+      {heroGallery ? (
+        <section className="home-hero" aria-labelledby="gallery-overview-hero-heading">
+          <img
+            src={heroGallery.coverUrl}
+            srcSet={heroGallery.coverSrcSet}
+            sizes="100vw"
+            alt=""
+            className="home-hero__bg"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+          <div className="home-hero__shade" aria-hidden />
+          <div className="home-hero__content">
+            <h1 id="gallery-overview-hero-heading" className="home-hero__title font-display">
+              {heroTitle}
+            </h1>
+            <p className="home-hero__lede">{heroLede}</p>
+            <Link to={`${base}/photography/photos`} className="home-hero__cta">
+              {t("photography.browseAllPhotos")} →
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <Reveal as="header" className="gallery-overview__header" variant="fade" immediate>
+          <h1 className="gallery-overview__title">{heroTitle}</h1>
+          <p className="gallery-overview__lede">{heroLede}</p>
+          <p className="mt-8">
+            <Link to={`${base}/photography/photos`} className="gallery-overview__photos-link">
+              {t("photography.browseAllPhotos")} →
+            </Link>
+          </p>
+        </Reveal>
+      )}
       <GalleryGrid
         galleries={galleries}
         publishedCategories={publishedCategories}

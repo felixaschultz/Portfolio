@@ -173,34 +173,92 @@ export function GalleryView({
     [lng, gallery.slug, title, description, metaLine],
   );
 
+  const heroImage =
+    gallery.images.find((img) => img._key === gallery.coverImageKey) ?? gallery.images[0] ?? null;
+
+  const flickrLink = gallery.flickrAlbumUrl ? (
+    <a
+      href={gallery.flickrAlbumUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="gallery-album__flickr-link"
+    >
+      Flickr
+    </a>
+  ) : null;
+
+  const copy = (
+    <>
+      <h1 className="gallery-album__title">{title}</h1>
+      {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
+      <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
+    </>
+  );
+
   return (
     <article className="gallery-album">
       {nextGallery?.coverUrl ? <link rel="preload" as="image" href={nextGallery.coverUrl} /> : null}
       {prevGallery?.coverUrl ? <link rel="preload" as="image" href={prevGallery.coverUrl} /> : null}
 
-      <header className="gallery-album__masthead">
-        <div className="gallery-album__intro-toolbar">
-          <button type="button" onClick={handleBack} className="gallery-album__back gallery-album__back--plain">
-            ←{" "}
-            <GalleryResponsiveLabel
-              short={t("photography.backShort")}
-              long={t("photography.back")}
-            />
-          </button>
-          <div className="gallery-album__toolbar-actions">
-            <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
-            {gallery.flickrAlbumUrl ? (
-              <a href={gallery.flickrAlbumUrl} target="_blank" rel="noopener noreferrer" className="gallery-album__flickr-link">
-                Flickr
-              </a>
-            ) : null}
-            <GalleryShare payload={sharePayload} />
+      {heroImage ? (
+        <>
+          <div className="gallery-album__hero-toolbar">
+            <button type="button" onClick={handleBack} className="gallery-album__back gallery-album__back--on-cover">
+              ←{" "}
+              <GalleryResponsiveLabel
+                short={t("photography.backShort")}
+                long={t("photography.back")}
+              />
+            </button>
+            <div className="gallery-album__toolbar-actions">
+              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="hero" />
+              {flickrLink}
+              <GalleryShare payload={sharePayload} />
+            </div>
           </div>
-        </div>
-        <h1 className="gallery-album__title mt-10">{title}</h1>
-        {metaLine ? <p className="gallery-album__meta">{metaLine}</p> : null}
-        <GalleryDetails description={description} categories={categories} tags={tags} lng={lng} />
-      </header>
+
+          <header className="gallery-album__hero">
+            <button
+              type="button"
+              className="gallery-album__hero-media"
+              onClick={() => openPhoto(heroImage._key)}
+              aria-label={title}
+            >
+              <GalleryImage
+                src={heroImage.imageFullUrl || heroImage.imageUrl}
+                srcSet={heroImage.imageFullSrcSet || heroImage.imageSrcSet}
+                sizes="100vw"
+                alt={heroImage.alt || title}
+                blurSrc={heroImage.imageBlurUrl}
+                className="gallery-album__hero-img"
+                loading="eager"
+                fetchPriority="high"
+                protectedImage
+              />
+              <span className="gallery-album__hero-shade" aria-hidden />
+            </button>
+            <div className="gallery-album__hero-copy">{copy}</div>
+          </header>
+        </>
+      ) : (
+        <header className="gallery-album__masthead">
+          <div className="gallery-album__intro-toolbar">
+            <button type="button" onClick={handleBack} className="gallery-album__back gallery-album__back--plain">
+              ←{" "}
+              <GalleryResponsiveLabel
+                short={t("photography.backShort")}
+                long={t("photography.back")}
+              />
+            </button>
+            <div className="gallery-album__toolbar-actions">
+              <GalleryPublicShopLink shopUrl={gallery.shopUrl} variant="plain" />
+              {flickrLink}
+              <GalleryShare payload={sharePayload} />
+            </div>
+          </div>
+          <div className="mt-10">{copy}</div>
+        </header>
+      )}
 
       {gallery.images.length > 0 ? (
         <ProtectedGallerySurface className="gallery-album__stream-wrap">

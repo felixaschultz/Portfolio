@@ -942,7 +942,11 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
     const out: HomeFavoritePhoto[] = [];
 
     const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
-    const { flickrStaticUrl } = await import("./flickr.server");
+    const { flickrStaticUrl, fetchFlickrAlbums } = await import("./flickr.server");
+    const needsFlickrTitles = rows.some((row) => row.flickrPhotoId && row.flickrAlbumId);
+    const flickrAlbumTitles = needsFlickrTitles
+      ? new Map((await fetchFlickrAlbums()).map((a) => [a.id, a.title]))
+      : new Map<string, string>();
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_FAVORITES) break;
@@ -955,6 +959,7 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
         const srcSetParts: string[] = [];
         if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
         srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
+        const albumTitle = row.flickrAlbumId ? flickrAlbumTitles.get(row.flickrAlbumId) : undefined;
         out.push({
           _key: pid,
           imageUrl,
@@ -964,7 +969,7 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
           imageScale: flickrZoomScale(framing),
           stackPose: resolveStackPose(row.stackPose, stackIndex, total),
           gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
-          galleryTitle: {},
+          galleryTitle: albumTitle ? { en: albumTitle, da: albumTitle, de: albumTitle } : {},
         });
         continue;
       }
@@ -1077,7 +1082,11 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
     const out: HomeSpotlightSlide[] = [];
 
     const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
-    const { flickrStaticUrl } = await import("./flickr.server");
+    const { flickrStaticUrl, fetchFlickrAlbums } = await import("./flickr.server");
+    const needsFlickrTitles = rows.some((row) => row.flickrPhotoId && row.flickrAlbumId);
+    const flickrAlbumTitles = needsFlickrTitles
+      ? new Map((await fetchFlickrAlbums()).map((a) => [a.id, a.title]))
+      : new Map<string, string>();
 
     for (const row of rows) {
       if (out.length >= MAX_HOME_SPOTLIGHT_SLIDES) break;
@@ -1089,6 +1098,7 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
         const srcSetParts: string[] = [];
         if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
         srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
+        const albumTitle = row.flickrAlbumId ? flickrAlbumTitles.get(row.flickrAlbumId) : undefined;
         out.push({
           _key: pid,
           imageUrl,
@@ -1097,7 +1107,7 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
           imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
           imageScale: flickrZoomScale(framing),
           gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
-          galleryTitle: {},
+          galleryTitle: albumTitle ? { en: albumTitle, da: albumTitle, de: albumTitle } : {},
         });
         continue;
       }

@@ -2,6 +2,7 @@ import { redirect, useLoaderData } from "react-router";
 import type { Route } from "./+types/$locale.photography._index";
 import { PhotographyOverview } from "../components/PhotographyOverview";
 import { fetchGalleriesForList, fetchPublishedGalleryCategories } from "../lib/sanity.server";
+import { buildPhotographyListJsonLd } from "../lib/gallery-seo";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
@@ -27,14 +28,18 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   };
 }
 
-export function meta({ params }: Route.MetaArgs) {
+export function meta({ params, data }: Route.MetaArgs) {
   const locale = isValidLocale(params.locale ?? "") ? (params.locale as Locale) : defaultLocale;
-  return buildPageMeta({
-    title: seoCopy(locale, "photographyTitle"),
-    description: seoCopy(locale, "photographyDescription"),
-    locale,
-    path: "/photography",
-  });
+  const galleries = data?.galleries ?? data?.photos ?? [];
+  return [
+    ...buildPageMeta({
+      title: seoCopy(locale, "photographyTitle"),
+      description: seoCopy(locale, "photographyDescription"),
+      locale,
+      path: "/photography",
+    }),
+    { "script:ld+json": buildPhotographyListJsonLd(galleries, locale) },
+  ];
 }
 
 export default function PhotographyIndex() {

@@ -6,13 +6,8 @@ import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 import { useScrolled } from "../lib/use-scrolled";
 import { type Locale } from "../lib/i18n";
 import { crossDomainUrl, localizedPath, pathSuffixAfterLocale, siteOriginForLocale } from "../lib/site-domains";
+import { siteCompanyLinks as websiteLinks } from "../lib/site-links";
 import { Logo } from "./Logo";
-
-const websiteLinks = [
-  { name: "devhelp.dk", href: "https://www.devhelp.dk" },
-  { name: "Intastellar Solutions", href: "https://www.intastellarsolutions.com" },
-  { name: "Intastellar Consents", href: "https://www.intastellarconsents.com" },
-];
 
 type SiteHeaderProps = {
   onContactClick: () => void;

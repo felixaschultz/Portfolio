@@ -354,12 +354,13 @@ async function mapGalleryToListItem(
     if (heroItem.externalUrl) {
       const hero = externalPhotoSrcSet(heroItem.externalUrl, COVER_WIDTHS_HOME_HERO, {
         fit: "16x9",
+        quality: 90,
       });
       heroSrc = hero.src;
       heroSrcSet = hero.srcSet;
     } else {
       const heroSource = toSanityImageSource(heroItem.image);
-      const hero = photoSrcSet(heroSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9" });
+      const hero = photoSrcSet(heroSource, COVER_WIDTHS_HOME_HERO, { fit: "16x9", quality: 90 });
       heroSrc = hero.src;
       heroSrcSet = hero.srcSet;
     }
@@ -604,7 +605,7 @@ const CLAIMED_FLICKR_ALBUM_IDS_QUERY = `*[${publishedGalleryFilter} && defined(f
 
 export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {
   const { COVER_WIDTHS_HOME_TILE } = await import("./image.server");
-  const { fetchFlickrAlbums, flickrAlbumToListItem } = await import("./flickr.server");
+  const { fetchFlickrAlbums, flickrAlbumToListItem, flickrAlbumHeroCover } = await import("./flickr.server");
   const client = getSanityClient();
   if (!client) return [];
   try {
@@ -646,10 +647,12 @@ export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]
         }
         const item = flickrAlbumToListItem(entry.album);
         const meta = metaMap.get(entry.album.id);
+        const hero = index === 0 ? flickrAlbumHeroCover(entry.album) : null;
         return Promise.resolve({
           ...item,
           description: meta?.description ?? item.description,
           location: meta?.location ?? item.location,
+          ...(hero ? { coverHeroUrl: hero.src, coverHeroSrcSet: hero.srcSet } : {}),
         });
       }),
     );

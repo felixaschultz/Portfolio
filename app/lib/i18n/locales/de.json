@@ -32,18 +32,16 @@
     "contact": "Kontakt"
   },
   "home": {
-    "doors": {
-      "heading": "Ich fange Momente. Ich baue Systeme.",
-      "lede": "Festivals, Veranstaltungen und Fotoshoots — oder Projekte und Produkte von Entwicklern.",
-      "photoEyebrow": "Fotografie",
-      "photoTitle": "Fotografie",
-      "photoText": "Festivals, Veranstaltungen und Fotoshoots — Galerien und Bilder in voller Größe durchstöbern.",
-      "photoCta": "Zu den Galerien",
-      "devEyebrow": "Webentwicklung",
-      "devTitle": "Entwicklung",
-      "devText": "Websites, Produkte und Kundenarbeit. Für professionelles Web im Alltag siehe die Unternehmensseiten unten.",
-      "devCta": "Portfolio-Projekte ansehen",
-      "devNote": "Hauptauftritt beruflich:"
+    "hero": {
+      "heading": "Momente, eingefangen.",
+      "lede": "Festivals, Veranstaltungen, Natur und kleinere Fotoshoots — das gesamte Werk durchstöbern.",
+      "cta": "Zu den Galerien"
+    },
+    "devBand": {
+      "title": "Entwicklung",
+      "text": "Websites, Produkte und Kundenarbeit. Für professionelles Web im Alltag siehe die Unternehmensseiten unten.",
+      "cta": "Portfolio-Projekte ansehen",
+      "note": "Hauptauftritt beruflich:"
     },
     "favorites": {
       "title": "Lieblingsaufnahmen",
@@ -59,6 +57,9 @@
     },
     "photoPreview": {
       "title": "Aus den Galerien"
+    },
+    "categories": {
+      "title": "Nach Kategorie durchstöbern"
     }
   },
   "hero": {
@@ -126,7 +127,10 @@
     "shareEmail": "E-Mail"
   },
   "recommendations": {
-    "title": "Empfehlungen"
+    "title": "Empfehlungen",
+    "prev": "Vorherige Empfehlung",
+    "next": "Nächste Empfehlung",
+    "goTo": "Zu Empfehlung {{n}} wechseln"
   },
   "contact": {
     "title": "Lassen Sie uns sprechen!",

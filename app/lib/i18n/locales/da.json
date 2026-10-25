@@ -32,18 +32,16 @@
     "contact": "Kontakt"
   },
   "home": {
-    "doors": {
-      "heading": "Jeg fanger øjeblikke. Jeg bygger systemer.",
-      "lede": "Festivaler, arrangementer og fotoshoots — eller projekter og produkter fra udvikleren.",
-      "photoEyebrow": "Fotografi",
-      "photoTitle": "Fotografi",
-      "photoText": "Fotogallerier fra festivals, arrangementer, naturen og mindre fotoshoots — gennemse album og billeder i fuld størrelse.",
-      "photoCta": "Gå til gallerier",
-      "devEyebrow": "Webudvikling",
-      "devTitle": "Udvikling",
-      "devText": "Websites, produkter og kundearbejde. Til dagligt professionelt web, se virksomhedssiderne nedenfor.",
-      "devCta": "Se portfolioprojekter",
-      "devNote": "Primær professionel tilstedeværelse:"
+    "hero": {
+      "heading": "Øjeblikke, fanget.",
+      "lede": "Festivaler, arrangementer, naturen og mindre fotoshoots — gennemse hele mit arbejde.",
+      "cta": "Gå til gallerier"
+    },
+    "devBand": {
+      "title": "Udvikling",
+      "text": "Websites, produkter og kundearbejde. Til dagligt professionelt web, se virksomhedssiderne nedenfor.",
+      "cta": "Se portfolioprojekter",
+      "note": "Primær professionel tilstedeværelse:"
     },
     "favorites": {
       "title": "Favoritbilleder",
@@ -59,6 +57,9 @@
     },
     "photoPreview": {
       "title": "Fra gallerierne"
+    },
+    "categories": {
+      "title": "Gennemse efter kategori"
     }
   },
   "hero": {
@@ -126,7 +127,10 @@
     "shareEmail": "E-mail"
   },
   "recommendations": {
-    "title": "Anbefalinger"
+    "title": "Anbefalinger",
+    "prev": "Forrige anbefaling",
+    "next": "Næste anbefaling",
+    "goTo": "Gå til anbefaling {{n}}"
   },
   "contact": {
     "title": "Lad os tage en snak!",

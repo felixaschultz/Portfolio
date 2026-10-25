@@ -32,18 +32,16 @@
     "contact": "Contact"
   },
   "home": {
-    "doors": {
-      "heading": "I capture moments. I build systems.",
-      "lede": "Festivals, events and photoshoots — or projects and products from developers.",
-      "photoEyebrow": "Photography",
-      "photoTitle": "Photography",
-      "photoText": "Photo galleries from festivals, events, nature, and smaller photoshoots — browse albums and full-size work.",
-      "photoCta": "Enter galleries",
-      "devEyebrow": "Web development",
-      "devTitle": "Development",
-      "devText": "Websites, products, and client work. For day-to-day professional web, see the company sites below.",
-      "devCta": "View portfolio projects",
-      "devNote": "Main professional presence:"
+    "hero": {
+      "heading": "Moments, captured.",
+      "lede": "Festivals, events, nature, and smaller photoshoots — browse the full body of work.",
+      "cta": "Enter galleries"
+    },
+    "devBand": {
+      "title": "Development",
+      "text": "Websites, products, and client work. For day-to-day professional web, see the company sites below.",
+      "cta": "View portfolio projects",
+      "note": "Main professional presence:"
     },
     "favorites": {
       "title": "Favorite shots",
@@ -59,6 +57,9 @@
     },
     "photoPreview": {
       "title": "From the galleries"
+    },
+    "categories": {
+      "title": "Browse by category"
     }
   },
   "hero": {
@@ -126,7 +127,10 @@
     "shareEmail": "Email"
   },
   "recommendations": {
-    "title": "Recommendations"
+    "title": "Recommendations",
+    "prev": "Previous recommendation",
+    "next": "Next recommendation",
+    "goTo": "Go to recommendation {{n}}"
   },
   "contact": {
     "title": "Let's talk!",

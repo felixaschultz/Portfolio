@@ -36,8 +36,8 @@ export type PhotoSrcSetOptions = {
 /** Cover tiles on the home page (square grid). */
 export const COVER_WIDTHS_HOME_TILE = [320, 420, 560, 720] as const;
 
-/** Photography door panel (~50vw). */
-export const COVER_WIDTHS_HOME_HERO = [640, 960, 1200, 1600] as const;
+/** Full-bleed home page hero (100vw). */
+export const COVER_WIDTHS_HOME_HERO = [640, 960, 1280, 1600, 1920, 2400] as const;
 
 /** Gallery overview cards (16:9). */
 export const COVER_WIDTHS_OVERVIEW = [640, 960, 1200, 1600, 2000] as const;

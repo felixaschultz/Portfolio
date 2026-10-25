@@ -2,16 +2,18 @@ import { Link, useLoaderData, useOutletContext, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale._index";
 import { GalleryImage } from "../components/GalleryImage";
-import { HomeDoors } from "../components/HomeDoors";
+import { HomeDevBand } from "../components/HomeDevBand";
 import { HomeFavoriteStack } from "../components/HomeFavoriteStack";
+import { HomeHero } from "../components/HomeHero";
 import { HomeSpotlightSlider } from "../components/HomeSpotlightSlider";
 import { Recommendations } from "../components/Recommendations";
-import { resolveHomeDevCover, resolveHomePhotoCover } from "../lib/home-page.server";
-import { getFeaturedProjects } from "../lib/projects.server";
+import { categoryOptionsFromRefs, photographyCategoryPath } from "../lib/gallery-categories";
+import { resolveHomePhotoCover } from "../lib/home-page.server";
 import {
   fetchFeaturedGalleriesForList,
   fetchHomeFavoritePhotos,
   fetchHomeSpotlightSlides,
+  fetchPublishedGalleryCategories,
 } from "../lib/sanity.server";
 import type { GalleryListItem } from "../lib/galleries";
 import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
@@ -19,20 +21,19 @@ import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  const [featuredProjects, featuredGalleries, favoritePhotos, spotlightSlides] = await Promise.all([
-    getFeaturedProjects(3),
+  const [featuredGalleries, favoritePhotos, spotlightSlides, categories] = await Promise.all([
     fetchFeaturedGalleriesForList(),
     fetchHomeFavoritePhotos(),
     fetchHomeSpotlightSlides(),
+    fetchPublishedGalleryCategories(),
   ]);
 
   return {
-    featuredProjects,
     featuredGalleries,
     favoritePhotos,
     spotlightSlides,
+    categories,
     photoCover: resolveHomePhotoCover(featuredGalleries),
-    devCover: resolveHomeDevCover(featuredProjects[0]?.screenshot),
   };
 }
 
@@ -55,6 +56,7 @@ export default function HomePage() {
   const featuredGalleries = data.featuredGalleries ?? [];
   const favoritePhotos = data.favoritePhotos ?? [];
   const spotlightSlides = data.spotlightSlides ?? [];
+  const categories = data.categories ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
   const { openContact } = useOutletContext<OutletContext>();
@@ -63,15 +65,11 @@ export default function HomePage() {
 
   const showFavorites = favoritePhotos.length > 0;
   const showSpotlight = spotlightSlides.length > 0;
+  const categoryOptions = categoryOptionsFromRefs(categories, lng);
 
   return (
     <>
-      <HomeDoors
-        base={base}
-        photoCover={data.photoCover}
-        devCover={data.devCover}
-        onContact={openContact}
-      />
+      <HomeHero base={base} photoCover={data.photoCover} />
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("about.title")}</h2>
         <p className="mt-6 max-w-3xl leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
@@ -114,14 +112,32 @@ export default function HomePage() {
                 {t("photography.showMore")} →
               </Link>
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-              {featuredGalleries.slice(0, 4).map((gallery: GalleryListItem) => (
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {featuredGalleries.map((gallery: GalleryListItem) => (
                 <FeaturedGallery key={gallery._id} gallery={gallery} locale={lng} base={base} />
               ))}
             </div>
+            {categoryOptions.length > 0 ? (
+              <nav className="home-categories" aria-label={t("home.categories.title")}>
+                <p className="home-categories__title">{t("home.categories.title")}</p>
+                <div className="gallery-overview__filter-chips">
+                  {categoryOptions.map((category) => (
+                    <Link
+                      key={category.slug}
+                      to={photographyCategoryPath(lng, category.slug)}
+                      className="gallery-overview__filter-chip"
+                    >
+                      {category.label}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            ) : null}
           </div>
         </section>
       ) : null}
+
+      <HomeDevBand base={base} onContact={openContact} />
 
       <Recommendations />
     </>

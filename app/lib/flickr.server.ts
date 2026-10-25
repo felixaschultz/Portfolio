@@ -3,6 +3,8 @@ import type { Locale } from "./i18n";
 
 const FLICKR_API_BASE = "https://www.flickr.com/services/rest/";
 const PHOTO_EXTRAS = "url_s,url_n,url_z,url_c,url_b,url_h,url_k";
+/** Larger derivative sizes aren't guaranteed to share the primary photo's secret — fetch their real URLs instead of guessing. */
+const PRIMARY_PHOTO_EXTRAS = "url_b,url_h,url_k";
 
 // ── Raw API types ─────────────────────────────────────────────────────────────
 
@@ -18,6 +20,12 @@ type FlickrPhotoRaw = {
   url_k?: string; width_k?: number; height_k?: number;
 };
 
+type FlickrPrimaryPhotoExtras = {
+  url_b?: string; width_b?: number; height_b?: number;
+  url_h?: string; width_h?: number; height_h?: number;
+  url_k?: string; width_k?: number; height_k?: number;
+};
+
 type FlickrPhotosetRaw = {
   id: string;
   primary: string;
@@ -27,6 +35,7 @@ type FlickrPhotosetRaw = {
   title: { _content: string };
   description: { _content: string };
   date_create: string;
+  primary_photo_extras?: FlickrPrimaryPhotoExtras;
 };
 
 type FlickrPhotosetListResponse = {
@@ -46,6 +55,7 @@ type FlickrPhotosetInfoResponse = {
     title: { _content: string };
     description: { _content: string };
     date_create: string;
+    primary_photo_extras?: FlickrPrimaryPhotoExtras;
   };
   message?: string;
 };
@@ -67,6 +77,9 @@ export type FlickrAlbumMeta = {
   primaryPhotoSecret: string;
   photoCount: number;
   dateCreate: string;
+  /** Only present when the primary photo's original is large enough to have these derivatives — each may use its own secret, so use the URL as-is. */
+  primaryPhotoUrlH?: string;
+  primaryPhotoUrlK?: string;
 };
 
 // ── Slug helpers ──────────────────────────────────────────────────────────────
@@ -106,6 +119,14 @@ function albumDate(album: FlickrAlbumMeta): string {
 
 // ── Map album to list/nav items ───────────────────────────────────────────────
 
+/** `url_h`/`url_k` may use a different secret than the primary photo's base secret — always use the fetched URL verbatim, never reconstruct it. */
+function largeSrcSetRungs(album: FlickrAlbumMeta): string[] {
+  const rungs: string[] = [];
+  if (album.primaryPhotoUrlH) rungs.push(`${album.primaryPhotoUrlH} 1600w`);
+  if (album.primaryPhotoUrlK) rungs.push(`${album.primaryPhotoUrlK} 2048w`);
+  return rungs;
+}
+
 export function flickrAlbumToListItem(album: FlickrAlbumMeta): GalleryListItem {
   const { primaryPhotoId: pid, primaryPhotoServer: srv, primaryPhotoSecret: sec } = album;
   const title = { en: album.title, da: album.title, de: album.title };
@@ -123,8 +144,23 @@ export function flickrAlbumToListItem(album: FlickrAlbumMeta): GalleryListItem {
       `${staticUrl(srv, pid, sec, "z")} 640w`,
       `${staticUrl(srv, pid, sec, "c")} 800w`,
       `${staticUrl(srv, pid, sec, "b")} 1024w`,
+      ...largeSrcSetRungs(album),
     ].join(", "),
     coverBlurUrl: staticUrl(srv, pid, sec, "n"),
+  };
+}
+
+/** Full-bleed home page hero cover for a Flickr-backed lead gallery (100vw, high-res rungs where available). */
+export function flickrAlbumHeroCover(album: FlickrAlbumMeta): { src: string; srcSet: string } {
+  const { primaryPhotoId: pid, primaryPhotoServer: srv, primaryPhotoSecret: sec } = album;
+  const largeRungs = largeSrcSetRungs(album);
+  return {
+    src: album.primaryPhotoUrlH ?? staticUrl(srv, pid, sec, "b"),
+    srcSet: [
+      `${staticUrl(srv, pid, sec, "c")} 800w`,
+      `${staticUrl(srv, pid, sec, "b")} 1024w`,
+      ...largeRungs,
+    ].join(", "),
   };
 }
 
@@ -163,6 +199,7 @@ export async function fetchFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
       url.searchParams.set("nojsoncallback", "1");
       url.searchParams.set("per_page", "500");
       url.searchParams.set("page", String(page));
+      url.searchParams.set("primary_photo_extras", PRIMARY_PHOTO_EXTRAS);
 
       const res = await fetch(url.toString());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -180,6 +217,8 @@ export async function fetchFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
           primaryPhotoSecret: ps.secret,
           photoCount: ps.count_photos,
           dateCreate: ps.date_create,
+          primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
+          primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
         });
       }
 
@@ -207,6 +246,7 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
   if (userId) url.searchParams.set("user_id", userId);
   url.searchParams.set("format", "json");
   url.searchParams.set("nojsoncallback", "1");
+  url.searchParams.set("primary_photo_extras", PRIMARY_PHOTO_EXTRAS);
 
   try {
     const res = await fetch(url.toString());
@@ -223,6 +263,8 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
       primaryPhotoSecret: ps.secret,
       photoCount: typeof ps.count_photos === "object" ? ps.count_photos._content : ps.count_photos,
       dateCreate: ps.date_create,
+      primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
+      primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
     };
   } catch (err) {
     console.error(`[flickr] fetchFlickrAlbumInfo(${albumId}) failed:`, err);

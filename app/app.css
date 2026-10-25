@@ -1239,6 +1239,31 @@ body {
   color: rgb(255 255 255 / 0.35);
 }
 
+/* Taller hero + reserved blank strip at its base (pure image, below the text content's own
+   padding) so the first masonry row can bleed up into it without ever covering the title/meta. */
+.gallery-album .home-hero {
+  min-height: min(92vh, 50rem);
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .gallery-album .home-hero {
+    padding-bottom: 4rem;
+  }
+}
+
+.home-hero + .gallery-album__stream-wrap {
+  position: relative;
+  z-index: 1;
+  margin-top: -3rem;
+}
+
+@media (min-width: 640px) {
+  .home-hero + .gallery-album__stream-wrap {
+    margin-top: -4rem;
+  }
+}
+
 .gallery-album__title {
   @apply font-display text-[clamp(2.5rem,8vw,3.5rem)] leading-[0.95] font-normal tracking-tight text-[var(--color-text)];
 }

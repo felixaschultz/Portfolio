@@ -84,7 +84,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
             <summary className="nav-link cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               {t("nav.websites")}
             </summary>
-            <div className="absolute right-0 z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-2 shadow-xl">
+            <div className="absolute right-0 z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-2 shadow-[0_16px_48px_rgb(0_0_0_/_0.45)]">
               {websiteLinks.map((link) => (
                 <a
                   key={link.href}
@@ -99,28 +99,25 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
             </div>
           </details>
 
-          <button
-            type="button"
-            onClick={onSearchClick}
-            className="btn-ghost gap-2 px-4"
-            aria-label={t("search.open")}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M9 9l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <span>{t("search.open")}</span>
-            <kbd className="hidden rounded border border-[var(--color-border)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--color-muted)] lg:inline">
-              {t("search.shortcut")}
-            </kbd>
-          </button>
-
-          <button type="button" onClick={onContactClick} className="btn-ghost px-4">
+          <button type="button" onClick={onContactClick} className="btn-primary ml-3 px-5">
             {t("nav.contact")}
           </button>
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onSearchClick}
+            className="btn-icon header-search-button"
+            aria-label={t("search.open")}
+            title={`${t("search.open")} (${t("search.shortcut")})`}
+          >
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M9 9l3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+
           <div className="flex items-center gap-0.5 rounded-full border border-[var(--color-border)] p-0.5">
             {(["da", "de", "en"] as Locale[]).map((lng) => {
               const href = localeHref(lng);
@@ -183,7 +180,7 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 onClick={() => setMenuOpen(false)}
               />
               <nav
-                className="absolute inset-x-0 top-[var(--site-header-height)] z-10 max-h-[calc(100dvh-var(--site-header-height))] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+                className="absolute inset-x-0 top-[var(--site-header-height)] z-10 max-h-[calc(100dvh-var(--site-header-height))] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_24px_64px_rgb(0_0_0_/_0.5)]"
                 aria-label="Main"
               >
             <div className="flex flex-col gap-1">

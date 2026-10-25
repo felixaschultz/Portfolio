@@ -251,12 +251,14 @@ export const FEATURED_GALLERIES_QUERY = `*[${publishedGalleryFilter} && featured
 
 export const GALLERY_BY_SLUG_QUERY = `*[${publishedGalleryFilter} && slug.current == $slug][0] ${galleryDetailProjection}`;
 
+/** One resolved cover image per gallery (explicit cover, else first) — not the full images[] array. */
 const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} {
   _id,
   "slug": slug.current,
   title,
-  coverImageKey,
-  images[] {
+  takenAt,
+  flickrAlbumId,
+  "coverImage": coalesce(images[_key == ^.coverImageKey][0], images[0]) {
     _key,
     externalUrl,
     externalWidth,
@@ -267,6 +269,15 @@ const GALLERY_NAV_QUERY = `*[${publishedGalleryFilter}] | ${GALLERY_LIST_ORDER} 
     }
   }
 }`;
+
+type GalleryNavQueryRow = {
+  _id: string;
+  slug?: string;
+  title: LocalizedString;
+  takenAt?: string;
+  flickrAlbumId?: string;
+  coverImage: GalleryImageDocument | null;
+};
 
 const FLICKR_ALBUM_META_QUERY = `*[_type == "flickrAlbumMeta" && defined(flickrAlbumId) && !(_id in path("drafts.**"))] {
   flickrAlbumId,
@@ -545,10 +556,16 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   const { fetchFlickrAlbums, flickrAlbumToNavItem } = await import("./flickr.server");
 
   try {
-    const [galleries, flickrAlbums]: [GalleryDocument[], Awaited<ReturnType<typeof fetchFlickrAlbums>>] =
+    const [rawRows, flickrAlbums]: [GalleryNavQueryRow[], Awaited<ReturnType<typeof fetchFlickrAlbums>>] =
       await Promise.all([client.fetch(GALLERY_NAV_QUERY), fetchFlickrAlbums()]);
 
-    const published = dedupeGalleriesBySlug(galleries);
+    const seenSlugs = new Set<string>();
+    const rows = rawRows.filter((r) => {
+      if (!r.slug || seenSlugs.has(r.slug)) return false;
+      seenSlugs.add(r.slug);
+      return true;
+    });
+
     const {
       photoSrcSet,
       photoBlurPlaceholder,
@@ -559,10 +576,9 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
     } = await import("./image.server");
 
     const sanityItems: GalleryNavItem[] = [];
-    for (const gallery of published) {
-      if (!gallery.slug) continue;
-      const coverItem = resolveGalleryCoverImage(gallery);
-      if (!coverItem) continue;
+    for (const row of rows) {
+      if (!row.slug || !row.coverImage) continue;
+      const coverItem = row.coverImage;
 
       let src: string;
       let srcSet: string;
@@ -578,11 +594,11 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       }
       if (!src) continue;
 
-      sanityItems.push({ slug: gallery.slug, title: gallery.title, coverUrl: src, coverSrcSet: srcSet, coverBlurUrl });
+      sanityItems.push({ slug: row.slug, title: row.title, coverUrl: src, coverSrcSet: srcSet, coverBlurUrl });
     }
 
-    const claimedAlbumIds = new Set(galleries.map((g) => g.flickrAlbumId).filter(Boolean));
-    const sanityDateBySlug = new Map(galleries.map((g) => [g.slug, g.takenAt ?? ""]));
+    const claimedAlbumIds = new Set(rows.map((r) => r.flickrAlbumId).filter(Boolean));
+    const sanityDateBySlug = new Map(rows.map((r) => [r.slug, r.takenAt ?? ""]));
 
     type Dated = { item: GalleryNavItem; date: string };
     const dated: Dated[] = [

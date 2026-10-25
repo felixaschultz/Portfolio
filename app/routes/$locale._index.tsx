@@ -16,8 +16,8 @@ import {
   fetchPublishedGalleryCategories,
 } from "../lib/sanity.server";
 import type { GalleryListItem } from "../lib/galleries";
-import { defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
-import { buildPageMeta } from "../lib/seo";
+import { createI18n, defaultLocale, isValidLocale, localizedField, type Locale } from "../lib/i18n";
+import { buildOgImageUrl, buildPageMeta, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
@@ -37,15 +37,27 @@ export async function loader() {
   };
 }
 
-export function meta({ params }: Route.MetaArgs) {
+export function meta({ params, data }: Route.MetaArgs) {
   const locale: Locale = isValidLocale(params.locale ?? "")
     ? (params.locale as Locale)
     : defaultLocale;
+  const i18n = createI18n(locale);
+
+  const ogImage = buildOgImageUrl({
+    title: i18n.t("home.hero.heading"),
+    subtitle: i18n.t("home.hero.lede"),
+    eyebrow: i18n.t("hero.name"),
+    image: data?.photoCover?.src,
+  });
+
   return buildPageMeta({
     title: seoCopy(locale, "homeTitle"),
     description: seoCopy(locale, "homeDescription"),
     locale,
     path: "",
+    image: ogImage,
+    ogImageWidth: OG_IMAGE_WIDTH,
+    ogImageHeight: OG_IMAGE_HEIGHT,
   });
 }
 

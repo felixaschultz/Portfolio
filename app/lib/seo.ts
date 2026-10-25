@@ -53,6 +53,21 @@ export type PageMetaInput = {
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 
+/** Relative URL for the dynamic /og.png route — photo + overlaid text, same look as the site's own photo heroes. */
+export function buildOgImageUrl(params: {
+  title: string;
+  subtitle?: string;
+  eyebrow?: string;
+  image?: string;
+}): string {
+  const qs = new URLSearchParams();
+  qs.set("title", params.title);
+  if (params.subtitle) qs.set("subtitle", params.subtitle);
+  if (params.eyebrow) qs.set("eyebrow", params.eyebrow);
+  if (params.image) qs.set("image", params.image);
+  return `/og.png?${qs.toString()}`;
+}
+
 function absoluteImage(image: string, siteUrl: string): string {
   if (image.startsWith("http")) return image;
   const base = siteUrl.replace(/\/$/, "");

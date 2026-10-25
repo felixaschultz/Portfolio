@@ -26,7 +26,7 @@ export function HomeHero({ base, photoCover }: HomeHeroProps) {
       ) : null}
       <div className="home-hero__shade" aria-hidden />
       <div className="home-hero__content">
-        <p className="home-hero__eyebrow font-mono text-sm">&lt;{t("hero.name")} /&gt;</p>
+        <p className="home-hero__eyebrow font-mono text-xs uppercase tracking-[0.2em]">{t("hero.name")}</p>
         <h1 id="home-hero-heading" className="home-hero__title font-display">
           {t("home.hero.heading")}
         </h1>

@@ -58,7 +58,8 @@ export default defineConfig(async () => {
     },
     ssr: {
       // Bundle react-router for Vercel — otherwise runtime resolves missing dist files.
-      external: ["sanitize-html"],
+      // satori/@resvg/resvg-js (native binary) must stay external, not transformed by Vite.
+      external: ["sanitize-html", "satori", "@resvg/resvg-js"],
       noExternal: ["react-router", "@react-router/node"],
     },
   };

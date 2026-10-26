@@ -4,10 +4,9 @@ import { siteCompanyLinks } from "../lib/site-links";
 
 type HomeDevBandProps = {
   base: string;
-  onContact: () => void;
 };
 
-export function HomeDevBand({ base, onContact }: HomeDevBandProps) {
+export function HomeDevBand({ base }: HomeDevBandProps) {
   const { t } = useTranslation();
 
   return (
@@ -33,16 +32,9 @@ export function HomeDevBand({ base, onContact }: HomeDevBandProps) {
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            className="home-dev-band__contact"
-            onClick={(e) => {
-              e.preventDefault();
-              onContact();
-            }}
-          >
+          <Link to={`${base}/contact`} className="home-dev-band__contact">
             {t("hero.cta")}
-          </button>
+          </Link>
         </div>
       </div>
     </section>

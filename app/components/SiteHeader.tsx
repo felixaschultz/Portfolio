@@ -10,11 +10,10 @@ import { siteCompanyLinks as websiteLinks } from "../lib/site-links";
 import { Logo } from "./Logo";
 
 type SiteHeaderProps = {
-  onContactClick: () => void;
   onSearchClick: () => void;
 };
 
-export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
+export function SiteHeader({ onSearchClick }: SiteHeaderProps) {
   const { locale } = useParams();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -52,11 +51,6 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
   function openSearch() {
     setMenuOpen(false);
     onSearchClick();
-  }
-
-  function openContact() {
-    setMenuOpen(false);
-    onContactClick();
   }
 
   return (
@@ -105,13 +99,9 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
             </div>
           </details>
 
-          <button
-            type="button"
-            onClick={onContactClick}
-            className="btn-primary header-contact-button ml-3 px-5"
-          >
+          <Link to={`${base}/contact`} className="btn-primary header-contact-button ml-3 px-5">
             {t("nav.contact")}
-          </button>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -239,9 +229,13 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
               <button type="button" onClick={openSearch} className="nav-link-mobile text-left">
                 {t("search.open")}
               </button>
-              <button type="button" onClick={openContact} className="btn-primary mt-3 w-full">
+              <Link
+                to={`${base}/contact`}
+                className="btn-primary mt-3 w-full"
+                onClick={() => setMenuOpen(false)}
+              >
                 {t("nav.contact")}
-              </button>
+              </Link>
                 </div>
               </nav>
             </div>,

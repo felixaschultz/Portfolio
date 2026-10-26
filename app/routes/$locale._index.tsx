@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useOutletContext, useParams } from "react-router";
+import { Link, useLoaderData, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale._index";
 import { HomeDevBand } from "../components/HomeDevBand";
@@ -65,8 +65,6 @@ export function meta({ params, data }: Route.MetaArgs) {
   });
 }
 
-type OutletContext = { openContact: () => void };
-
 export default function HomePage() {
   const data = useLoaderData<typeof loader>();
   const favoritePhotos = data.favoritePhotos ?? [];
@@ -75,7 +73,6 @@ export default function HomePage() {
   const categories = data.categories ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
-  const { openContact } = useOutletContext<OutletContext>();
   const base = `/${locale}`;
   const lng = (locale ?? "da") as Locale;
 
@@ -152,7 +149,7 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      <HomeDevBand base={base} onContact={openContact} />
+      <HomeDevBand base={base} />
 
       <Recommendations />
     </>

@@ -25,7 +25,9 @@
     "allPhotosTitle": "Alle Fotos",
     "allPhotosDescription": "Alle veröffentlichten Fotos aus den Galerien von Felix A. Schultz durchsuchen.",
     "aboutTitle": "Über mich",
-    "aboutDescription": "Über Felix A. Schultz — Fotograf und Webentwickler aus Dänemark."
+    "aboutDescription": "Über Felix A. Schultz — Fotograf und Webentwickler aus Dänemark.",
+    "contactTitle": "Kontakt",
+    "contactDescription": "Kontaktieren Sie Felix A. Schultz für Fotografie-Buchungen oder Webentwicklung."
   },
   "nav": {
     "projects": "Projekte",

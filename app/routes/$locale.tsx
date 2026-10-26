@@ -13,9 +13,6 @@ import {
   shouldEnforceDomainLocale,
 } from "../lib/site-domains";
 
-const ContactModal = lazy(() =>
-  import("../components/ContactModal").then((m) => ({ default: m.ContactModal })),
-);
 const SearchDialog = lazy(() =>
   import("../components/SearchDialog").then((m) => ({ default: m.SearchDialog })),
 );
@@ -72,11 +69,8 @@ function NavProgressBar() {
 
 export default function LocaleLayout() {
   const { locale } = useLoaderData<typeof loader>();
-  const [contactOpen, setContactOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const openContact = useCallback(() => setContactOpen(true), []);
-  const closeContact = useCallback(() => setContactOpen(false), []);
   const openSearch = useCallback(() => setSearchOpen(true), []);
   const closeSearch = useCallback(() => setSearchOpen(false), []);
 
@@ -95,18 +89,13 @@ export default function LocaleLayout() {
     <LocaleProvider locale={locale}>
       <NavProgressBar />
       <div className="site-layout">
-        <SiteHeader onContactClick={openContact} onSearchClick={openSearch} />
+        <SiteHeader onSearchClick={openSearch} />
         <div className="site-layout__body">
           <main className="site-layout__main">
-            <Outlet context={{ openContact }} />
+            <Outlet />
           </main>
-          <SiteFooter onContactClick={openContact} />
+          <SiteFooter />
         </div>
-        {contactOpen ? (
-          <Suspense fallback={null}>
-            <ContactModal open onClose={closeContact} />
-          </Suspense>
-        ) : null}
         {searchOpen ? (
           <Suspense fallback={null}>
             <SearchDialog locale={locale} open onClose={closeSearch} />

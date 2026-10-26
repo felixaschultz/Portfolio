@@ -3,10 +3,6 @@ import { useTranslation } from "react-i18next";
 import { type Locale } from "../lib/i18n";
 import { Logo } from "./Logo";
 
-type SiteFooterProps = {
-  onContactClick: () => void;
-};
-
 function GithubIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
@@ -53,7 +49,7 @@ const socialLinks = [
   { name: "Instagram", href: "https://instagram.com/felixaschultz", Icon: InstagramIcon },
 ];
 
-export function SiteFooter({ onContactClick }: SiteFooterProps) {
+export function SiteFooter() {
   const { locale } = useParams();
   const { t } = useTranslation();
   const lng = (locale ?? "da") as Locale;
@@ -72,9 +68,7 @@ export function SiteFooter({ onContactClick }: SiteFooterProps) {
           <Link to={`${base}/photography`}>{t("nav.photography")}</Link>
           <Link to={`${base}/projects`}>{t("nav.projects")}</Link>
           <Link to={`${base}/about`}>{t("nav.about")}</Link>
-          <button type="button" onClick={onContactClick}>
-            {t("nav.contact")}
-          </button>
+          <Link to={`${base}/contact`}>{t("nav.contact")}</Link>
         </nav>
 
         <div className="site-footer__social">
@@ -94,9 +88,24 @@ export function SiteFooter({ onContactClick }: SiteFooterProps) {
       </div>
 
       <div className="site-footer__bottom">
-        <p>
-          © {year} Felix A. Schultz. {t("footer.rights")}.
-        </p>
+        <div className="site-footer__bottom-inner">
+          <p>
+            © {year} Felix A. Schultz. {t("footer.rights")}.
+          </p>
+          <a
+            href="https://www.intastellarsolutions.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Intastellar Solutions"
+            className="site-footer__company-mark"
+          >
+            <img
+              src="https://www.intastellar-consents.com/assets/icons/intastellar-logo-white.svg"
+              alt="Intastellar"
+              loading="lazy"
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );

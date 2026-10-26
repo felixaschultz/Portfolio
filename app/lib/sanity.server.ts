@@ -893,6 +893,10 @@ const HOME_PAGE_HERO_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
   heroImage[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
 }`;
 
+const CONTACT_PAGE_HERO_QUERY = `*[_type == "contactPage" && _id == "contactPage"][0] {
+  heroImage[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
+}`;
+
 type HomePageImageRow = {
   _key?: string;
   alt?: string;
@@ -1304,13 +1308,13 @@ export async function fetchHomeSelectedWork(): Promise<HomeSelectedWorkPhoto[]> 
   }
 }
 
-/** Manually-picked home page hero photo — falls back to `resolveHomePhotoCover` (featured gallery) when unset. */
-export async function fetchHomeHeroPhoto(): Promise<ResponsiveCoverImage | null> {
+/** Shared by any single-photo "heroImage" picker field (home page, contact page, …). */
+async function fetchSingleHeroPhoto(query: string, label: string): Promise<ResponsiveCoverImage | null> {
   const client = getSanityLivePublishedClient();
   if (!client) return null;
 
   try {
-    const doc = await client.fetch<{ heroImage?: HomePageFavoriteRow[] } | null>(HOME_PAGE_HERO_QUERY);
+    const doc = await client.fetch<{ heroImage?: HomePageFavoriteRow[] } | null>(query);
     const row = doc?.heroImage?.[0];
     if (!row) return null;
 
@@ -1358,7 +1362,17 @@ export async function fetchHomeHeroPhoto(): Promise<ResponsiveCoverImage | null>
 
     return null;
   } catch (err) {
-    console.error("[sanity] fetchHomeHeroPhoto failed:", err);
+    console.error(`[sanity] ${label} failed:`, err);
     return null;
   }
+}
+
+/** Manually-picked home page hero photo — falls back to `resolveHomePhotoCover` (featured gallery) when unset. */
+export async function fetchHomeHeroPhoto(): Promise<ResponsiveCoverImage | null> {
+  return fetchSingleHeroPhoto(HOME_PAGE_HERO_QUERY, "fetchHomeHeroPhoto");
+}
+
+/** Manually-picked contact page hero photo. */
+export async function fetchContactHeroPhoto(): Promise<ResponsiveCoverImage | null> {
+  return fetchSingleHeroPhoto(CONTACT_PAGE_HERO_QUERY, "fetchContactHeroPhoto");
 }

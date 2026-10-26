@@ -4015,19 +4015,45 @@ body {
   border-top: 1px solid var(--color-border);
 }
 
-.site-footer__bottom p {
+.site-footer__bottom-inner {
   max-width: 72rem;
   margin: 0 auto;
   padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .site-footer__bottom-inner {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+.site-footer__bottom-inner p {
+  margin: 0;
   font-size: 0.75rem;
   color: var(--color-muted);
 }
 
-@media (min-width: 640px) {
-  .site-footer__bottom p {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
+.site-footer__company-mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.site-footer__company-mark:hover {
+  opacity: 1;
+}
+
+.site-footer__company-mark img {
+  display: block;
+  height: 22px;
+  width: auto;
 }
 
 /* Home + About — selected work showcase grid */

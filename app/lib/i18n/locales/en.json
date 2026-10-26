@@ -25,7 +25,9 @@
     "allPhotosTitle": "All photos",
     "allPhotosDescription": "Browse every published photo across all photography galleries by Felix A. Schultz.",
     "aboutTitle": "About",
-    "aboutDescription": "About Felix A. Schultz — photographer and web developer based in Denmark."
+    "aboutDescription": "About Felix A. Schultz — photographer and web developer based in Denmark.",
+    "contactTitle": "Contact",
+    "contactDescription": "Get in touch with Felix A. Schultz for photography bookings or web development work."
   },
   "nav": {
     "projects": "Projects",

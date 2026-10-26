@@ -39,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `window.INTA = {
-  policy_link: "https://intastellar.eu/legal/privacy",
+  policy_link: "https://www.felix-schultz.net/en/privacy",
   settings: {
     rootDomain: "felix-schultz.net",
     company: "Intastellar Solutions, International",

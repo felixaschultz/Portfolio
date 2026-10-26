@@ -3,6 +3,7 @@ import {
   ArrowUpIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  CloseIcon,
   ImagesIcon,
   ResetIcon,
   SearchIcon,
@@ -10,6 +11,7 @@ import {
 } from "@sanity/icons";
 import { Box, Button, Card, Flex, Grid, Spinner, Stack, Text, TextInput } from "@sanity/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   PatchEvent,
   type ArrayInputProps,
@@ -249,6 +251,18 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   const [flickrPhotos, setFlickrPhotos] = useState<FlickrPhotoItem[]>([]);
   const [flickrPhotosLoading, setFlickrPhotosLoading] = useState(false);
   const [flickrPhotosError, setFlickrPhotosError] = useState<string | null>(null);
+
+  // ── Photo browser (sidebar) ───────────────────────────────────────────────
+  const [browserOpen, setBrowserOpen] = useState(false);
+
+  useEffect(() => {
+    if (!browserOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setBrowserOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [browserOpen]);
 
   // ── Picks ──────────────────────────────────────────────────────────────────
   const picks = useMemo(() => {
@@ -754,17 +768,29 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
+  const browserTitle =
+    mode === "spotlight"
+      ? "Choose spotlight slides"
+      : mode === "selectedWork"
+        ? "Choose selected-work photos"
+        : mode === "hero"
+          ? "Choose hero photo"
+          : "Choose favorite photos";
+
   return (
     <Stack space={4}>
-      <Text size={1} muted>
-        {mode === "spotlight"
-          ? `Choose a gallery or Flickr album, then pick slides for the home page slider (${picks.length} / ${max}).`
-          : mode === "selectedWork"
-            ? `Choose a gallery or Flickr album, then pick photos for the "Selected work" grid (${picks.length} / ${max}).`
-            : mode === "hero"
-              ? `Choose a gallery or Flickr album, then pick the home page hero photo (${picks.length} / ${max}).`
-              : `Choose a gallery or Flickr album, then pick photos (${picks.length} / ${max}). Only one source loads at a time.`}
-      </Text>
+      <Flex align="center" justify="space-between" gap={3}>
+        <Text size={1} muted>
+          {picks.length} / {max} picked
+        </Text>
+        <Button
+          icon={ImagesIcon}
+          mode="ghost"
+          tone="primary"
+          text={picks.length > 0 ? "Edit photos" : "Choose photos"}
+          onClick={() => setBrowserOpen(true)}
+        />
+      </Flex>
 
       {picks.length > 0 ? (
         <Stack space={4}>
@@ -941,114 +967,156 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         </Stack>
       ) : null}
 
-      <TextInput
-        icon={SearchIcon}
-        placeholder="Search galleries and Flickr albums…"
-        value={filter}
-        onChange={(e) => setFilter(e.currentTarget.value)}
-      />
-
-      {listError ? (
-        <Card padding={3} radius={2} tone="critical">
-          <Text size={1}>{listError}</Text>
-        </Card>
-      ) : null}
-
-      {/* Sanity galleries */}
-      {listLoading ? (
-        <Flex align="center" gap={2}>
-          <Spinner muted />
-          <Text size={1} muted>Loading gallery list…</Text>
-        </Flex>
-      ) : listError ? null : filteredGalleryList.length > 0 ? (
-        <Stack space={1}>
-          <Text size={0} muted weight="semibold" style={{ paddingLeft: 4, paddingBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Sanity galleries
-          </Text>
-          <Card padding={2} radius={2} border tone="transparent">
-            <Stack space={1}>
-              {filteredGalleryList.map((gallery) => {
-                const open = activeGalleryId === gallery._id;
-                return (
-                  <Box key={gallery._id}>
+      {browserOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div style={{ position: "fixed", inset: 0, zIndex: 100000, display: "flex", justifyContent: "flex-end" }}>
+              <div
+                onClick={() => setBrowserOpen(false)}
+                style={{ position: "absolute", inset: 0, background: "rgba(0, 0, 0, 0.5)" }}
+              />
+              <Card
+                shadow={4}
+                style={{
+                  position: "relative",
+                  width: "min(480px, 100vw)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                }}
+              >
+                <Box
+                  padding={3}
+                  style={{ borderBottom: "1px solid var(--card-border-color)", flexShrink: 0 }}
+                >
+                  <Flex align="center" justify="space-between" gap={2}>
+                    <Text size={2} weight="semibold">{browserTitle}</Text>
                     <Button
+                      icon={CloseIcon}
                       mode="bleed"
-                      tone={open ? "primary" : "default"}
-                      onClick={() => {
-                        setActiveGalleryId(open ? null : gallery._id);
-                        setActiveFlickrAlbumId(null);
-                      }}
-                      style={{ width: "100%", justifyContent: "flex-start" }}
-                    >
-                      <Flex align="center" gap={2} style={{ width: "100%" }}>
-                        <Text muted>{open ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
-                        <Text size={1} weight="medium">{galleryLabel(gallery)}</Text>
-                        <Text size={0} muted style={{ marginLeft: "auto" }}>
-                          {gallery.imageCount ?? 0} photos
+                      aria-label="Close"
+                      onClick={() => setBrowserOpen(false)}
+                    />
+                  </Flex>
+                </Box>
+
+                <Box padding={3} style={{ overflowY: "auto", flex: 1 }}>
+                  <Stack space={4}>
+                    <TextInput
+                      icon={SearchIcon}
+                      placeholder="Search galleries and Flickr albums…"
+                      value={filter}
+                      onChange={(e) => setFilter(e.currentTarget.value)}
+                    />
+
+                    {listError ? (
+                      <Card padding={3} radius={2} tone="critical">
+                        <Text size={1}>{listError}</Text>
+                      </Card>
+                    ) : null}
+
+                    {/* Sanity galleries */}
+                    {listLoading ? (
+                      <Flex align="center" gap={2}>
+                        <Spinner muted />
+                        <Text size={1} muted>Loading gallery list…</Text>
+                      </Flex>
+                    ) : listError ? null : filteredGalleryList.length > 0 ? (
+                      <Stack space={1}>
+                        <Text size={0} muted weight="semibold" style={{ paddingLeft: 4, paddingBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Sanity galleries
                         </Text>
-                      </Flex>
-                    </Button>
-                    {open ? (
-                      <Box paddingLeft={3} paddingTop={2} paddingBottom={3}>
-                        {renderGalleryPhotoGrid(gallery._id)}
-                      </Box>
+                        <Card padding={2} radius={2} border tone="transparent">
+                          <Stack space={1}>
+                            {filteredGalleryList.map((gallery) => {
+                              const open = activeGalleryId === gallery._id;
+                              return (
+                                <Box key={gallery._id}>
+                                  <Button
+                                    mode="bleed"
+                                    tone={open ? "primary" : "default"}
+                                    onClick={() => {
+                                      setActiveGalleryId(open ? null : gallery._id);
+                                      setActiveFlickrAlbumId(null);
+                                    }}
+                                    style={{ width: "100%", justifyContent: "flex-start" }}
+                                  >
+                                    <Flex align="center" gap={2} style={{ width: "100%" }}>
+                                      <Text muted>{open ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
+                                      <Text size={1} weight="medium">{galleryLabel(gallery)}</Text>
+                                      <Text size={0} muted style={{ marginLeft: "auto" }}>
+                                        {gallery.imageCount ?? 0} photos
+                                      </Text>
+                                    </Flex>
+                                  </Button>
+                                  {open ? (
+                                    <Box paddingLeft={3} paddingTop={2} paddingBottom={3}>
+                                      {renderGalleryPhotoGrid(gallery._id)}
+                                    </Box>
+                                  ) : null}
+                                </Box>
+                              );
+                            })}
+                          </Stack>
+                        </Card>
+                      </Stack>
                     ) : null}
-                  </Box>
-                );
-              })}
-            </Stack>
-          </Card>
-        </Stack>
-      ) : null}
 
-      {/* Flickr albums */}
-      {flickrAlbumsLoading ? (
-        <Flex align="center" gap={2}>
-          <Spinner muted />
-          <Text size={1} muted>Loading Flickr albums…</Text>
-        </Flex>
-      ) : filteredFlickrAlbumList.length > 0 ? (
-        <Stack space={1}>
-          <Text size={0} muted weight="semibold" style={{ paddingLeft: 4, paddingBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Flickr albums
-          </Text>
-          <Card padding={2} radius={2} border tone="transparent">
-            <Stack space={1}>
-              {filteredFlickrAlbumList.map((album) => {
-                const open = activeFlickrAlbumId === album.flickrAlbumId;
-                return (
-                  <Box key={album._id}>
-                    <Button
-                      mode="bleed"
-                      tone={open ? "primary" : "default"}
-                      onClick={() => {
-                        setActiveFlickrAlbumId(open ? null : album.flickrAlbumId);
-                        setActiveGalleryId(null);
-                      }}
-                      style={{ width: "100%", justifyContent: "flex-start" }}
-                    >
-                      <Flex align="center" gap={2} style={{ width: "100%" }}>
-                        <Text muted>{open ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
-                        <Text size={1} weight="medium">{flickrAlbumLabel(album)}</Text>
-                        <Text size={0} muted style={{ marginLeft: "auto" }}>Flickr</Text>
+                    {/* Flickr albums */}
+                    {flickrAlbumsLoading ? (
+                      <Flex align="center" gap={2}>
+                        <Spinner muted />
+                        <Text size={1} muted>Loading Flickr albums…</Text>
                       </Flex>
-                    </Button>
-                    {open ? (
-                      <Box paddingLeft={3} paddingTop={2} paddingBottom={3}>
-                        {renderFlickrPhotoGrid(album.flickrAlbumId)}
-                      </Box>
+                    ) : filteredFlickrAlbumList.length > 0 ? (
+                      <Stack space={1}>
+                        <Text size={0} muted weight="semibold" style={{ paddingLeft: 4, paddingBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Flickr albums
+                        </Text>
+                        <Card padding={2} radius={2} border tone="transparent">
+                          <Stack space={1}>
+                            {filteredFlickrAlbumList.map((album) => {
+                              const open = activeFlickrAlbumId === album.flickrAlbumId;
+                              return (
+                                <Box key={album._id}>
+                                  <Button
+                                    mode="bleed"
+                                    tone={open ? "primary" : "default"}
+                                    onClick={() => {
+                                      setActiveFlickrAlbumId(open ? null : album.flickrAlbumId);
+                                      setActiveGalleryId(null);
+                                    }}
+                                    style={{ width: "100%", justifyContent: "flex-start" }}
+                                  >
+                                    <Flex align="center" gap={2} style={{ width: "100%" }}>
+                                      <Text muted>{open ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
+                                      <Text size={1} weight="medium">{flickrAlbumLabel(album)}</Text>
+                                      <Text size={0} muted style={{ marginLeft: "auto" }}>Flickr</Text>
+                                    </Flex>
+                                  </Button>
+                                  {open ? (
+                                    <Box paddingLeft={3} paddingTop={2} paddingBottom={3}>
+                                      {renderFlickrPhotoGrid(album.flickrAlbumId)}
+                                    </Box>
+                                  ) : null}
+                                </Box>
+                              );
+                            })}
+                          </Stack>
+                        </Card>
+                      </Stack>
                     ) : null}
-                  </Box>
-                );
-              })}
-            </Stack>
-          </Card>
-        </Stack>
-      ) : null}
 
-      {!activeGalleryId && !activeFlickrAlbumId ? (
-        <Text size={1} muted>Expand a gallery or Flickr album above to browse and select photos.</Text>
-      ) : null}
+                    {!activeGalleryId && !activeFlickrAlbumId ? (
+                      <Text size={1} muted>Expand a gallery or Flickr album above to browse and select photos.</Text>
+                    ) : null}
+                  </Stack>
+                </Box>
+              </Card>
+            </div>,
+            document.body,
+          )
+        : null}
     </Stack>
   );
 }

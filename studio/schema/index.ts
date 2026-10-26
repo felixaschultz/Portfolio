@@ -1,3 +1,4 @@
+import { contactPage } from "./contactPage";
 import { flickrAlbumMeta } from "./flickrAlbumMeta";
 import { gallery } from "./gallery";
 import { galleryBundle } from "./galleryBundle";
@@ -10,6 +11,7 @@ import { photo } from "./photo";
 import { project } from "./project";
 
 export const schemaTypes = [
+  contactPage,
   flickrAlbumMeta,
   gallery,
   galleryBundle,

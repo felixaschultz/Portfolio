@@ -25,6 +25,14 @@ export const structure: StructureResolver = (S) =>
             .documentId("homePage")
             .title("Home page"),
         ),
+      S.listItem()
+        .title("Contact page")
+        .child(
+          S.document()
+            .schemaType("contactPage")
+            .documentId("contactPage")
+            .title("Contact page"),
+        ),
       S.divider(),
       S.listItem()
         .title("Projects")

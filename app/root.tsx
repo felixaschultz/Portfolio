@@ -41,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     rootDomain: "felix-schultz.net",
     company: "Intastellar Solutions, International",
     design: "nova",
-    color: "rgb(163, 133, 64)",
+    color: "var(--color-accent)",
     novaBackgroundColor: "#fff"
   }
 };`,

@@ -79,6 +79,12 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
           >
             {t("nav.projects")}
           </NavLink>
+          <NavLink
+            to={`${base}/about`}
+            className={({ isActive }) => `nav-link ${isActive ? "nav-link-active" : ""}`}
+          >
+            {t("nav.about")}
+          </NavLink>
 
           <details className="relative">
             <summary className="nav-link cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -205,6 +211,15 @@ export function SiteHeader({ onContactClick, onSearchClick }: SiteHeaderProps) {
                 onClick={() => setMenuOpen(false)}
               >
                 {t("nav.projects")}
+              </NavLink>
+              <NavLink
+                to={`${base}/about`}
+                className={({ isActive }) =>
+                  `nav-link-mobile ${isActive ? "nav-link-active" : ""}`
+                }
+                onClick={() => setMenuOpen(false)}
+              >
+                {t("nav.about")}
               </NavLink>
               <p className="mt-3 px-3 text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
                 {t("nav.websites")}

@@ -5,6 +5,7 @@ import { GalleryImage } from "../components/GalleryImage";
 import { HomeDevBand } from "../components/HomeDevBand";
 import { HomeFavoriteStack } from "../components/HomeFavoriteStack";
 import { HomeHero } from "../components/HomeHero";
+import { HomeSelectedWork } from "../components/HomeSelectedWork";
 import { HomeSpotlightSlider } from "../components/HomeSpotlightSlider";
 import { Recommendations } from "../components/Recommendations";
 import { categoryOptionsFromRefs, photographyCategoryPath } from "../lib/gallery-categories";
@@ -12,6 +13,7 @@ import { resolveHomePhotoCover } from "../lib/home-page.server";
 import {
   fetchFeaturedGalleriesForList,
   fetchHomeFavoritePhotos,
+  fetchHomeSelectedWork,
   fetchHomeSpotlightSlides,
   fetchPublishedGalleryCategories,
 } from "../lib/sanity.server";
@@ -21,10 +23,11 @@ import { buildOgImageUrl, buildPageMeta, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from 
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  const [featuredGalleries, favoritePhotos, spotlightSlides, categories] = await Promise.all([
+  const [featuredGalleries, favoritePhotos, spotlightSlides, selectedWork, categories] = await Promise.all([
     fetchFeaturedGalleriesForList(),
     fetchHomeFavoritePhotos(),
     fetchHomeSpotlightSlides(),
+    fetchHomeSelectedWork(),
     fetchPublishedGalleryCategories(),
   ]);
 
@@ -32,6 +35,7 @@ export async function loader() {
     featuredGalleries,
     favoritePhotos,
     spotlightSlides,
+    selectedWork,
     categories,
     photoCover: resolveHomePhotoCover(featuredGalleries),
   };
@@ -68,6 +72,7 @@ export default function HomePage() {
   const featuredGalleries = data.featuredGalleries ?? [];
   const favoritePhotos = data.favoritePhotos ?? [];
   const spotlightSlides = data.spotlightSlides ?? [];
+  const selectedWork = data.selectedWork ?? [];
   const categories = data.categories ?? [];
   const { locale } = useParams();
   const { t } = useTranslation();
@@ -82,10 +87,6 @@ export default function HomePage() {
   return (
     <>
       <HomeHero base={base} photoCover={data.photoCover} />
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t("about.title")}</h2>
-        <p className="mt-6 max-w-3xl leading-relaxed text-[var(--color-muted)]">{t("about.body")}</p>
-      </section>
       {showFavorites ? (
         <section className="home-favorites-section border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
           <div className="home-favorites-section__inner mx-auto max-w-6xl px-4 sm:px-6">
@@ -107,6 +108,24 @@ export default function HomePage() {
       {showSpotlight ? (
         <section className="home-spotlight-section" aria-label={t("home.spotlight.carousel")}>
           <HomeSpotlightSlider slides={spotlightSlides} locale={lng} base={base} />
+        </section>
+      ) : null}
+
+      {selectedWork.length > 0 ? (
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <header className="max-w-xl">
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+                {t("home.selectedWork.title")}
+              </h2>
+              <p className="mt-2 text-sm text-[var(--color-muted)] sm:text-base">
+                {t("home.selectedWork.lede")}
+              </p>
+            </header>
+            <div className="mt-8">
+              <HomeSelectedWork photos={selectedWork} locale={lng} base={base} />
+            </div>
+          </div>
         </section>
       ) : null}
 

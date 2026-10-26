@@ -23,11 +23,14 @@
     "photographyTitle": "Fotografie",
     "photographyDescription": "Fotogalerien von Felix A. Schultz.",
     "allPhotosTitle": "Alle Fotos",
-    "allPhotosDescription": "Alle veröffentlichten Fotos aus den Galerien von Felix A. Schultz durchsuchen."
+    "allPhotosDescription": "Alle veröffentlichten Fotos aus den Galerien von Felix A. Schultz durchsuchen.",
+    "aboutTitle": "Über mich",
+    "aboutDescription": "Über Felix A. Schultz — Fotograf und Webentwickler aus Dänemark."
   },
   "nav": {
     "projects": "Projekte",
     "photography": "Fotografie",
+    "about": "Über mich",
     "websites": "Websites",
     "contact": "Kontakt"
   },
@@ -60,6 +63,10 @@
     },
     "categories": {
       "title": "Nach Kategorie durchstöbern"
+    },
+    "selectedWork": {
+      "title": "Ausgewählte Arbeiten",
+      "lede": "Ein genauerer Blick auf einzelne Aufnahmen — die, die am besten zeigen, worauf es mir hinter der Kamera ankommt."
     }
   },
   "hero": {
@@ -71,7 +78,11 @@
   },
   "about": {
     "title": "Fotograf & Fullstack Entwickler - Felix A. Schultz",
-    "body": "Ich bin Felix A. Schultz und arbeite im Kreuzfachbereich zwischen dem visuellen und dem technischen. Als Fotograf ist es der Moment, der mich antreibt – nicht der gefälschte, sondern der echte. Bei Festivals und Veranstaltungen suche ich nach den kleinen Momenten, die die meisten überspringen: eine Emotion im Publikum, ein Blick zwischen zwei Menschen, die Stimmung im Raum. Bei kleineren Fotoshootings geht es darum, ein Raum zu schaffen, in dem das natürliche entstehen kann."
+    "body": "Ich bin Felix A. Schultz und arbeite im Kreuzfachbereich zwischen dem visuellen und dem technischen. Als Fotograf ist es der Moment, der mich antreibt – nicht der gefälschte, sondern der echte. Bei Festivals und Veranstaltungen suche ich nach den kleinen Momenten, die die meisten überspringen: eine Emotion im Publikum, ein Blick zwischen zwei Menschen, die Stimmung im Raum. Bei kleineren Fotoshootings geht es darum, ein Raum zu schaffen, in dem das natürliche entstehen kann.",
+    "approach": "Derselbe Instinkt zieht sich auch durch die technische Arbeit — ich baue gerne Dinge, die nicht im Weg stehen, damit sich die Menschen, die sie nutzen, auf das konzentrieren können, weswegen sie da sind. Ob hinter der Kamera oder vor dem Bildschirm, die Frage bleibt dieselbe: Was braucht hier wirklich Aufmerksamkeit? Festivals, Hochzeiten, Familienfotos, Produkte — unterschiedliche Kontexte, derselbe Blick.",
+    "specialtiesTitle": "Spezialgebiete",
+    "workTitle": "Ein paar Arbeiten",
+    "portraitAlt": "Felix A. Schultz"
   },
   "projects": {
     "title": "Projekte",

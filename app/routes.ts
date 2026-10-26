@@ -25,6 +25,7 @@ export default [
   route("projects/*", "routes/projects.$.tsx"),
   route(":locale", "routes/$locale.tsx", [
     index("routes/$locale._index.tsx"),
+    route("about", "routes/$locale.about.tsx"),
     route("projects", "routes/$locale.projects._index.tsx"),
     route("projects/:slug", "routes/$locale.projects.$slug.tsx"),
     route("photography", "routes/$locale.photography._index.tsx"),

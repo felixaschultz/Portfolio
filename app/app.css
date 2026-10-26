@@ -4049,6 +4049,120 @@ body {
   }
 }
 
+/* Home + About — selected work showcase grid */
+.home-selected-work__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .home-selected-work__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-selected-work__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.home-selected-work__item {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  isolation: isolate;
+}
+
+.home-selected-work__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-selected-work__item:hover .home-selected-work__img {
+  transform: scale(1.04);
+}
+
+.home-selected-work__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.75) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.home-selected-work__item:hover .home-selected-work__shade,
+.home-selected-work__item:focus-visible .home-selected-work__shade {
+  opacity: 1;
+}
+
+.home-selected-work__caption {
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: 0.75rem;
+  z-index: 2;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.home-selected-work__item:hover .home-selected-work__caption,
+.home-selected-work__item:focus-visible .home-selected-work__caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* About page — portrait + intro, specialty/work sections */
+.about-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .about-page__intro {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 3rem;
+  }
+}
+
+.about-page__portrait {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+@media (min-width: 900px) {
+  .about-page__portrait {
+    width: 20rem;
+    flex-shrink: 0;
+  }
+}
+
+.about-page__copy {
+  min-width: 0;
+  max-width: 42rem;
+}
+
+.about-page__section {
+  margin-top: 4rem;
+}
+
 /* Recommendations — one-at-a-time slider */
 .recommendations__slide {
   display: flex;

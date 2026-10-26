@@ -1,3 +1,4 @@
+import { ImagesIcon } from "@sanity/icons";
 import type { DefaultDocumentNodeResolver } from "sanity/structure";
 import type { StructureResolver } from "sanity/structure";
 import { GalleryStudioPanel } from "./components/GalleryStudioPanel";
@@ -34,9 +35,18 @@ export const structure: StructureResolver = (S) =>
         .schemaType("gallery")
         .child(S.documentTypeList("gallery").title("Galleries")),
       S.listItem()
-        .title("Flickr album metadata")
-        .schemaType("flickrAlbumMeta")
-        .child(S.documentTypeList("flickrAlbumMeta").title("Flickr album metadata")),
+        .title("Flickr")
+        .icon(ImagesIcon)
+        .child(
+          S.list()
+            .title("Flickr")
+            .items([
+              S.listItem()
+                .title("Album metadata")
+                .schemaType("flickrAlbumMeta")
+                .child(S.documentTypeList("flickrAlbumMeta").title("Flickr album metadata")),
+            ]),
+        ),
       S.listItem()
         .title("Gallery bundles")
         .schemaType("galleryBundle")

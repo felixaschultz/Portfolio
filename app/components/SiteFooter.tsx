@@ -71,6 +71,7 @@ export function SiteFooter({ onContactClick }: SiteFooterProps) {
         <nav className="site-footer__nav" aria-label="Footer">
           <Link to={`${base}/photography`}>{t("nav.photography")}</Link>
           <Link to={`${base}/projects`}>{t("nav.projects")}</Link>
+          <Link to={`${base}/about`}>{t("nav.about")}</Link>
           <button type="button" onClick={onContactClick}>
             {t("nav.contact")}
           </button>

@@ -16,6 +16,7 @@ import {
 } from "./home-favorite-framing";
 import { MAX_HOME_FAVORITES, type HomeFavoritePhoto } from "./home-favorites";
 import { MAX_HOME_SPOTLIGHT_SLIDES, type HomeSpotlightSlide } from "./home-spotlight";
+import { MAX_HOME_SELECTED_WORK, type HomeSelectedWorkPhoto } from "./home-selected-work";
 import { resolveStackPose } from "./home-favorite-stack";
 import type { Locale } from "./i18n";
 import { resolveSanityString } from "./i18n";
@@ -883,6 +884,10 @@ const HOME_PAGE_SPOTLIGHT_QUERY = `*[_type == "homePage" && _id == "homePage"][0
   spotlightSlides[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
 }`;
 
+const HOME_PAGE_SELECTED_WORK_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
+  selectedWork[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
+}`;
+
 type HomePageImageRow = {
   _key?: string;
   alt?: string;
@@ -1173,6 +1178,123 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
     return out;
   } catch (err) {
     console.error("[sanity] fetchHomeSpotlightSlides failed:", err);
+    return [];
+  }
+}
+
+/** Larger showcase grid (home page + about page) — individual best shots, hand-picked like favorites/spotlight. */
+export async function fetchHomeSelectedWork(): Promise<HomeSelectedWorkPhoto[]> {
+  const widths = [480, 720, 1080, 1440, 1920] as const;
+
+  const client = getSanityLivePublishedClient();
+  if (!client) {
+    console.warn("[sanity] fetchHomeSelectedWork: Sanity not configured");
+    return [];
+  }
+
+  try {
+    const doc = await client.fetch<{ selectedWork?: HomePageFavoriteRow[] } | null>(
+      HOME_PAGE_SELECTED_WORK_QUERY,
+    );
+    if (!doc) {
+      console.warn(
+        "[sanity] fetchHomeSelectedWork: no published homePage document — publish Home page in Studio",
+      );
+      return [];
+    }
+
+    const rows = doc.selectedWork ?? [];
+    const out: HomeSelectedWorkPhoto[] = [];
+
+    const { externalPhotoSrcSet, externalPhotoBlurPlaceholder } = await import("./image.server");
+    const { flickrStaticUrl, fetchFlickrAlbums } = await import("./flickr.server");
+    const needsFlickrTitles = rows.some((row) => row.flickrPhotoId && row.flickrAlbumId);
+    const flickrAlbumTitles = needsFlickrTitles
+      ? new Map((await fetchFlickrAlbums()).map((a) => [a.id, a.title]))
+      : new Map<string, string>();
+
+    for (const row of rows) {
+      if (out.length >= MAX_HOME_SELECTED_WORK) break;
+
+      if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+        const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
+        const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
+        const srcSetParts: string[] = [];
+        if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
+        srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
+        const albumTitle = row.flickrAlbumId ? flickrAlbumTitles.get(row.flickrAlbumId) : undefined;
+        out.push({
+          _key: pid,
+          imageUrl,
+          imageSrcSet: srcSetParts.join(", "),
+          imageBlurUrl: flickrStaticUrl(srv, pid, sec, "s"),
+          imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+          imageScale: flickrZoomScale(framing),
+          gallerySlug: row.flickrAlbumId ? `flickr-${row.flickrAlbumId}` : `flickr-${pid}`,
+          galleryTitle: albumTitle ? { en: albumTitle, da: albumTitle, de: albumTitle } : {},
+        });
+        continue;
+      }
+
+      const imageKey = row.imageKey?.trim();
+      const slug = row.slug?.trim();
+      const imageRow = row.imageRow;
+      if (!slug || !imageKey || !imageRow) {
+        console.warn("[sanity] fetchHomeSelectedWork: skipping pick (missing gallery, image, or key)");
+        continue;
+      }
+
+      try {
+        if (imageRow.externalUrl) {
+          const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, widths, { fit: "4x5" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeSelectedWork: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5 };
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: externalPhotoBlurPlaceholder(imageRow.externalUrl),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else if (imageRow.image) {
+          const base = toSanityImageSource(imageRow.image);
+          const framing =
+            normalizeHomeFavoriteFraming(row.framing) ??
+            framingFromImageSource(imageRow.image as import("@sanity/image-url").SanityImageSource);
+          const source = applyHomeFavoriteFraming(base, framing);
+          const { src, srcSet } = photoSrcSet(source, widths, { fit: "4x5" });
+          if (!src) {
+            console.warn(`[sanity] fetchHomeSelectedWork: no URL for ${slug}/${imageKey}`);
+            continue;
+          }
+          out.push({
+            _key: imageKey,
+            imageUrl: src,
+            imageSrcSet: srcSet,
+            imageBlurUrl: photoBlurPlaceholder(source),
+            imageObjectPosition: `${Math.round(framing.x * 100)}% ${Math.round(framing.y * 100)}%`,
+            alt: imageRow.alt,
+            gallerySlug: slug,
+            galleryTitle: row.title ?? {},
+          });
+        } else {
+          console.warn("[sanity] fetchHomeSelectedWork: skipping pick (no image or externalUrl)");
+        }
+      } catch (err) {
+        console.warn(`[sanity] fetchHomeSelectedWork: failed ${slug}/${imageKey}`, err);
+      }
+    }
+
+    return out;
+  } catch (err) {
+    console.error("[sanity] fetchHomeSelectedWork failed:", err);
     return [];
   }
 }

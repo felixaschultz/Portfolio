@@ -29,7 +29,7 @@
   },
   "nav": {
     "projects": "Projects",
-    "photography": "Photography",
+    "photography": "Gallery",
     "about": "About",
     "websites": "Websites",
     "contact": "Contact"
@@ -65,8 +65,7 @@
       "title": "Browse by category"
     },
     "selectedWork": {
-      "title": "Selected work",
-      "lede": "A closer look at individual shots — the ones that best show what I'm after behind the camera."
+      "title": "Selected work"
     }
   },
   "hero": {

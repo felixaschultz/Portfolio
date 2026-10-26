@@ -29,7 +29,7 @@
   },
   "nav": {
     "projects": "Projekte",
-    "photography": "Fotografie",
+    "photography": "Gallerie",
     "about": "Über mich",
     "websites": "Websites",
     "contact": "Kontakt"
@@ -65,8 +65,7 @@
       "title": "Nach Kategorie durchstöbern"
     },
     "selectedWork": {
-      "title": "Ausgewählte Arbeiten",
-      "lede": "Ein genauerer Blick auf einzelne Aufnahmen — die, die am besten zeigen, worauf es mir hinter der Kamera ankommt."
+      "title": "Ausgewählte Arbeiten"
     }
   },
   "hero": {

@@ -112,19 +112,12 @@ export default function HomePage() {
       ) : null}
 
       {selectedWork.length > 0 ? (
-        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24">
+        <section
+          className="border-b border-[var(--color-border)] bg-[var(--color-surface)] py-16 sm:py-24"
+          aria-label={t("home.selectedWork.title")}
+        >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <header className="max-w-xl">
-              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                {t("home.selectedWork.title")}
-              </h2>
-              <p className="mt-2 text-sm text-[var(--color-muted)] sm:text-base">
-                {t("home.selectedWork.lede")}
-              </p>
-            </header>
-            <div className="mt-8">
-              <HomeSelectedWork photos={selectedWork} locale={lng} base={base} />
-            </div>
+            <HomeSelectedWork photos={selectedWork} locale={lng} base={base} />
           </div>
         </section>
       ) : null}

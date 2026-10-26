@@ -29,7 +29,7 @@
   },
   "nav": {
     "projects": "Projekter",
-    "photography": "Fotografi",
+    "photography": "Galleri",
     "about": "Om",
     "websites": "Websites",
     "contact": "Kontakt"
@@ -65,8 +65,7 @@
       "title": "Gennemse efter kategori"
     },
     "selectedWork": {
-      "title": "Udvalgte billeder",
-      "lede": "Et nærmere kig på enkelte billeder — dem der bedst viser, hvad jeg går efter bag kameraet."
+      "title": "Udvalgte billeder"
     }
   },
   "hero": {

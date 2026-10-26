@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { GalleryListItem } from "../lib/galleries";
+import { galleryHasCategory } from "../lib/gallery-categories";
+import type { GalleryListItem, ResponsiveCoverImage } from "../lib/galleries";
 import type { GalleryCategoryRef } from "../lib/sanity.server";
 import { GalleryGrid } from "./GalleryGrid";
 import { Reveal } from "./Reveal";
@@ -13,6 +14,7 @@ type PhotographyOverviewProps = {
   activeCategorySlug?: string | null;
   categoryLabel?: string | null;
   categoryDescription?: string | null;
+  heroPhoto?: ResponsiveCoverImage | null;
 };
 
 export function PhotographyOverview({
@@ -23,6 +25,7 @@ export function PhotographyOverview({
   activeCategorySlug = null,
   categoryLabel = null,
   categoryDescription = null,
+  heroPhoto = null,
 }: PhotographyOverviewProps) {
   const { locale } = useParams();
   const { t } = useTranslation();
@@ -30,16 +33,21 @@ export function PhotographyOverview({
 
   const heroTitle = categoryLabel ?? activeTag ?? t("photography.title");
   const heroLede = categoryDescription ?? t("photography.description");
-  const heroGallery = galleries[0] ?? null;
+  const fallbackGallery = activeCategorySlug
+    ? galleries.find((g) => galleryHasCategory(g, activeCategorySlug)) ?? null
+    : galleries[0] ?? null;
+  const hero = heroPhoto ?? (fallbackGallery
+    ? { src: fallbackGallery.coverUrl, srcSet: fallbackGallery.coverSrcSet, sizes: "100vw" }
+    : null);
 
   return (
     <div className="gallery-overview">
-      {heroGallery ? (
+      {hero ? (
         <section className="home-hero" aria-labelledby="gallery-overview-hero-heading">
           <img
-            src={heroGallery.coverUrl}
-            srcSet={heroGallery.coverSrcSet}
-            sizes="100vw"
+            src={hero.src}
+            srcSet={hero.srcSet}
+            sizes={hero.sizes}
             alt=""
             className="home-hero__bg"
             loading="eager"

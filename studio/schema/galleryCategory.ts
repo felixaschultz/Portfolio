@@ -1,4 +1,5 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
+import { HomeFavoritePhotosInput } from "../components/HomeFavoritePhotosInput";
 
 const localizedString = (name: string, title: string) =>
   defineField({
@@ -31,6 +32,18 @@ export const galleryCategory = defineType({
         maxLength: 64,
       },
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "heroImage",
+      title: "Hero photo",
+      description:
+        "The full-bleed photo for this category's gallery listing page. Pick one gallery or Flickr photo and crop it. Falls back to the first gallery in this category if left empty.",
+      type: "array",
+      of: [defineArrayMember({ type: "homeFavoritePhoto" })],
+      validation: (rule) => rule.max(1).error("Pick a single hero photo"),
+      components: {
+        input: HomeFavoritePhotosInput,
+      },
     }),
   ],
   preview: {

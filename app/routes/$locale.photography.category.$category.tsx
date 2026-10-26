@@ -5,7 +5,11 @@ import {
   categoryOptionsFromRefs,
   resolveActiveCategorySlug,
 } from "../lib/gallery-categories";
-import { fetchGalleriesForList, fetchPublishedGalleryCategories } from "../lib/sanity.server";
+import {
+  fetchCategoryHeroPhoto,
+  fetchGalleriesForList,
+  fetchPublishedGalleryCategories,
+} from "../lib/sanity.server";
 import { defaultLocale, isValidLocale, type Locale } from "../lib/i18n";
 import { buildPageMeta } from "../lib/seo";
 import { seoCopy } from "../lib/seo-copy";
@@ -25,6 +29,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const activeCategory = categoryOptions.find((c) => c.slug === activeCategorySlug);
   const categoryLabel = activeCategory?.label ?? activeCategorySlug;
   const categoryDescription = activeCategory?.description ?? null;
+  const heroPhoto = await fetchCategoryHeroPhoto(activeCategorySlug);
 
   return {
     galleries,
@@ -32,6 +37,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     activeCategorySlug,
     categoryLabel,
     categoryDescription,
+    heroPhoto,
     locale,
     currentYear: new Date().getUTCFullYear(),
   };
@@ -52,8 +58,15 @@ export function meta({ data, params }: Route.MetaArgs) {
 }
 
 export default function PhotographyCategoryPage() {
-  const { galleries, publishedCategories, activeCategorySlug, categoryLabel, categoryDescription, currentYear } =
-    useLoaderData<typeof loader>();
+  const {
+    galleries,
+    publishedCategories,
+    activeCategorySlug,
+    categoryLabel,
+    categoryDescription,
+    heroPhoto,
+    currentYear,
+  } = useLoaderData<typeof loader>();
   return (
     <PhotographyOverview
       galleries={galleries}
@@ -62,6 +75,7 @@ export default function PhotographyCategoryPage() {
       activeCategorySlug={activeCategorySlug}
       categoryLabel={categoryLabel}
       categoryDescription={categoryDescription}
+      heroPhoto={heroPhoto}
     />
   );
 }

@@ -142,7 +142,7 @@ export function HomeSpotlightSlider({ slides, locale, base }: HomeSpotlightSlide
                   className="home-spotlight__img"
                   objectPosition={item.imageObjectPosition}
                   scale={item.imageScale}
-                  loading={eager || trackIndex < total ? "eager" : "lazy"}
+                  loading={single || eager ? "eager" : "lazy"}
                   fetchPriority={trackIndex === position ? "high" : undefined}
                 />
               );

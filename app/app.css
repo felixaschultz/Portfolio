@@ -238,11 +238,6 @@ body {
   height: 100%;
 }
 
-.home-featured-gallery__caption {
-  z-index: 2;
-  pointer-events: none;
-}
-
 .home-hero__shade {
   position: absolute;
   inset: 0;
@@ -419,20 +414,6 @@ body {
 .home-dev-band__contact:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
-}
-
-/* Home — browse by category */
-.home-categories {
-  margin-top: 2.5rem;
-}
-
-.home-categories__title {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.6875rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--color-muted);
 }
 
 /* Home spotlight — full viewport, center slide + side peeks */

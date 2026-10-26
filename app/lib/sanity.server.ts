@@ -971,6 +971,12 @@ export async function fetchHomeFavoritePhotos(): Promise<HomeFavoritePhoto[]> {
       const stackIndex = out.length;
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        if (row.flickrAlbumId && !flickrAlbumTitles.has(row.flickrAlbumId)) {
+          console.warn(
+            `[sanity] fetchHomeFavoritePhotos: skipping ${row.flickrPhotoId} — album ${row.flickrAlbumId} is no longer public on Flickr`,
+          );
+          continue;
+        }
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
         const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
@@ -1110,6 +1116,12 @@ export async function fetchHomeSpotlightSlides(): Promise<HomeSpotlightSlide[]> 
       if (out.length >= MAX_HOME_SPOTLIGHT_SLIDES) break;
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        if (row.flickrAlbumId && !flickrAlbumTitles.has(row.flickrAlbumId)) {
+          console.warn(
+            `[sanity] fetchHomeSpotlightSlides: skipping ${row.flickrPhotoId} — album ${row.flickrAlbumId} is no longer public on Flickr`,
+          );
+          continue;
+        }
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
         const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
@@ -1230,6 +1242,12 @@ export async function fetchHomeSelectedWork(): Promise<HomeSelectedWorkPhoto[]> 
       if (out.length >= MAX_HOME_SELECTED_WORK) break;
 
       if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+        if (row.flickrAlbumId && !flickrAlbumTitles.has(row.flickrAlbumId)) {
+          console.warn(
+            `[sanity] fetchHomeSelectedWork: skipping ${row.flickrPhotoId} — album ${row.flickrAlbumId} is no longer public on Flickr`,
+          );
+          continue;
+        }
         const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
         const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
         const framing = normalizeHomeFavoriteFraming(row.framing) ?? { x: 0.5, y: 0.5, width: 1, height: 1 };
@@ -1329,9 +1347,18 @@ async function fetchSingleHeroPhoto(
     const { externalPhotoSrcSet, externalPhotoBlurPlaceholder, COVER_WIDTHS_HOME_HERO } = await import(
       "./image.server"
     );
-    const { flickrStaticUrl } = await import("./flickr.server");
+    const { flickrStaticUrl, fetchFlickrAlbums } = await import("./flickr.server");
 
     if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+      if (row.flickrAlbumId) {
+        const albums = await fetchFlickrAlbums();
+        if (!albums.some((a) => a.id === row.flickrAlbumId)) {
+          console.warn(
+            `[sanity] ${label}: hiding ${row.flickrPhotoId} — album ${row.flickrAlbumId} is no longer public on Flickr`,
+          );
+          return null;
+        }
+      }
       const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
       const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
       const srcSetParts: string[] = [];

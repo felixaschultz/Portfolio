@@ -39,7 +39,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
+      <div className="mx-auto max-w-6xl px-4 pt-16 pb-12 sm:px-6 sm:pt-20 sm:pb-16">
         <div className="about-page__intro">
           <img
             src="/assets/me.jpeg"

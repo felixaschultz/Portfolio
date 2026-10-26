@@ -6,7 +6,6 @@ import { useBodyScrollLock } from "../lib/useBodyScrollLock";
 import { useScrolled } from "../lib/use-scrolled";
 import { type Locale } from "../lib/i18n";
 import { crossDomainUrl, localizedPath, pathSuffixAfterLocale, siteOriginForLocale } from "../lib/site-domains";
-import { siteCompanyLinks as websiteLinks } from "../lib/site-links";
 import { Logo } from "./Logo";
 
 type SiteHeaderProps = {
@@ -79,25 +78,6 @@ export function SiteHeader({ onSearchClick }: SiteHeaderProps) {
           >
             {t("nav.about")}
           </NavLink>
-
-          <details className="relative">
-            <summary className="nav-link cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-              {t("nav.websites")}
-            </summary>
-            <div className="absolute right-0 z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-2 shadow-[0_16px_48px_rgb(0_0_0_/_0.45)]">
-              {websiteLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block rounded-lg px-3 py-2.5 text-sm text-[var(--color-muted)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-text)]"
-                >
-                  {link.name}
-                </a>
-              ))}
-            </div>
-          </details>
 
           <Link to={`${base}/contact`} className="btn-primary header-contact-button ml-3 px-5">
             {t("nav.contact")}
@@ -211,21 +191,6 @@ export function SiteHeader({ onSearchClick }: SiteHeaderProps) {
               >
                 {t("nav.about")}
               </NavLink>
-              <p className="mt-3 px-3 text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
-                {t("nav.websites")}
-              </p>
-              {websiteLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="nav-link-mobile"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
               <button type="button" onClick={openSearch} className="nav-link-mobile text-left">
                 {t("search.open")}
               </button>

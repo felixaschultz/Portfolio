@@ -33,6 +33,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.INTA = {
+  policy_link: "https://intastellar.eu/legal/privacy",
+  settings: {
+    rootDomain: "felix-schultz.net",
+    company: "Intastellar Solutions, International",
+    /* color: "radial-gradient(circle,rgb(192, 159, 83) 0%,rgb(163, 133, 64) 100%)", */
+    color: "rgb(163, 133, 64)",
+    novaBackgroundColor: "#fff"
+  }
+};`,
+          }}
+        />
+        <script src="https://consents.cdn.intastellarsolutions.com/uc.js" />
         {gtmId ? <GoogleTagManagerHead containerId={gtmId} /> : null}
         <script src="https://analytics.consentsmanagement.com/api/a" data-site="isp49uv0Tv1W5mol" async defer />
         <Meta />

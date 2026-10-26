@@ -27,7 +27,13 @@
     "aboutTitle": "Om",
     "aboutDescription": "Om Felix A. Schultz — fotograf og webudvikler fra Danmark.",
     "contactTitle": "Kontakt",
-    "contactDescription": "Kom i kontakt med Felix A. Schultz for fotograferingsopgaver eller webudvikling."
+    "contactDescription": "Kom i kontakt med Felix A. Schultz for fotograferingsopgaver eller webudvikling.",
+    "imprintTitle": "Firmaoplysninger",
+    "imprintDescription": "Udbyderoplysninger og juridisk information for felix-schultz.net.",
+    "privacyTitle": "Privatlivspolitik",
+    "privacyDescription": "Hvordan felix-schultz.net indsamler, bruger og beskytter dine personoplysninger.",
+    "termsTitle": "Handelsbetingelser",
+    "termsDescription": "Betingelser for køb foretaget i billedshoppen på felix-schultz.net."
   },
   "nav": {
     "projects": "Projekter",
@@ -297,5 +303,153 @@
       "emailNotConfigured": "E-mail er ikke konfigureret.",
       "emailSendFailed": "Kunne ikke sende e-mail. Prøv igen eller download direkte på siden."
     }
+  },
+  "imprint": {
+    "title": "Firmaoplysninger",
+    "updated": "Senest opdateret: oktober 2026",
+    "sections": [
+      {
+        "heading": "Udbyder",
+        "paragraphs": [
+          "Intastellar Solutions, International",
+          "v/ Felix A. Schultz",
+          "Toldbodgade 3, st. 9",
+          "6300 Gråsten",
+          "Email: info@felix-schultz.dk",
+          "CVR-nr.: 41604409"
+        ]
+      },
+      {
+        "heading": "Ansvarlig for indholdet",
+        "paragraphs": ["Felix A. Schultz, samme adresse som ovenfor."]
+      },
+      {
+        "heading": "Tvistbilæggelse",
+        "paragraphs": [
+          "EU-Kommissionen stiller en platform til rådighed for online tvistbilæggelse (ODR): https://ec.europa.eu/consumers/odr. Vi er ikke forpligtet til og deltager ikke i tvistbilæggelse ved et forbrugerklagenævn."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privatlivspolitik",
+    "updated": "Senest opdateret: oktober 2026",
+    "cookieTableHeading": "Aktuel oversigt over cookies på denne side",
+    "intro": [
+      "Denne politik beskriver, hvilke personoplysninger denne hjemmeside indsamler, hvorfor, og hvilke rettigheder du har. Den dækker felix-schultz.net, felix-schultz.dk og tilknyttede domæner drevet af Intastellar Solutions, International."
+    ],
+    "sections": [
+      {
+        "heading": "Hvem er dataansvarlig",
+        "paragraphs": [
+          "Den dataansvarlige er Intastellar Solutions, International, Toldbodgade 3, st. 9, 6300 Gråsten (CVR 41604409), repræsenteret ved Felix A. Schultz. Ved spørgsmål om privatliv, kontakt info@felix-schultz.dk."
+        ]
+      },
+      {
+        "heading": "Kontaktformular",
+        "paragraphs": [
+          "Når du bruger kontaktformularen, behandler vi navn, e-mailadresse og den besked, du skriver, for at kunne besvare din henvendelse. Oplysningerne bruges ikke til andre formål. Retsgrundlag: vores legitime interesse i at besvare henvendelser rettet til os (databeskyttelsesforordningens artikel 6, stk. 1, litra f), eller dit samtykke ved at indsende formularen."
+        ]
+      },
+      {
+        "heading": "Køb og levering af billeder",
+        "paragraphs": [
+          "Når du køber en billedlicens i shoppen, behandler vi dit navn, din e-mailadresse og — ved erhvervslicens — firmanavn for at oprette og levere din ordre.",
+          "Betalingen håndteres udelukkende af Stripe; vi ser eller gemmer aldrig dine kortoplysninger. Stripe behandler dine betalingsoplysninger efter egen privatlivspolitik.",
+          "Vi gemmer en oversigt over din ordre — e-mail, navn, firmanavn, det galleri og den licens du har købt, det betalte beløb samt din downloadstatus — i vores egen database, så vi kan levere dine downloads og håndtere eventuel support. Downloadlinks er gyldige i 7 dage efter købet.",
+          "Din ordrebekræftelse og dit downloadlink sendes via e-mail med Resend, vores e-mailudbyder, som udelukkende behandler din e-mailadresse for at levere denne besked.",
+          "Retsgrundlag: opfyldelse af købsaftalen med dig (artikel 6, stk. 1, litra b), samt vores retlige forpligtelse til bogføring (artikel 6, stk. 1, litra c, jf. bogføringsloven)."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": ["Denne hjemmeside bruger følgende cookies:"],
+        "list": [
+          "portfolio_locale — husker dit sprogvalg. Strengt nødvendig; kræver ikke samtykke.",
+          "admin_session — holder sidens ejer logget ind i administrationsområdet. Strengt nødvendig; sættes ikke for almindelige besøgende.",
+          "Analysecookies (Google Tag Manager og vores egen Intastellar Consents Analytics) — indlæses først, når du accepterer dem i cookiebanneret. Du kan til enhver tid trække dit samtykke tilbage via det samme banner."
+        ]
+      },
+      {
+        "heading": "Skrifttyper",
+        "paragraphs": [
+          "Denne hjemmeside henter sine skrifttyper direkte fra Google Fonts (fonts.googleapis.com og fonts.gstatic.com). Indlæsning af en skrifttype sender din IP-adresse og browseroplysninger til Google. Se Googles privatlivspolitik for detaljer om Googles behandling heraf."
+        ]
+      },
+      {
+        "heading": "Billeder og indholdslevering",
+        "paragraphs": [
+          "Billederne på denne hjemmeside hostes på Flickr og hentes direkte fra Flickrs servere (live.staticflickr.com), når du ser et galleri. Hjemmesidens tekst og struktur administreres via Sanity, et indholdsstyringssystem, som ikke behandler dine personoplysninger.",
+          "Selve hjemmesiden hostes hos Vercel, som fører almindelige tekniske serverlogs (IP-adresse, browser, tidsstempel) af hensyn til sikkerhed og drift."
+        ]
+      },
+      {
+        "heading": "Hvor længe vi opbevarer dine oplysninger",
+        "paragraphs": [
+          "Beskeder fra kontaktformularen opbevares kun, så længe det er nødvendigt for at håndtere din henvendelse. Ordre- og betalingsoplysninger opbevares i 5 år fra udgangen af det pågældende regnskabsår, som krævet efter bogføringsloven."
+        ]
+      },
+      {
+        "heading": "Dine rettigheder",
+        "paragraphs": [
+          "Efter databeskyttelsesforordningen har du ret til at få indsigt i, rette eller slette dine oplysninger, begrænse eller gøre indsigelse mod behandlingen, samt få udleveret dine oplysninger i et overførbart format. Kontakt info@felix-schultz.dk for at gøre brug af dine rettigheder.",
+          "Du har desuden ret til at klage til Datatilsynet, www.datatilsynet.dk."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Handelsbetingelser",
+    "updated": "Senest opdateret: oktober 2026",
+    "intro": ["Disse betingelser gælder for køb foretaget i billedshoppen på denne hjemmeside."],
+    "sections": [
+      {
+        "heading": "Sælger",
+        "paragraphs": [
+          "Køb foretages hos Intastellar Solutions, International, Toldbodgade 3, st. 9, 6300 Gråsten (CVR 41604409), som optræder som indløser (merchant of record) ved betalingsbehandlingen."
+        ]
+      },
+      {
+        "heading": "Produkter og licenser",
+        "paragraphs": ["Der findes to licenstyper pr. billede:"],
+        "list": [
+          "Privat download — til privat, ikke-erhvervsmæssig brug (print, sociale medier, private projekter).",
+          "Erhvervslicens — til erhvervsmæssig brug, markedsføring, publikationer og kundeopgaver."
+        ],
+        "trailing": [
+          "En licens giver dig ret til at bruge det/de licenserede billede(r) som beskrevet ovenfor; den overdrager ikke ophavsretten, som forbliver hos Felix A. Schultz."
+        ]
+      },
+      {
+        "heading": "Priser og betaling",
+        "paragraphs": [
+          "Priser fastsættes og opkræves i danske kroner (DKK); beløb vist i EUR er kun vejledende. Betalingen behandles sikkert via Stripe ved checkout."
+        ]
+      },
+      {
+        "heading": "Levering",
+        "paragraphs": [
+          "Efter gennemført betaling sendes et downloadlink til den e-mailadresse, du har angivet. Linket er gyldigt i 7 dage fra købsdatoen."
+        ]
+      },
+      {
+        "heading": "Fortrydelsesret",
+        "paragraphs": [
+          "Da produktet er digitalt indhold, der leveres straks efter betaling, ophører din lovbestemte fortrydelsesret på 14 dage, så snart downloadet påbegyndes — forudsat at du forinden har givet udtrykkeligt samtykke til øjeblikkelig levering og er blevet gjort bekendt med, at fortrydelsesretten dermed bortfalder. Er et sådant samtykke ikke blevet indhentet ved købet, gælder de almindelige fortrydelsesregler for forbrugere i stedet."
+        ]
+      },
+      {
+        "heading": "Ansvar",
+        "paragraphs": [
+          "Billederne leveres, som de er. Vi er ikke ansvarlige for indirekte tab som følge af brugen af de licenserede billeder, medmindre ansvar ikke kan fraskrives efter dansk ret."
+        ]
+      },
+      {
+        "heading": "Lovvalg og tvister",
+        "paragraphs": [
+          "Disse betingelser er underlagt dansk ret. Tvister kan indbringes for EU-Kommissionens online tvistbilæggelsesplatform på https://ec.europa.eu/consumers/odr. Vi deltager ikke i sagsbehandling ved et privat forbrugerklagenævn."
+        ]
+      }
+    ]
   }
 }

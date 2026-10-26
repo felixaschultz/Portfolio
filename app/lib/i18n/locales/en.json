@@ -27,7 +27,13 @@
     "aboutTitle": "About",
     "aboutDescription": "About Felix A. Schultz — photographer and web developer based in Denmark.",
     "contactTitle": "Contact",
-    "contactDescription": "Get in touch with Felix A. Schultz for photography bookings or web development work."
+    "contactDescription": "Get in touch with Felix A. Schultz for photography bookings or web development work.",
+    "imprintTitle": "Imprint",
+    "imprintDescription": "Provider details and legal information for felix-schultz.net.",
+    "privacyTitle": "Privacy Policy",
+    "privacyDescription": "How felix-schultz.net collects, uses, and protects your personal data.",
+    "termsTitle": "Terms of Service",
+    "termsDescription": "Terms governing purchases made through the photo shop on felix-schultz.net."
   },
   "nav": {
     "projects": "Projects",
@@ -298,5 +304,153 @@
       "emailNotConfigured": "Email is not configured.",
       "emailSendFailed": "Could not send email. Please try again or download directly on the page."
     }
+  },
+  "imprint": {
+    "title": "Imprint",
+    "updated": "Last updated: October 2026",
+    "sections": [
+      {
+        "heading": "Provider",
+        "paragraphs": [
+          "Intastellar Solutions, International",
+          "c/o Felix A. Schultz",
+          "Toldbodgade 3, st. 9",
+          "6300 Gråsten, Denmark",
+          "Email: info@felix-schultz.dk",
+          "CVR (business registration number): 41604409"
+        ]
+      },
+      {
+        "heading": "Responsible for content",
+        "paragraphs": ["Felix A. Schultz, same address as above."]
+      },
+      {
+        "heading": "Dispute resolution",
+        "paragraphs": [
+          "The European Commission provides a platform for online dispute resolution (ODR): https://ec.europa.eu/consumers/odr. We are not obliged to, and do not, participate in dispute resolution proceedings before a consumer arbitration board."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated: October 2026",
+    "cookieTableHeading": "Current cookies on this site",
+    "intro": [
+      "This policy explains what personal data this website collects, why, and what your rights are. It covers felix-schultz.net, felix-schultz.dk, and related domains operated by Intastellar Solutions, International."
+    ],
+    "sections": [
+      {
+        "heading": "Who is responsible for your data",
+        "paragraphs": [
+          "The data controller is Intastellar Solutions, International, Toldbodgade 3, st. 9, 6300 Gråsten, Denmark (CVR 41604409), represented by Felix A. Schultz. For any privacy question, contact info@felix-schultz.dk."
+        ]
+      },
+      {
+        "heading": "Contact form",
+        "paragraphs": [
+          "If you use the contact form, we process the name, email address, and message you provide to respond to your inquiry. This data is not used for any other purpose. Legal basis: our legitimate interest in responding to inquiries addressed to us (Art. 6(1)(f) GDPR), or your consent by submitting the form."
+        ]
+      },
+      {
+        "heading": "Purchases and digital downloads",
+        "paragraphs": [
+          "If you buy a photo license through the shop, we process your name, email address, and — for commercial licenses — company name to create and fulfil your order.",
+          "Payment is handled entirely by Stripe; we never see or store your card details. Stripe processes your payment data under its own privacy policy.",
+          "We keep a record of your order — email, name, company name, the gallery and license purchased, the amount paid, and your download status — in our own database, so we can provide your downloads and handle any support request. Download links are valid for 7 days after purchase.",
+          "Your purchase confirmation and download link are sent by email via Resend, our email delivery provider, which processes your email address solely to deliver that message.",
+          "Legal basis: performance of the purchase contract with you (Art. 6(1)(b) GDPR), and our legal obligation to keep accounting records (Art. 6(1)(c) GDPR, Danish Bookkeeping Act)."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": ["This site uses the following cookies:"],
+        "list": [
+          "portfolio_locale — remembers your language choice. Strictly necessary; no consent required.",
+          "admin_session — keeps the site owner signed in to the admin area. Strictly necessary; not set for regular visitors.",
+          "Analytics cookies (Google Tag Manager and our own Intastellar Consents Analytics) — only load after you accept them in the cookie banner. You can withdraw consent at any time through the same banner."
+        ]
+      },
+      {
+        "heading": "Fonts",
+        "paragraphs": [
+          "This site loads its typefaces directly from Google Fonts (fonts.googleapis.com and fonts.gstatic.com). Loading a font transmits your IP address and browser information to Google. See Google's privacy policy for details on how Google processes this data."
+        ]
+      },
+      {
+        "heading": "Photos and content delivery",
+        "paragraphs": [
+          "Photos on this site are hosted on Flickr and loaded directly from Flickr's servers (live.staticflickr.com) when you view a gallery. Website text and structure are managed through Sanity, a content management system, which does not process your personal data.",
+          "The site itself is hosted on Vercel, which keeps standard technical server logs (IP address, browser, timestamp) for security and operation of the service."
+        ]
+      },
+      {
+        "heading": "How long we keep your data",
+        "paragraphs": [
+          "Contact form messages are kept only as long as needed to handle your inquiry. Order and payment records are kept for 5 years from the end of the relevant financial year, as required under Danish bookkeeping law."
+        ]
+      },
+      {
+        "heading": "Your rights",
+        "paragraphs": [
+          "Under the GDPR, you have the right to access, correct, or delete your data, to restrict or object to its processing, and to receive a copy of it in a portable format. To exercise any of these rights, contact info@felix-schultz.dk.",
+          "You also have the right to lodge a complaint with the Danish Data Protection Agency (Datatilsynet), www.datatilsynet.dk."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated: October 2026",
+    "intro": ["These terms apply to purchases made through the photo shop on this website."],
+    "sections": [
+      {
+        "heading": "Seller",
+        "paragraphs": [
+          "Purchases are made from Intastellar Solutions, International, Toldbodgade 3, st. 9, 6300 Gråsten, Denmark (CVR 41604409), which acts as merchant of record for payment processing."
+        ]
+      },
+      {
+        "heading": "Products and licenses",
+        "paragraphs": ["Two license types are available per photo:"],
+        "list": [
+          "Personal download — for private, non-commercial use (prints, social media, personal projects).",
+          "Commercial license — for business use, marketing, publications, and client work."
+        ],
+        "trailing": [
+          "A license grants you the right to use the licensed image(s) as described above; it does not transfer copyright, which remains with Felix A. Schultz."
+        ]
+      },
+      {
+        "heading": "Prices and payment",
+        "paragraphs": [
+          "Prices are set and charged in Danish kroner (DKK); amounts shown in EUR are for reference only. Payment is processed securely by Stripe at checkout."
+        ]
+      },
+      {
+        "heading": "Delivery",
+        "paragraphs": [
+          "After successful payment, a download link is sent to the email address you provide. The link is valid for 7 days from the date of purchase."
+        ]
+      },
+      {
+        "heading": "Right of withdrawal",
+        "paragraphs": [
+          "Because the product is digital content delivered immediately after payment, your statutory 14-day right of withdrawal ends as soon as download begins, provided you have given prior express consent to immediate delivery and acknowledged the resulting loss of the withdrawal right. If no such consent was requested at checkout, standard consumer withdrawal rights apply instead."
+        ]
+      },
+      {
+        "heading": "Liability",
+        "paragraphs": [
+          "Photos are provided as-is. We are not liable for indirect losses arising from use of the licensed images, except where liability cannot be excluded under Danish law."
+        ]
+      },
+      {
+        "heading": "Governing law and disputes",
+        "paragraphs": [
+          "These terms are governed by Danish law. Disputes may be submitted to the European Commission's online dispute resolution platform at https://ec.europa.eu/consumers/odr. We do not participate in proceedings before a private consumer arbitration board."
+        ]
+      }
+    ]
   }
 }

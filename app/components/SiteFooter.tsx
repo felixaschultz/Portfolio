@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { type Locale } from "../lib/i18n";
+import { legalCopy } from "../lib/legal-copy";
 import { Logo } from "./Logo";
 import { socialLinks } from "./SocialIcons";
 
@@ -45,7 +46,10 @@ export function SiteFooter() {
       <div className="site-footer__bottom">
         <div className="site-footer__bottom-inner">
           <p>
-            © {year} Felix A. Schultz. {t("footer.rights")}.
+            © {year} Felix A. Schultz. {t("footer.rights")}.{" "}
+            <Link to={`${base}/imprint`}>{legalCopy(lng, "imprint").title}</Link> ·{" "}
+            <Link to={`${base}/privacy`}>{legalCopy(lng, "privacy").title}</Link> ·{" "}
+            <Link to={`${base}/terms`}>{legalCopy(lng, "terms").title}</Link>
           </p>
           <a
             href="https://www.intastellar.eu"

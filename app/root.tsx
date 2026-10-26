@@ -42,7 +42,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     company: "Intastellar Solutions, International",
     design: "nova",
     color: "var(--color-accent)",
-    novaBackgroundColor: "#fff"
+    novaBackgroundColor: "#141311"
   }
 };`,
           }}

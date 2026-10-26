@@ -150,7 +150,11 @@
     "submit": "Afsend besked",
     "success": "Din besked er blevet afsendt",
     "error": "Din besked kunne ikke afsendes. Prøv igen senere.",
-    "close": "Luk"
+    "close": "Luk",
+    "directTitle": "Direkte kontakt",
+    "emailCta": "Send mig en e-mail",
+    "specialtiesTitle": "Det jeg fotograferer",
+    "socialTitle": "Find mig online"
   },
   "footer": {
     "rights": "Alle rettigheder forbeholdes",

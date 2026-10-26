@@ -4170,6 +4170,49 @@ body {
   margin-top: 4rem;
 }
 
+/* Contact page — form + info panel */
+.contact-page__layout {
+  display: grid;
+  gap: 3rem;
+}
+
+@media (min-width: 900px) {
+  .contact-page__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    gap: 4rem;
+  }
+}
+
+.contact-page__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.contact-page__info-block:first-child {
+  padding-top: 0;
+}
+
+.contact-page__info-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.9rem;
+}
+
+.contact-page__email-link {
+  display: inline-flex;
+  color: var(--color-accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.contact-page__email-link:hover {
+  text-decoration-color: currentColor;
+}
+
 /* Recommendations — one-at-a-time slider */
 .recommendations__slide {
   display: flex;

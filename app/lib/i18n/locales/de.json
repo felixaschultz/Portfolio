@@ -150,7 +150,11 @@
     "submit": "Nachricht senden",
     "success": "Ihre Nachricht wurde gesendet.",
     "error": "Ihre Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
-    "close": "Schließen"
+    "close": "Schließen",
+    "directTitle": "Direktkontakt",
+    "emailCta": "Schreiben Sie mir direkt",
+    "specialtiesTitle": "Was ich fotografiere",
+    "socialTitle": "Finden Sie mich online"
   },
   "footer": {
     "rights": "Alle Rechte vorbehalten",

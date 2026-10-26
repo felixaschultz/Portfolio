@@ -150,7 +150,11 @@
     "submit": "Send message",
     "success": "Your message has been sent. Thank you.",
     "error": "There was an error sending your message. Please try again.",
-    "close": "Close"
+    "close": "Close",
+    "directTitle": "Direct contact",
+    "emailCta": "Email me directly",
+    "specialtiesTitle": "What I shoot",
+    "socialTitle": "Find me online"
   },
   "footer": {
     "rights": "All rights reserved",

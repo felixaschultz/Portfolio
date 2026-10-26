@@ -16,7 +16,7 @@ export function Recommendations() {
   const current = recommendations[index]!;
 
   return (
-    <section className="recommendations border-t border-[var(--color-border)] bg-[var(--color-surface)] py-20">
+    <section className="recommendations border-t border-[var(--color-border)] bg-[var(--color-bg)] py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <h2 className="font-display text-center text-3xl font-semibold">{t("recommendations.title")}</h2>
 

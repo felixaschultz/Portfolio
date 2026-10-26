@@ -4,7 +4,7 @@ import type { Locale } from "./i18n";
 const FLICKR_API_BASE = "https://www.flickr.com/services/rest/";
 const PHOTO_EXTRAS = "url_s,url_n,url_z,url_c,url_b,url_h,url_k";
 /** Larger derivative sizes aren't guaranteed to share the primary photo's secret — fetch their real URLs instead of guessing. */
-const PRIMARY_PHOTO_EXTRAS = "url_b,url_h,url_k";
+const PRIMARY_PHOTO_EXTRAS = "url_b,url_h,url_k,date_taken";
 
 // ── Raw API types ─────────────────────────────────────────────────────────────
 
@@ -24,6 +24,7 @@ type FlickrPrimaryPhotoExtras = {
   url_b?: string; width_b?: number; height_b?: number;
   url_h?: string; width_h?: number; height_h?: number;
   url_k?: string; width_k?: number; height_k?: number;
+  date_taken?: string;
 };
 
 type FlickrPhotosetRaw = {
@@ -77,6 +78,8 @@ export type FlickrAlbumMeta = {
   primaryPhotoSecret: string;
   photoCount: number;
   dateCreate: string;
+  /** When the primary photo was actually taken (per its EXIF/upload metadata) — preferred over `dateCreate` for sorting albums chronologically. */
+  primaryPhotoDateTaken?: string;
   /** Only present when the primary photo's original is large enough to have these derivatives — each may use its own secret, so use the URL as-is. */
   primaryPhotoUrlH?: string;
   primaryPhotoUrlK?: string;
@@ -113,7 +116,9 @@ export type FlickrPhotoForStudio = {
   thumbUrl: string;
 };
 
-function albumDate(album: FlickrAlbumMeta): string {
+/** Chronological sort key for an album — the primary photo's taken date where Flickr provides one, else the album's creation date. */
+export function albumSortDate(album: FlickrAlbumMeta): string {
+  if (album.primaryPhotoDateTaken) return album.primaryPhotoDateTaken.slice(0, 10);
   return new Date(parseInt(album.dateCreate, 10) * 1000).toISOString().slice(0, 10);
 }
 
@@ -135,7 +140,7 @@ export function flickrAlbumToListItem(album: FlickrAlbumMeta): GalleryListItem {
     slug: flickrAlbumSlug(album.id),
     title,
     description: album.description ? { en: album.description, da: album.description, de: album.description } : undefined,
-    takenAt: albumDate(album),
+    takenAt: albumSortDate(album),
     imageCount: album.photoCount,
     coverUrl: staticUrl(srv, pid, sec, "z"),
     coverOgUrl: staticUrl(srv, pid, sec, "b"),
@@ -235,6 +240,7 @@ async function loadFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
           primaryPhotoSecret: ps.secret,
           photoCount: ps.count_photos,
           dateCreate: ps.date_create,
+          primaryPhotoDateTaken: ps.primary_photo_extras?.date_taken,
           primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
           primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
         });
@@ -281,6 +287,7 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
       primaryPhotoSecret: ps.secret,
       photoCount: typeof ps.count_photos === "object" ? ps.count_photos._content : ps.count_photos,
       dateCreate: ps.date_create,
+      primaryPhotoDateTaken: ps.primary_photo_extras?.date_taken,
       primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
       primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
     };

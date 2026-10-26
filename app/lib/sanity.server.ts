@@ -555,7 +555,7 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
   const client = getSanityClient();
   if (!client) return [];
 
-  const { fetchFlickrAlbums, flickrAlbumToNavItem } = await import("./flickr.server");
+  const { fetchFlickrAlbums, flickrAlbumToNavItem, albumSortDate } = await import("./flickr.server");
 
   try {
     const [rawRows, flickrAlbums]: [GalleryNavQueryRow[], Awaited<ReturnType<typeof fetchFlickrAlbums>>] =
@@ -607,7 +607,7 @@ export async function fetchGalleryNavList(): Promise<GalleryNavItem[]> {
       ...sanityItems.map((item) => ({ item, date: sanityDateBySlug.get(item.slug) ?? "" })),
       ...flickrAlbums
         .filter((a) => !claimedAlbumIds.has(a.id))
-        .map((a) => ({ item: flickrAlbumToNavItem(a), date: new Date(parseInt(a.dateCreate, 10) * 1000).toISOString().slice(0, 10) })),
+        .map((a) => ({ item: flickrAlbumToNavItem(a), date: albumSortDate(a) })),
     ];
 
     return dated
@@ -623,7 +623,7 @@ const CLAIMED_FLICKR_ALBUM_IDS_QUERY = `*[${publishedGalleryFilter} && defined(f
 
 export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]> {
   const { COVER_WIDTHS_HOME_TILE } = await import("./image.server");
-  const { fetchFlickrAlbums, flickrAlbumToListItem, flickrAlbumHeroCover } = await import("./flickr.server");
+  const { fetchFlickrAlbums, flickrAlbumToListItem, flickrAlbumHeroCover, albumSortDate } = await import("./flickr.server");
   const client = getSanityClient();
   if (!client) return [];
   try {
@@ -648,7 +648,7 @@ export async function fetchFeaturedGalleriesForList(): Promise<GalleryListItem[]
       ...published.map((gallery): Entry => ({ kind: "sanity", takenAt: gallery.takenAt ?? "", gallery })),
       ...featuredFlickrAlbums.map((album): Entry => ({
         kind: "flickr",
-        takenAt: new Date(parseInt(album.dateCreate, 10) * 1000).toISOString().slice(0, 10),
+        takenAt: albumSortDate(album),
         album,
       })),
     ]

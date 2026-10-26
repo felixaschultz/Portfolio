@@ -40,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   settings: {
     rootDomain: "felix-schultz.net",
     company: "Intastellar Solutions, International",
-    /* color: "radial-gradient(circle,rgb(192, 159, 83) 0%,rgb(163, 133, 64) 100%)", */
+    design: "nova",
     color: "rgb(163, 133, 64)",
     novaBackgroundColor: "#fff"
   }

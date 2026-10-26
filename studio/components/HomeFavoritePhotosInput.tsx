@@ -42,11 +42,13 @@ const FLICKR_DEFAULT_FRAMING: HomeFavoriteFraming = { x: 0.5, y: 0.5, width: 1, 
 const MAX_FAVORITES = 5;
 const MAX_SPOTLIGHT = 8;
 const MAX_SELECTED_WORK = 12;
+const MAX_HERO = 1;
 
-function fieldMode(props: ArrayInputProps): "favorites" | "spotlight" | "selectedWork" {
+function fieldMode(props: ArrayInputProps): "favorites" | "spotlight" | "selectedWork" | "hero" {
   const segment = props.path?.[props.path.length - 1];
   if (segment === "spotlightSlides") return "spotlight";
   if (segment === "selectedWork") return "selectedWork";
+  if (segment === "heroImage") return "hero";
   return "favorites";
 }
 
@@ -201,12 +203,20 @@ function flickrAlbumLabel(a: FlickrAlbumItem): string {
 export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   const mode = fieldMode(props);
   const isSpotlight = mode === "spotlight";
+  const wideAspect = mode === "spotlight" || mode === "hero";
   const useStackUI = mode === "favorites";
   const preferLargeFlickr = mode !== "favorites";
-  const max = mode === "favorites" ? MAX_FAVORITES : mode === "spotlight" ? MAX_SPOTLIGHT : MAX_SELECTED_WORK;
-  const thumbAspect = isSpotlight ? "16/9" : "4/5";
-  const thumbW = isSpotlight ? 160 : 120;
-  const thumbH = isSpotlight ? 90 : 150;
+  const max =
+    mode === "favorites"
+      ? MAX_FAVORITES
+      : mode === "spotlight"
+        ? MAX_SPOTLIGHT
+        : mode === "hero"
+          ? MAX_HERO
+          : MAX_SELECTED_WORK;
+  const thumbAspect = wideAspect ? "16/9" : "4/5";
+  const thumbW = wideAspect ? 160 : 120;
+  const thumbH = wideAspect ? 90 : 150;
 
   const baseClient = useClient({ apiVersion: "2024-05-16" });
   const user = useCurrentUser();
@@ -751,7 +761,9 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           ? `Choose a gallery or Flickr album, then pick slides for the home page slider (${picks.length} / ${max}).`
           : mode === "selectedWork"
             ? `Choose a gallery or Flickr album, then pick photos for the "Selected work" grid (${picks.length} / ${max}).`
-            : `Choose a gallery or Flickr album, then pick photos (${picks.length} / ${max}). Only one source loads at a time.`}
+            : mode === "hero"
+              ? `Choose a gallery or Flickr album, then pick the home page hero photo (${picks.length} / ${max}).`
+              : `Choose a gallery or Flickr album, then pick photos (${picks.length} / ${max}). Only one source loads at a time.`}
       </Text>
 
       {picks.length > 0 ? (
@@ -838,11 +850,15 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
             </Stack>
           ) : (
             <Stack space={3}>
-              <Text size={1} weight="semibold">{mode === "spotlight" ? "Slide order" : "Photo order"}</Text>
+              <Text size={1} weight="semibold">
+                {mode === "spotlight" ? "Slide order" : mode === "hero" ? "Hero photo" : "Photo order"}
+              </Text>
               <Text size={1} muted>
                 {mode === "spotlight"
                   ? "First slide shows first on the home page. Use arrows to reorder."
-                  : "First photo shows first in the grid. Use arrows to reorder."}
+                  : mode === "hero"
+                    ? "This photo is used as the home page hero background."
+                    : "First photo shows first in the grid. Use arrows to reorder."}
               </Text>
               {picks.map((pick, index) => {
                 const url = resolvePickThumb(pick);
@@ -894,7 +910,13 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           {picks.length > 0 ? (
             <Stack space={4}>
               <Text size={1} weight="semibold">
-                {isSpotlight ? "Slide crops (16:9)" : mode === "selectedWork" ? "Selected work crops" : "Card crops"}
+                {isSpotlight
+                  ? "Slide crops (16:9)"
+                  : mode === "selectedWork"
+                    ? "Selected work crops"
+                    : mode === "hero"
+                      ? "Hero crop (16:9)"
+                      : "Card crops"}
               </Text>
               {picks.map((pick, index) => {
                 const image = resolvePickImage(pick);
@@ -907,7 +929,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
                       imageUrl={imageUrl}
                       framing={pickFraming(pick)}
                       label={resolvePickLabel(pick, index)}
-                      aspectRatio={isSpotlight ? "16 / 9" : "4 / 5"}
+                      aspectRatio={wideAspect ? "16 / 9" : "4 / 5"}
                       onChange={(framing) => updatePickFraming(pick._key, framing)}
                       onReset={() => resetPickFraming(pick)}
                     />

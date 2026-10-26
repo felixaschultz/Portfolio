@@ -7,6 +7,18 @@ export const homePage = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "heroImage",
+      title: "Hero photo (front page)",
+      description:
+        "The full-bleed photo behind the home page heading. Pick one gallery or Flickr photo and crop it. Falls back to the most recent featured gallery's cover if left empty.",
+      type: "array",
+      of: [defineArrayMember({ type: "homeFavoritePhoto" })],
+      validation: (rule) => rule.max(1).error("Pick a single hero photo"),
+      components: {
+        input: HomeFavoritePhotosInput,
+      },
+    }),
+    defineField({
       name: "favoritePhotos",
       title: "Favorite photos (front page)",
       description:

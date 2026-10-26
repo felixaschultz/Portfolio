@@ -6,6 +6,7 @@ import {
   type GalleryListItem,
   type GalleryNavItem,
   type PortfolioPhotoItem,
+  type ResponsiveCoverImage,
 } from "./galleries";
 import { resolveGalleryCoverImage, resolveGalleryFirstImage } from "./gallery-cover";
 import {
@@ -888,6 +889,10 @@ const HOME_PAGE_SELECTED_WORK_QUERY = `*[_type == "homePage" && _id == "homePage
   selectedWork[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
 }`;
 
+const HOME_PAGE_HERO_QUERY = `*[_type == "homePage" && _id == "homePage"][0] {
+  heroImage[] ${HOME_PAGE_PHOTO_ROW_PROJECTION}
+}`;
+
 type HomePageImageRow = {
   _key?: string;
   alt?: string;
@@ -1296,5 +1301,64 @@ export async function fetchHomeSelectedWork(): Promise<HomeSelectedWorkPhoto[]> 
   } catch (err) {
     console.error("[sanity] fetchHomeSelectedWork failed:", err);
     return [];
+  }
+}
+
+/** Manually-picked home page hero photo — falls back to `resolveHomePhotoCover` (featured gallery) when unset. */
+export async function fetchHomeHeroPhoto(): Promise<ResponsiveCoverImage | null> {
+  const client = getSanityLivePublishedClient();
+  if (!client) return null;
+
+  try {
+    const doc = await client.fetch<{ heroImage?: HomePageFavoriteRow[] } | null>(HOME_PAGE_HERO_QUERY);
+    const row = doc?.heroImage?.[0];
+    if (!row) return null;
+
+    const { externalPhotoSrcSet, externalPhotoBlurPlaceholder, COVER_WIDTHS_HOME_HERO } = await import(
+      "./image.server"
+    );
+    const { flickrStaticUrl } = await import("./flickr.server");
+
+    if (row.flickrPhotoId && row.flickrServer && row.flickrSecret) {
+      const { flickrPhotoId: pid, flickrServer: srv, flickrSecret: sec } = row;
+      const imageUrl = row.flickrPhotoUrl || flickrStaticUrl(srv, pid, sec, "b");
+      const srcSetParts: string[] = [];
+      if (row.flickrThumbUrl) srcSetParts.push(`${row.flickrThumbUrl} 150w`);
+      srcSetParts.push(`${imageUrl} ${flickrSizeWidth(imageUrl)}w`);
+      return {
+        src: imageUrl,
+        srcSet: srcSetParts.join(", "),
+        blurSrc: flickrStaticUrl(srv, pid, sec, "s"),
+        sizes: "100vw",
+      };
+    }
+
+    const imageRow = row.imageRow;
+    if (!imageRow) return null;
+
+    if (imageRow.externalUrl) {
+      const { src, srcSet } = externalPhotoSrcSet(imageRow.externalUrl, COVER_WIDTHS_HOME_HERO, {
+        fit: "16x9",
+        quality: 90,
+      });
+      if (!src) return null;
+      return { src, srcSet, blurSrc: externalPhotoBlurPlaceholder(imageRow.externalUrl), sizes: "100vw" };
+    }
+
+    if (imageRow.image) {
+      const base = toSanityImageSource(imageRow.image);
+      const framing =
+        normalizeHomeFavoriteFraming(row.framing) ??
+        framingFromImageSource(imageRow.image as import("@sanity/image-url").SanityImageSource);
+      const source = applyHomeFavoriteFraming(base, framing);
+      const { src, srcSet } = photoSrcSet(source, COVER_WIDTHS_HOME_HERO, { fit: "16x9", quality: 90 });
+      if (!src) return null;
+      return { src, srcSet, blurSrc: photoBlurPlaceholder(source), sizes: "100vw" };
+    }
+
+    return null;
+  } catch (err) {
+    console.error("[sanity] fetchHomeHeroPhoto failed:", err);
+    return null;
   }
 }

@@ -12,6 +12,7 @@ import { resolveHomePhotoCover } from "../lib/home-page.server";
 import {
   fetchFeaturedGalleriesForList,
   fetchHomeFavoritePhotos,
+  fetchHomeHeroPhoto,
   fetchHomeSelectedWork,
   fetchHomeSpotlightSlides,
   fetchPublishedGalleryCategories,
@@ -21,21 +22,22 @@ import { buildOgImageUrl, buildPageMeta, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from 
 import { seoCopy } from "../lib/seo-copy";
 
 export async function loader() {
-  const [featuredGalleries, favoritePhotos, spotlightSlides, selectedWork, categories] = await Promise.all([
-    fetchFeaturedGalleriesForList(),
-    fetchHomeFavoritePhotos(),
-    fetchHomeSpotlightSlides(),
-    fetchHomeSelectedWork(),
-    fetchPublishedGalleryCategories(),
-  ]);
+  const [featuredGalleries, favoritePhotos, spotlightSlides, selectedWork, categories, heroPhoto] =
+    await Promise.all([
+      fetchFeaturedGalleriesForList(),
+      fetchHomeFavoritePhotos(),
+      fetchHomeSpotlightSlides(),
+      fetchHomeSelectedWork(),
+      fetchPublishedGalleryCategories(),
+      fetchHomeHeroPhoto(),
+    ]);
 
   return {
-    featuredGalleries,
     favoritePhotos,
     spotlightSlides,
     selectedWork,
     categories,
-    photoCover: resolveHomePhotoCover(featuredGalleries),
+    photoCover: heroPhoto ?? resolveHomePhotoCover(featuredGalleries),
   };
 }
 

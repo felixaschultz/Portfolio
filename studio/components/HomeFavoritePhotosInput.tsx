@@ -41,10 +41,13 @@ const FLICKR_DEFAULT_FRAMING: HomeFavoriteFraming = { x: 0.5, y: 0.5, width: 1, 
 
 const MAX_FAVORITES = 5;
 const MAX_SPOTLIGHT = 8;
+const MAX_SELECTED_WORK = 12;
 
-function fieldMode(props: ArrayInputProps): "favorites" | "spotlight" {
+function fieldMode(props: ArrayInputProps): "favorites" | "spotlight" | "selectedWork" {
   const segment = props.path?.[props.path.length - 1];
-  return segment === "spotlightSlides" ? "spotlight" : "favorites";
+  if (segment === "spotlightSlides") return "spotlight";
+  if (segment === "selectedWork") return "selectedWork";
+  return "favorites";
 }
 
 const GALLERY_LIST_QUERY = `*[_type == "gallery" && defined(slug.current) && defined(images[0])] | order(title.en asc) {
@@ -198,7 +201,9 @@ function flickrAlbumLabel(a: FlickrAlbumItem): string {
 export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   const mode = fieldMode(props);
   const isSpotlight = mode === "spotlight";
-  const max = isSpotlight ? MAX_SPOTLIGHT : MAX_FAVORITES;
+  const useStackUI = mode === "favorites";
+  const preferLargeFlickr = mode !== "favorites";
+  const max = mode === "favorites" ? MAX_FAVORITES : mode === "spotlight" ? MAX_SPOTLIGHT : MAX_SELECTED_WORK;
   const thumbAspect = isSpotlight ? "16/9" : "4/5";
   const thumbW = isSpotlight ? 160 : 120;
   const thumbH = isSpotlight ? 90 : 150;
@@ -367,7 +372,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
     fetchAlbumPhotos(albumId)
       .then((raw) => {
         if (cancelled) return;
-        setFlickrPhotos(raw.flatMap((p) => { const m = mapFlickrPhoto(p, isSpotlight); return m ? [m] : []; }));
+        setFlickrPhotos(raw.flatMap((p) => { const m = mapFlickrPhoto(p, preferLargeFlickr); return m ? [m] : []; }));
       })
       .catch((err: unknown) => {
         if (!cancelled)
@@ -377,7 +382,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
         if (!cancelled) setFlickrPhotosLoading(false);
       });
     return () => { cancelled = true; };
-  }, [activeFlickrAlbumId, isSpotlight]);
+  }, [activeFlickrAlbumId, preferLargeFlickr]);
 
   // ── Write helpers ──────────────────────────────────────────────────────────
   const writePicks = useCallback(
@@ -453,11 +458,11 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           gallery: { _ref: galleryId, _type: "reference" },
           imageKey,
           framing: framingFromImageSource(image),
-          ...(isSpotlight ? {} : { stackPose: defaultStackPose(nextIndex, nextTotal) }),
+          ...(useStackUI ? { stackPose: defaultStackPose(nextIndex, nextTotal) } : {}),
         },
       ]);
     },
-    [isSpotlight, max, picks, selectedSet, writePicks],
+    [useStackUI, max, picks, selectedSet, writePicks],
   );
 
   const toggleFlickr = useCallback(
@@ -480,11 +485,11 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           flickrSecret: secret,
           flickrPhotoUrl: bestUrl,
           flickrThumbUrl: smallUrl,
-          ...(isSpotlight ? {} : { stackPose: defaultStackPose(nextIndex, nextTotal) }),
+          ...(useStackUI ? { stackPose: defaultStackPose(nextIndex, nextTotal) } : {}),
         },
       ]);
     },
-    [isSpotlight, max, picks, selectedSet, writePicks],
+    [useStackUI, max, picks, selectedSet, writePicks],
   );
 
   // ── Filtered lists ─────────────────────────────────────────────────────────
@@ -742,16 +747,18 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
   return (
     <Stack space={4}>
       <Text size={1} muted>
-        {isSpotlight
+        {mode === "spotlight"
           ? `Choose a gallery or Flickr album, then pick slides for the home page slider (${picks.length} / ${max}).`
-          : `Choose a gallery or Flickr album, then pick photos (${picks.length} / ${max}). Only one source loads at a time.`}
+          : mode === "selectedWork"
+            ? `Choose a gallery or Flickr album, then pick photos for the "Selected work" grid (${picks.length} / ${max}).`
+            : `Choose a gallery or Flickr album, then pick photos (${picks.length} / ${max}). Only one source loads at a time.`}
       </Text>
 
       {picks.length > 0 ? (
         <Stack space={4}>
-          {!isSpotlight ? <HomeFavoriteStackPreview cards={stackPreviewCards} /> : null}
+          {useStackUI ? <HomeFavoriteStackPreview cards={stackPreviewCards} /> : null}
 
-          {!isSpotlight ? (
+          {useStackUI ? (
             <Stack space={3}>
               <Flex align="center" justify="space-between" gap={2}>
                 <Text size={1} weight="semibold">Stack order &amp; fold</Text>
@@ -831,8 +838,12 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
             </Stack>
           ) : (
             <Stack space={3}>
-              <Text size={1} weight="semibold">Slide order</Text>
-              <Text size={1} muted>First slide shows first on the home page. Use arrows to reorder.</Text>
+              <Text size={1} weight="semibold">{mode === "spotlight" ? "Slide order" : "Photo order"}</Text>
+              <Text size={1} muted>
+                {mode === "spotlight"
+                  ? "First slide shows first on the home page. Use arrows to reorder."
+                  : "First photo shows first in the grid. Use arrows to reorder."}
+              </Text>
               {picks.map((pick, index) => {
                 const url = resolvePickThumb(pick);
                 const label = resolvePickLabel(pick, index);
@@ -845,7 +856,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
                           alt=""
                           loading="lazy"
                           decoding="async"
-                          style={{ width: 96, aspectRatio: "16/9", objectFit: "cover", borderRadius: 4, flexShrink: 0 }}
+                          style={{ width: 96, aspectRatio: thumbAspect, objectFit: "cover", borderRadius: 4, flexShrink: 0 }}
                         />
                       ) : null}
                       <Text size={1} weight="medium" style={{ flex: 1 }}>{label}</Text>
@@ -868,7 +879,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
                           icon={TrashIcon}
                           mode="bleed"
                           tone="critical"
-                          aria-label="Remove slide"
+                          aria-label={mode === "spotlight" ? "Remove slide" : "Remove photo"}
                           onClick={() => removePick(pick._key)}
                         />
                       </Flex>
@@ -883,7 +894,7 @@ export function HomeFavoritePhotosInput(props: ArrayInputProps) {
           {picks.length > 0 ? (
             <Stack space={4}>
               <Text size={1} weight="semibold">
-                {isSpotlight ? "Slide crops (16:9)" : "Card crops"}
+                {isSpotlight ? "Slide crops (16:9)" : mode === "selectedWork" ? "Selected work crops" : "Card crops"}
               </Text>
               {picks.map((pick, index) => {
                 const image = resolvePickImage(pick);

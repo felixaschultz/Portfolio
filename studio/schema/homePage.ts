@@ -30,6 +30,18 @@ export const homePage = defineType({
         input: HomeFavoritePhotosInput,
       },
     }),
+    defineField({
+      name: "selectedWork",
+      title: "Selected work grid",
+      description:
+        "A larger showcase grid of individual photos on the home page (and on the About page). Pick up to 12; order is left-to-right, top-to-bottom.",
+      type: "array",
+      of: [defineArrayMember({ type: "homeFavoritePhoto" })],
+      validation: (rule) => rule.max(12).error("You can add at most 12 selected-work photos"),
+      components: {
+        input: HomeFavoritePhotosInput,
+      },
+    }),
   ],
   preview: {
     prepare() {

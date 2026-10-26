@@ -45,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     company: "Intastellar Solutions, International",
     design: "nova",
     color: "var(--color-accent)",
-    novaBackgroundColor: "#141311"
+    novaBackgroundColor: "#2f2f2f"
   }
 };`,
           }}

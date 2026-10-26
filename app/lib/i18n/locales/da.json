@@ -93,7 +93,8 @@
     "showMore": "Se alle projekter",
     "visitSite": "Besøg hjemmesiden",
     "visitGithub": "Besøg GitHub",
-    "tech": "Tech"
+    "selectedWorkTitle": "Udvalgte projekter",
+    "allProjectsTitle": "Alle projekter"
   },
   "photography": {
     "title": "Fotografi",

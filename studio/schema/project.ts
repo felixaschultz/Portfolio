@@ -61,6 +61,12 @@ export const project = defineType({
     defineField({ name: "type", title: "Type", type: "string" }),
     defineField({ name: "technology", title: "Technology", type: "string" }),
     defineField({ name: "sortOrder", title: "Sort order", type: "number" }),
+    defineField({
+      name: "year",
+      title: "Year",
+      description: "Only set this when there's real evidence for it (a dated screenshot, a date mentioned in the write-up). Leave blank rather than guess.",
+      type: "string",
+    }),
   ],
   orderings: [
     {

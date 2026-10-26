@@ -130,6 +130,8 @@ export const projects = [
         url: "https://www.cykelfaergen.info",
         type: "Web design / development & SoMe marketing",
         technology: "HTML, CSS, JS, PHP, MySQL",
+        sortOrder: 9,
+        year: "2019",
     },
     {
         id: "instastellarsignin",
@@ -397,7 +399,9 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
         github: "https://github.com/Intastellar-Solutions-International/intastellar-signin",
         url: "https://www.intastellaraccounts.com",
         type: "Web development",
-        technology: "JS, MySQL, PHP"
+        technology: "JS, MySQL, PHP",
+        sortOrder: 3,
+        year: "2024",
     },
     {
         id: "gdpr-cookiebanner",
@@ -440,7 +444,9 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
         url: "https://www.intastellar.eu/solutions/cookie-consents",
         type: "Web design / development",
-        technology: "JS"
+        technology: "JS",
+        sortOrder: 10,
+        year: "2018",
     },
     {
         id: "intastellar-consents-platform",
@@ -573,7 +579,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: "",
         url: "https://www.intastellarconsents.com",
         type: "SaaS - Solutions",
-        technology: "ReactJS, MySQL"
+        technology: "ReactJS, MySQL",
+        sortOrder: 1,
     },
     {
         id: "chat-bot",
@@ -628,7 +635,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: "https://github.com/felixaschultz/chatbot",
         url: "https://github.com/felixaschultz/chatbot",
         type: "Web design / development",
-        technology: "HTML, CSS, JS, PHP, MySQL"
+        technology: "HTML, CSS, JS, PHP, MySQL",
+        sortOrder: 7,
     },
     {
         id: "danfoss-insite",
@@ -657,7 +665,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: null,
         url: "https://www.danfoss.com/en/products/dcs/monitoring-and-services/alsense-insite/",
         type: "SaaS Solutions",
-        technology: "ReactJS"
+        technology: "ReactJS",
+        sortOrder: 2,
     },
     {
         id: "sailmore",
@@ -676,7 +685,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: null,
         url: "https://sailmore-dev.felix-schultz.dk",
         type: "Web development",
-        technology: "ReactJS"
+        technology: "ReactJS",
+        sortOrder: 8,
     },
     {
         id: "cykelfaergen-api",
@@ -812,7 +822,8 @@ export default function useFetch(updateInterval, url, method, headers, body, han
         github: null,
         url: "https://developers.cykelfaergen.info/timetable/js",
         type: "FE Development",
-        technology: "JS"
+        technology: "JS",
+        sortOrder: 6,
     },
     {
         id: "balticfinance-uploadformular",
@@ -1006,7 +1017,8 @@ if($movedFiles){
         github: null,
         url: "https://customerupload.balticfinance.com",
         type: "Web Development",
-        technology: "HTML, CSS, JS, PHP"
+        technology: "HTML, CSS, JS, PHP",
+        sortOrder: 5,
     },
     {
         id: "analytics-candidatedk",
@@ -1034,6 +1046,8 @@ if($movedFiles){
         url: "https://candidate.dk",
         type: "Web Development",
         technology: "MongoDB, RemixJS",
+        sortOrder: 4,
+        year: "2024",
     }
     /* {
         id: "event-planer",

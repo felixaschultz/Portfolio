@@ -802,6 +802,7 @@ export type SanityProjectDocument = {
   type?: string;
   technology?: string;
   sortOrder?: number;
+  year?: string;
 };
 
 const PROJECTS_QUERY = `*[_type == "project"] | order(coalesce(sortOrder, 999) asc, name asc) {
@@ -815,7 +816,8 @@ const PROJECTS_QUERY = `*[_type == "project"] | order(coalesce(sortOrder, 999) a
   url,
   type,
   technology,
-  sortOrder
+  sortOrder,
+  year
 }`;
 
 function localizedField(field: LocalizedString | undefined): Project["description"] {
@@ -838,6 +840,8 @@ function mapSanityProject(doc: SanityProjectDocument): Project {
     url: doc.url || null,
     type: doc.type ?? "",
     technology: doc.technology ?? "",
+    sortOrder: doc.sortOrder ?? 999,
+    year: doc.year || undefined,
   };
 }
 

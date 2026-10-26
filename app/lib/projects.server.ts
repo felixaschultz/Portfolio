@@ -19,7 +19,8 @@ async function loadProjects(): Promise<Project[]> {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  return loadProjects();
+  const list = await loadProjects();
+  return [...list].sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
 export async function getFeaturedProjects(limit = 3): Promise<Project[]> {

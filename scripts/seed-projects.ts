@@ -10,6 +10,7 @@ import { projects } from "../content/projects.source";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 config({ path: resolve(rootDir, ".env") });
+config({ path: resolve(rootDir, ".env.local"), override: true });
 
 const projectId = process.env.SANITY_PROJECT_ID;
 const dataset = process.env.SANITY_DATASET ?? "production";
@@ -65,7 +66,8 @@ async function main() {
       url: emptyToNull(p.url ?? undefined),
       type: p.type ?? "",
       technology: p.technology ?? "",
-      sortOrder: i,
+      sortOrder: p.sortOrder ?? i,
+      year: p.year ?? null,
     };
 
     await client.createOrReplace(doc);

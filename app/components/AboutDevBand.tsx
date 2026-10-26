@@ -24,7 +24,7 @@ export function AboutDevBand({ base }: AboutDevBandProps) {
         </div>
         <div className="home-dev-band__links">
           <p className="home-dev-band__note">{t("about.devBand.stackLabel")}</p>
-          <ul className="home-dev-band__stack">
+          <ul className="tech-chips">
             {STACK.map((tech) => (
               <li key={tech}>{tech}</li>
             ))}

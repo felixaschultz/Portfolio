@@ -93,7 +93,8 @@
     "showMore": "View all projects",
     "visitSite": "Visit website",
     "visitGithub": "Visit GitHub",
-    "tech": "Tech"
+    "selectedWorkTitle": "Selected work",
+    "allProjectsTitle": "All projects"
   },
   "photography": {
     "title": "Photography",

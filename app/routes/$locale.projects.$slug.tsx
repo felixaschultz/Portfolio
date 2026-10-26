@@ -1,4 +1,5 @@
 import { Link, useLoaderData, useParams } from "react-router";
+import { techList } from "../lib/projects";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/$locale.projects.$slug";
 import { HtmlContent } from "../components/HtmlContent";
@@ -54,11 +55,18 @@ export default function ProjectDetail() {
         ← {t("projects.title")}
       </Link>
       <header className="mt-8">
-        <h1 className="font-display text-4xl font-bold">{project.name}</h1>
+        <div className="flex items-baseline justify-between gap-3">
+          <h1 className="font-display text-4xl font-bold">{project.name}</h1>
+          {project.year && <span className="shrink-0 font-mono text-sm text-[var(--color-muted)]">{project.year}</span>}
+        </div>
         <p className="mt-2 text-[var(--color-muted)]">{project.type}</p>
-        <p className="mt-1 text-sm text-[var(--color-accent)]">
-          {t("projects.tech")}: {project.technology}
-        </p>
+        {techList(project.technology).length > 0 && (
+          <ul className="tech-chips mt-3">
+            {techList(project.technology).map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        )}
         {shortDesc && <p className="mt-4 text-[var(--color-muted)]">{shortDesc}</p>}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {project.url && (

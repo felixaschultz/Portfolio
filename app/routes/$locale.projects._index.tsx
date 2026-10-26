@@ -24,6 +24,8 @@ export function meta({ params }: Route.MetaArgs) {
 export default function ProjectsIndex() {
   const { projects } = useLoaderData<typeof loader>();
   const { t } = useTranslation();
+  const hero = projects.find((p) => p.highlight);
+  const rest = projects.filter((p) => p.id !== hero?.id);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -31,11 +33,26 @@ export default function ProjectsIndex() {
         <h1 className="font-display text-3xl font-bold sm:text-4xl">{t("projects.title")}</h1>
         <p className="mt-4 text-[var(--color-muted)]">{t("projects.description")}</p>
       </header>
-      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+
+      {hero && (
+        <section className="mt-12">
+          <h2 className="font-display text-xl font-semibold">{t("projects.selectedWorkTitle")}</h2>
+          <div className="mt-6">
+            <ProjectCard project={hero} featured />
+          </div>
+        </section>
+      )}
+
+      {rest.length > 0 && (
+        <section className="mt-16">
+          {hero && <h2 className="font-display text-xl font-semibold">{t("projects.allProjectsTitle")}</h2>}
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {rest.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

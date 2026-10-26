@@ -12,7 +12,18 @@ export type Project = {
   type: string;
   technology: string;
   images?: Record<string, string>;
+  /** Lower = more recent. Drives the chronological ordering of the projects list. */
+  sortOrder: number;
+  /** Only set when there's real evidence for the year (a dated screenshot, a date mentioned in the body). Omit rather than guess. */
+  year?: string;
 };
+
+export function techList(technology: string): string[] {
+  return technology
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
 
 export function getLocalizedText(
   field: Record<Locale, string> | undefined,

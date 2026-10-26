@@ -5,6 +5,6 @@ export type SiteLink = {
 
 export const siteCompanyLinks: SiteLink[] = [
   { name: "devhelp.dk", href: "https://www.devhelp.dk" },
-  { name: "Intastellar Solutions", href: "https://www.intastellarsolutions.com" },
+  { name: "Intastellar Solutions", href: "https://www.intastellar.eu" },
   { name: "Intastellar Consents", href: "https://www.intastellarconsents.com" },
 ];

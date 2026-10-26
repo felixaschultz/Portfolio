@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-const MERCHANT_URL = "https://www.intastellarsolutions.com";
+const MERCHANT_URL = "https://www.intastellar.eu";
 
 type ShopPaymentMerchantNoticeProps = {
   className?: string;

@@ -384,7 +384,7 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
             <img src="/projects/intastellarsignin/Screenshot 2024-08-06 at 04.50.13.png" />
             <section class="content-ppad">
                 <h2>Integration</h2>
-                <a href="https://developers.intastellarsolutions.com/identity/sign-in/web/docs" rel="noopener" target="_blank">Find dokumentation på Intastellar Developers</a>
+                <a href="https://developers.intastellar.eu/identity/sign-in/web/docs" rel="noopener" target="_blank">Find dokumentation på Intastellar Developers</a>
             </section>
                 `,
             en: ""
@@ -438,7 +438,7 @@ if ($iss == $issuer && $iss_url == $issuer_url) {
             en: ""
         },
         github: "https://github.com/felixaschultz/intastellar-gdpr-cookiebanner",
-        url: "https://www.intastellarsolutions.com/solutions/cookie-consents",
+        url: "https://www.intastellar.eu/solutions/cookie-consents",
         type: "Web design / development",
         technology: "JS"
     },

@@ -48,7 +48,7 @@ export function SiteFooter() {
             © {year} Felix A. Schultz. {t("footer.rights")}.
           </p>
           <a
-            href="https://www.intastellarsolutions.com"
+            href="https://www.intastellar.eu"
             target="_blank"
             rel="noreferrer"
             aria-label="Intastellar Solutions"

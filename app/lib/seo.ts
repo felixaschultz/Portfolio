@@ -5,7 +5,7 @@ import {
 } from "./site-domains";
 
 export const SITE_NAME = "Felix A. Schultz";
-export const DEFAULT_OG_IMAGE = "/assets/me.jpg";
+export const DEFAULT_OG_IMAGE = "/assets/me.jpeg";
 
 export function getSiteUrl(): string {
   const url =

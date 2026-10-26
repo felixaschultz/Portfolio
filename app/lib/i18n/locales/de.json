@@ -77,10 +77,15 @@
   "about": {
     "title": "Fotograf & Fullstack Entwickler - Felix A. Schultz",
     "body": "Ich bin Felix A. Schultz und arbeite im Kreuzfachbereich zwischen dem visuellen und dem technischen. Als Fotograf ist es der Moment, der mich antreibt – nicht der gefälschte, sondern der echte. Bei Festivals und Veranstaltungen suche ich nach den kleinen Momenten, die die meisten überspringen: eine Emotion im Publikum, ein Blick zwischen zwei Menschen, die Stimmung im Raum. Bei kleineren Fotoshootings geht es darum, ein Raum zu schaffen, in dem das natürliche entstehen kann.",
-    "approach": "Derselbe Instinkt zieht sich auch durch die technische Arbeit — ich baue gerne Dinge, die nicht im Weg stehen, damit sich die Menschen, die sie nutzen, auf das konzentrieren können, weswegen sie da sind. Ob hinter der Kamera oder vor dem Bildschirm, die Frage bleibt dieselbe: Was braucht hier wirklich Aufmerksamkeit? Festivals, Hochzeiten, Familienfotos, Produkte — unterschiedliche Kontexte, derselbe Blick.",
     "specialtiesTitle": "Spezialgebiete",
     "workTitle": "Ein paar Arbeiten",
-    "portraitAlt": "Felix A. Schultz"
+    "portraitAlt": "Felix A. Schultz",
+    "devBand": {
+      "title": "Derselbe Blick, ein anderes Werkzeug",
+      "text": "Derselbe Instinkt zieht sich durch die technische Arbeit — ich baue gerne Dinge, die nicht im Weg stehen, damit sich die Nutzer auf das konzentrieren können, weswegen sie da sind. Unterschiedliche Kontexte, derselbe Blick. Heute heißt das vor allem Websites, Produktarbeit und Kundenprojekte — diese Seite eingeschlossen.",
+      "stackLabel": "Diese Seite läuft mit",
+      "cta": "Projekte ansehen"
+    }
   },
   "projects": {
     "title": "Projekte",

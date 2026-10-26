@@ -77,10 +77,15 @@
   "about": {
     "title": "Fotograf & Fullstack udvikler - Felix A. Schultz",
     "body": "Jeg hedder Felix A. Schultz og arbejder i krydsfeltet mellem det visuelle og det tekniske. Som fotograf er det øjeblikket der driver mig – ikke det iscenesatte, men det ægte. Ved festivaler og arrangementer leder jeg efter de små øjeblikke de fleste overser: en emotion i publikummet, et blik mellem to mennesker, stemningen i rummet. Ved mindre fotoshoots handler det om at skabe et rum hvor det naturlige får lov at opstå.",
-    "approach": "Den samme instinkt følger med ind i det tekniske arbejde — jeg kan lide at bygge ting, der ikke står i vejen, så dem der bruger det kan fokusere på det, de kom for. Uanset om jeg står bag et kamera eller foran en skærm, er spørgsmålet det samme: hvad er det, der faktisk har brug for opmærksomhed her? Festivaler, bryllupper, familiefotos, produkter — forskellige sammenhænge, samme måde at se på.",
     "specialtiesTitle": "Specialer",
     "workTitle": "Noget af arbejdet",
-    "portraitAlt": "Felix A. Schultz"
+    "portraitAlt": "Felix A. Schultz",
+    "devBand": {
+      "title": "Samme blik, et andet værktøj",
+      "text": "Den samme instinkt følger med ind i det tekniske arbejde — jeg kan lide at bygge ting, der ikke står i vejen, så dem der bruger det kan fokusere på det, de kom for. Forskellige sammenhænge, samme måde at se på. I dag betyder det mest websites, produktarbejde og kundeprojekter — denne side inkluderet.",
+      "stackLabel": "Denne side kører på",
+      "cta": "Se projekterne"
+    }
   },
   "projects": {
     "title": "Projekter",

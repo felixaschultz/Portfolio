@@ -77,10 +77,15 @@
   "about": {
     "title": "Photographer & Fullstack Developer - Felix A. Schultz",
     "body": "I'm Felix A. Schultz and work in the crossover between the visual and the technical. As a photographer it's the moment that drives me - not the staged, but the real one. At festivals and events I look for the small moments that most people miss: an emotion in the audience, a glance between two people, the atmosphere in the room. At smaller photoshoots it's about creating a space where the natural can come to life.",
-    "approach": "That same instinct carries into the technical work — I like building things that get out of the way, so the people using them can focus on what they came to do. Whether I'm behind a camera or in front of a screen, it's the same question: what actually needs attention here? Festivals, weddings, family shoots, products — different contexts, same way of looking.",
     "specialtiesTitle": "Specialties",
     "workTitle": "Some of the work",
-    "portraitAlt": "Felix A. Schultz"
+    "portraitAlt": "Felix A. Schultz",
+    "devBand": {
+      "title": "Same eye, different tool",
+      "text": "That same instinct carries into the technical work — I like building things that get out of the way, so people using them can focus on what they came to do. Different contexts, same way of looking. These days that mostly means websites, product work, and client builds — this site included.",
+      "stackLabel": "This site runs on",
+      "cta": "See the projects"
+    }
   },
   "projects": {
     "title": "Projects",

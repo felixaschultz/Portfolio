@@ -416,6 +416,26 @@ body {
   color: var(--color-accent);
 }
 
+.home-dev-band__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-dev-band__stack li {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
 /* Home spotlight — full viewport, center slide + side peeks */
 .home-spotlight-section {
   border-bottom: 1px solid var(--color-border);
@@ -4151,6 +4171,7 @@ body {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: right;
   border-radius: 1rem;
 }
 
@@ -4168,6 +4189,10 @@ body {
 
 .about-page__section {
   margin-top: 4rem;
+}
+
+.about-page__section--first {
+  margin-top: 2.5rem;
 }
 
 /* Contact page — form + info panel */

@@ -181,7 +181,25 @@ export function flickrAlbumToNavItem(album: FlickrAlbumMeta): GalleryNavItem {
 
 // ── Fetch all albums for the configured user (auto-paginates) ─────────────────
 
-export async function fetchFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
+/**
+ * Short-lived cache so the many call sites that independently need the album list
+ * (home favorites/spotlight/selected-work, featured galleries, nav, etc.) share one
+ * Flickr request instead of each firing their own `photosets.getList` call.
+ */
+const ALBUMS_CACHE_TTL_MS = 10_000;
+let albumsCache: { promise: Promise<FlickrAlbumMeta[]>; expiresAt: number } | null = null;
+
+export function fetchFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
+  const now = Date.now();
+  if (albumsCache && albumsCache.expiresAt > now) {
+    return albumsCache.promise;
+  }
+  const promise = loadFlickrAlbums();
+  albumsCache = { promise, expiresAt: now + ALBUMS_CACHE_TTL_MS };
+  return promise;
+}
+
+async function loadFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
   const apiKey = process.env.FLICKR_API_KEY;
   const userId = process.env.FLICKR_USER_ID;
   if (!apiKey || !userId) return [];

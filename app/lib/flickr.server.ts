@@ -24,7 +24,8 @@ type FlickrPrimaryPhotoExtras = {
   url_b?: string; width_b?: number; height_b?: number;
   url_h?: string; width_h?: number; height_h?: number;
   url_k?: string; width_k?: number; height_k?: number;
-  date_taken?: string;
+  /** Flickr returns this key without the underscore, unlike the `date_taken` request param. */
+  datetaken?: string;
 };
 
 type FlickrPhotosetRaw = {
@@ -231,9 +232,6 @@ async function loadFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
       if (data.stat !== "ok" || !data.photosets) throw new Error(data.message ?? data.stat);
 
       for (const ps of data.photosets.photoset) {
-        if (ps.id === "72177720336336486") {
-          console.log("[flickr-debug] raw photoset:", JSON.stringify(ps));
-        }
         albums.push({
           id: ps.id,
           title: ps.title._content,
@@ -243,7 +241,7 @@ async function loadFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
           primaryPhotoSecret: ps.secret,
           photoCount: ps.count_photos,
           dateCreate: ps.date_create,
-          primaryPhotoDateTaken: ps.primary_photo_extras?.date_taken,
+          primaryPhotoDateTaken: ps.primary_photo_extras?.datetaken,
           primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
           primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
         });
@@ -281,7 +279,6 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
     const data = (await res.json()) as FlickrPhotosetInfoResponse;
     if (data.stat !== "ok" || !data.photoset) throw new Error(data.message ?? data.stat);
     const ps = data.photoset;
-    console.log("[flickr-debug] getInfo raw photoset:", JSON.stringify(ps));
     return {
       id: ps.id,
       title: ps.title._content,
@@ -291,7 +288,7 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
       primaryPhotoSecret: ps.secret,
       photoCount: typeof ps.count_photos === "object" ? ps.count_photos._content : ps.count_photos,
       dateCreate: ps.date_create,
-      primaryPhotoDateTaken: ps.primary_photo_extras?.date_taken,
+      primaryPhotoDateTaken: ps.primary_photo_extras?.datetaken,
       primaryPhotoUrlH: ps.primary_photo_extras?.url_h,
       primaryPhotoUrlK: ps.primary_photo_extras?.url_k,
     };

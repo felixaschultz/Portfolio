@@ -281,6 +281,7 @@ async function fetchFlickrAlbumInfo(albumId: string): Promise<FlickrAlbumMeta | 
     const data = (await res.json()) as FlickrPhotosetInfoResponse;
     if (data.stat !== "ok" || !data.photoset) throw new Error(data.message ?? data.stat);
     const ps = data.photoset;
+    console.log("[flickr-debug] getInfo raw photoset:", JSON.stringify(ps));
     return {
       id: ps.id,
       title: ps.title._content,

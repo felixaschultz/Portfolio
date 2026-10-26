@@ -4162,7 +4162,7 @@ body {
 @media (min-width: 900px) {
   .about-page__intro {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: 3rem;
   }
 }

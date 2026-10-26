@@ -231,6 +231,9 @@ async function loadFlickrAlbums(): Promise<FlickrAlbumMeta[]> {
       if (data.stat !== "ok" || !data.photosets) throw new Error(data.message ?? data.stat);
 
       for (const ps of data.photosets.photoset) {
+        if (ps.id === "72177720336336486") {
+          console.log("[flickr-debug] raw photoset:", JSON.stringify(ps));
+        }
         albums.push({
           id: ps.id,
           title: ps.title._content,

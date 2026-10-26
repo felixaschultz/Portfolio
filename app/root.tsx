@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useParams } from "react-router";
 import type { Route } from "./+types/root";
 import {
   GoogleTagManagerHead,
@@ -6,6 +6,7 @@ import {
   GoogleTagManagerRouteTracker,
 } from "./components/GoogleTagManager";
 import { RouteErrorBoundary } from "./components/RouteErrorBoundary";
+import { defaultLocale, isValidLocale } from "./lib/i18n";
 import { getGtmId } from "./lib/gtm";
 import "./app.css";
 
@@ -27,9 +28,11 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const gtmId = getGtmId();
+  const { locale } = useParams();
+  const lang = isValidLocale(locale ?? "") ? locale : defaultLocale;
 
   return (
-    <html lang="da" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
